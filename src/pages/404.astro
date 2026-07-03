@@ -1,0 +1,28 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Хуудас олдсонгүй">
+  <div class="mx-auto max-w-2xl px-4 py-20 sm:py-28 text-center">
+    <p class="text-7xl font-extrabold text-theme-600" aria-hidden="true">404</p>
+    <h1 class="mt-4 text-2xl sm:text-3xl font-bold text-title-600">Хуудас олдсонгүй</h1>
+    <p class="mt-3 text-body-500">
+      Таны хайсан хуудас устгагдсан, нэр нь өөрчлөгдсөн эсвэл түр хугацаанд ашиглах боломжгүй
+      байж магадгүй.
+    </p>
+    <div class="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
+      <a
+        href="/"
+        class="inline-block rounded-md bg-theme-600 px-6 py-3 font-semibold text-white hover:bg-theme-700 transition-colors"
+      >
+        Нүүр хуудас руу буцах
+      </a>
+      <a
+        href="/news"
+        class="inline-block rounded-md border border-gray-300 px-6 py-3 font-semibold text-dark-800 hover:border-theme-600 hover:text-theme-600 transition-colors"
+      >
+        Мэдээ үзэх
+      </a>
+    </div>
+  </div>
+</BaseLayout>

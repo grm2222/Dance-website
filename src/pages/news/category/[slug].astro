@@ -1,0 +1,76 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import NewsCard from '../../../components/NewsCard.astro';
+import { sanityFetch } from '../../../lib/sanity';
+import { newsByCategoryQuery, newsCategoriesQuery } from '../../../lib/queries';
+import type { NewsArticlePreview, NewsCategory } from '../../../lib/types';
+
+export async function getStaticPaths() {
+  const categories = await sanityFetch<NewsCategory[]>(newsCategoriesQuery, []);
+  return categories.map((category) => ({
+    params: { slug: category.slug },
+    props: { category, categories },
+  }));
+}
+
+interface Props {
+  category: NewsCategory;
+  categories: NewsCategory[];
+}
+
+const { category, categories } = Astro.props;
+const articles = await sanityFetch<NewsArticlePreview[]>(newsByCategoryQuery, [], {
+  category: category.slug,
+});
+---
+
+<BaseLayout title={category.title.mn}>
+  <div class="mx-auto max-w-6xl px-4 py-10 sm:py-14">
+    <h1 class="text-3xl sm:text-4xl font-extrabold mb-6">{category.title.mn}</h1>
+
+    <nav aria-label="Мэдээний ангилал" class="mb-8">
+      <ul class="flex flex-wrap gap-2">
+        <li>
+          <a
+            href="/news"
+            class="inline-block rounded-full border border-gray-200 px-4 py-1.5 text-sm font-medium text-gray-700 hover:border-theme-600 hover:text-theme-600"
+          >
+            Бүгд
+          </a>
+        </li>
+        {
+          categories.map((item) =>
+            item.slug === category.slug ? (
+              <li>
+                <span class="inline-block rounded-full bg-theme-600 text-white px-4 py-1.5 text-sm font-medium">
+                  {item.title.mn}
+                </span>
+              </li>
+            ) : (
+              <li>
+                <a
+                  href={`/news/category/${item.slug}`}
+                  class="inline-block rounded-full border border-gray-200 px-4 py-1.5 text-sm font-medium text-gray-700 hover:border-theme-600 hover:text-theme-600"
+                >
+                  {item.title.mn}
+                </a>
+              </li>
+            ),
+          )
+        }
+      </ul>
+    </nav>
+
+    {
+      articles.length === 0 ? (
+        <p class="text-gray-500">Энэ ангилалд мэдээ алга байна.</p>
+      ) : (
+        <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {articles.map((article) => (
+            <NewsCard article={article} />
+          ))}
+        </div>
+      )
+    }
+  </div>
+</BaseLayout>

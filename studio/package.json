@@ -1,0 +1,23 @@
+{
+  "name": "dancesport-mn-studio",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "sanity dev",
+    "build": "sanity build",
+    "deploy": "sanity deploy"
+  },
+  "dependencies": {
+    "@sanity/vision": "^4.0.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "sanity": "^4.0.0",
+    "styled-components": "^6.1.15"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.1.0",
+    "typescript": "^5.8.0"
+  }
+}

@@ -1,0 +1,18 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import RegistrationForm from '../components/RegistrationForm.astro';
+---
+
+<BaseLayout
+  title="Бүртгүүлэх хүсэлт"
+  description="Байгууллага, клубын гишүүнчлэлийн бүртгэлийн хүсэлт илгээх"
+>
+  <div class="mx-auto max-w-2xl px-4 py-10 sm:py-14">
+    <h1 class="text-3xl sm:text-4xl font-extrabold mb-3">Бүртгүүлэх хүсэлт</h1>
+    <p class="text-gray-600 mb-8">
+      Холбоонд гишүүнээр элсэх хүсэлтэй байгууллага, клубууд доорх маягтыг бөглөж илгээнэ үү.
+      Бид таны хүсэлтийг хянаж үзээд эргэн холбогдох болно.
+    </p>
+    <RegistrationForm />
+  </div>
+</BaseLayout>

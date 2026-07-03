@@ -1,0 +1,149 @@
+---
+// Posts to our own endpoint only; the Sanity write token stays server-side.
+---
+
+<form
+  id="registration-form"
+  method="post"
+  action="/api/register"
+  class="space-y-5"
+  novalidate
+>
+  <div>
+    <label for="orgName" class="block text-sm font-medium mb-1">
+      Байгууллага / клубын нэр <span class="text-red-600" aria-hidden="true">*</span>
+    </label>
+    <input
+      type="text"
+      id="orgName"
+      name="orgName"
+      required
+      maxlength="200"
+      autocomplete="organization"
+      class="w-full rounded-lg border border-gray-300 px-3 py-3 focus:border-theme-600 focus:ring-2 focus:ring-theme-100 outline-none"
+    />
+  </div>
+
+  <div>
+    <label for="about" class="block text-sm font-medium mb-1">
+      Танилцуулга <span class="text-red-600" aria-hidden="true">*</span>
+    </label>
+    <textarea
+      id="about"
+      name="about"
+      required
+      rows="4"
+      maxlength="2000"
+      class="w-full rounded-lg border border-gray-300 px-3 py-3 focus:border-theme-600 focus:ring-2 focus:ring-theme-100 outline-none"
+      placeholder="Үйл ажиллагааныхаа талаар товч бичнэ үү"></textarea>
+  </div>
+
+  <div>
+    <label for="address" class="block text-sm font-medium mb-1">
+      Хаяг <span class="text-red-600" aria-hidden="true">*</span>
+    </label>
+    <input
+      type="text"
+      id="address"
+      name="address"
+      required
+      maxlength="300"
+      autocomplete="street-address"
+      class="w-full rounded-lg border border-gray-300 px-3 py-3 focus:border-theme-600 focus:ring-2 focus:ring-theme-100 outline-none"
+    />
+  </div>
+
+  <div class="grid gap-5 sm:grid-cols-2">
+    <div>
+      <label for="phone" class="block text-sm font-medium mb-1">
+        Утасны дугаар <span class="text-red-600" aria-hidden="true">*</span>
+      </label>
+      <input
+        type="tel"
+        id="phone"
+        name="phone"
+        required
+        maxlength="30"
+        autocomplete="tel"
+        class="w-full rounded-lg border border-gray-300 px-3 py-3 focus:border-theme-600 focus:ring-2 focus:ring-theme-100 outline-none"
+      />
+    </div>
+    <div>
+      <label for="email" class="block text-sm font-medium mb-1">
+        Имэйл хаяг <span class="text-red-600" aria-hidden="true">*</span>
+      </label>
+      <input
+        type="email"
+        id="email"
+        name="email"
+        required
+        maxlength="200"
+        autocomplete="email"
+        class="w-full rounded-lg border border-gray-300 px-3 py-3 focus:border-theme-600 focus:ring-2 focus:ring-theme-100 outline-none"
+      />
+    </div>
+  </div>
+
+  <!-- Honeypot: hidden from humans, bots tend to fill it -->
+  <div class="hidden" aria-hidden="true">
+    <label for="website">Вэбсайт</label>
+    <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" />
+  </div>
+
+  <p
+    id="form-status"
+    role="status"
+    aria-live="polite"
+    tabindex="-1"
+    class="hidden rounded-lg px-4 py-3 text-sm"
+  >
+  </p>
+
+  <button
+    type="submit"
+    id="form-submit"
+    class="w-full sm:w-auto rounded-lg bg-theme-600 px-8 py-3 font-semibold text-white hover:bg-theme-700 transition-colors disabled:opacity-60"
+  >
+    Хүсэлт илгээх
+  </button>
+</form>
+
+<script>
+  const form = document.getElementById('registration-form') as HTMLFormElement | null;
+  const status = document.getElementById('form-status');
+  const submit = document.getElementById('form-submit') as HTMLButtonElement | null;
+
+  function showStatus(message: string, ok: boolean) {
+    if (!status) return;
+    status.textContent = message;
+    status.classList.remove('hidden', 'bg-green-50', 'text-green-800', 'bg-red-50', 'text-red-800');
+    status.classList.add(ok ? 'bg-green-50' : 'bg-red-50', ok ? 'text-green-800' : 'text-red-800');
+    // Bring the result into view for keyboard and screen-reader users
+    status.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    status.focus({ preventScroll: true });
+  }
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!form.reportValidity()) return;
+    if (submit) submit.disabled = true;
+
+    try {
+      const res = await fetch('/api/register', {
+        method: 'POST',
+        body: new FormData(form),
+      });
+      const data = (await res.json()) as { ok: boolean; error?: string };
+      if (res.ok && data.ok) {
+        form.reset();
+        showStatus('Таны хүсэлтийг хүлээн авлаа. Бид тантай удахгүй холбогдох болно.', true);
+      } else {
+        showStatus(data.error ?? 'Алдаа гарлаа. Дахин оролдоно уу.', false);
+      }
+    } catch {
+      showStatus('Сүлжээний алдаа гарлаа. Дахин оролдоно уу.', false);
+    } finally {
+      if (submit) submit.disabled = false;
+    }
+  });
+</script>

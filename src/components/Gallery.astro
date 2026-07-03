@@ -1,0 +1,36 @@
+---
+import { urlFor } from '../lib/sanity';
+import type { GalleryImage } from '../lib/types';
+
+interface Props {
+  images: GalleryImage[];
+}
+
+const { images } = Astro.props;
+---
+
+{
+  images.length > 0 && (
+    <ul class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+      {images.map((item) => (
+        <li>
+          <figure class="group relative overflow-hidden rounded-lg">
+            <img
+              src={urlFor(item.image).width(480).height(480).url()}
+              alt={item.caption?.mn ?? ''}
+              width="480"
+              height="480"
+              loading="lazy"
+              class="aspect-square w-full object-cover transition-transform group-hover:scale-105"
+            />
+            {item.caption?.mn && (
+              <figcaption class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent px-3 pb-2 pt-8 text-xs text-white">
+                {item.caption.mn}
+              </figcaption>
+            )}
+          </figure>
+        </li>
+      ))}
+    </ul>
+  )
+}

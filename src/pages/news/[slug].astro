@@ -1,0 +1,67 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { sanityFetch, urlFor } from '../../lib/sanity';
+import { newsArticleBySlugQuery, newsSlugsQuery } from '../../lib/queries';
+import { formatDate, renderPortableText } from '../../lib/format';
+import type { NewsArticle } from '../../lib/types';
+
+export async function getStaticPaths() {
+  const slugs = await sanityFetch<string[]>(newsSlugsQuery, []);
+  return slugs.map((slug) => ({ params: { slug } }));
+}
+
+const { slug } = Astro.params;
+const article = await sanityFetch<NewsArticle | null>(newsArticleBySlugQuery, null, { slug });
+
+if (!article) {
+  return Astro.redirect('/news');
+}
+
+const imageUrl = article.mainImage
+  ? urlFor(article.mainImage).width(1280).height(720).url()
+  : null;
+const bodyHtml = renderPortableText(article.body?.mn);
+---
+
+<BaseLayout title={article.title.mn}>
+  <article class="mx-auto max-w-3xl px-4 py-10 sm:py-14">
+    <header>
+      <div class="flex items-center gap-2 text-sm text-gray-500 mb-3">
+        {
+          article.category && (
+            <a
+              href={`/news/category/${article.category.slug}`}
+              class="rounded-full bg-theme-50 text-theme-700 px-3 py-1 text-xs font-medium hover:bg-theme-100"
+            >
+              {article.category.title.mn}
+            </a>
+          )
+        }
+        <time datetime={article.publishedAt}>{formatDate(article.publishedAt)}</time>
+      </div>
+      <h1 class="text-2xl sm:text-4xl font-extrabold leading-tight text-balance">
+        {article.title.mn}
+      </h1>
+    </header>
+
+    {
+      imageUrl && (
+        <img
+          src={imageUrl}
+          alt={article.mainImage?.alt ?? ''}
+          width="1280"
+          height="720"
+          class="mt-6 w-full rounded-xl object-cover"
+        />
+      )
+    }
+
+    <div class="prose-news mt-8 text-gray-800" set:html={bodyHtml} />
+
+    <footer class="mt-10 border-t border-gray-100 pt-6">
+      <a href="/news" class="text-sm font-semibold text-theme-600 hover:text-theme-700">
+        ← Бүх мэдээ рүү буцах
+      </a>
+    </footer>
+  </article>
+</BaseLayout>
