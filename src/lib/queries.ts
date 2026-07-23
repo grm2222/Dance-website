@@ -50,6 +50,18 @@ export const upcomingEventsQuery = `
 }
 `;
 
+export const allUpcomingEventsQuery = `
+*[_type == "event" && type == "schedule" && date >= now()] | order(date asc){
+  _id, title, date, location, description, type, resultDetails
+}
+`;
+
+export const allResultsQuery = `
+*[_type == "event" && type == "result"] | order(date desc){
+  _id, title, date, location, description, type, resultDetails
+}
+`;
+
 export const recentResultsQuery = `
 *[_type == "event" && type == "result"] | order(date desc)[0...5]{
   _id, title, date, location, description, type, resultDetails

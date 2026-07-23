@@ -1,0 +1,22 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import DancerRegistrationForm from '../../components/DancerRegistrationForm.astro';
+---
+
+<BaseLayout
+  title="Бүжигчний бүртгэл"
+  description="Тамирчин, бүжигчнээр бүртгүүлэх хүсэлт илгээх"
+>
+  <div class="mx-auto max-w-2xl px-4 py-10 sm:py-14">
+    <nav aria-label="Байршил" class="mb-4 text-sm text-body-500">
+      <a href="/register" class="hover:text-theme-600">Бүртгэл</a>
+      <span aria-hidden="true"> / </span>
+      <span>Бүжигчин</span>
+    </nav>
+    <h1 class="text-3xl sm:text-4xl font-extrabold mb-3">Бүжигчний бүртгэл</h1>
+    <p class="text-body-500 mb-8">
+      Холбоонд тамирчин, бүжигчнээр бүртгүүлэх хүсэлтээ доорх маягтаар илгээнэ үү.
+    </p>
+    <DancerRegistrationForm />
+  </div>
+</BaseLayout>

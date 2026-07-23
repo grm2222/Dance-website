@@ -7,8 +7,9 @@ Phase 1 scope ONLY — do not build beyond this without being asked:
 
 1. **Landing page** — hero, about sections, competition schedule preview, latest news, photo gallery, footer
 2. **News section** — list page + single article page, categories (Дотоод мэдээ / Гадаад мэдээ)
-3. **Registration form** — organization/member registration request form (no auth, no login — submissions are reviewed manually by admins)
-4. **Admin** — handled entirely by Sanity Studio (no custom admin UI to build)
+3. **Registration forms** — /register hub with two request forms: club/organization (`/register/club`) and dancer (`/register/dancer`) (no auth, no login — submissions are reviewed manually by admins)
+4. **Calendar** — /calendar page listing competition schedule (upcoming) and results
+5. **Admin** — handled entirely by Sanity Studio (no custom admin UI to build)
 
 Out of scope for now: user accounts/login, competition registration system,
 rankings, e-commerce, payments. These come in phase 2 — do not scaffold them.
@@ -40,6 +41,7 @@ Define these document types:
 - `galleryImage` — image, caption, order
 - `siteSettings` (singleton) — logo, phone, emails, address, facebook URL, footer text, hero content
 - `registrationRequest` — orgName, about, address, phone, email, submittedAt, status ("new" | "reviewed") — created via API, hidden from creation in Studio UI but listable
+- `dancerRegistrationRequest` — lastName, firstName, birthDate, gender ("male" | "female"), club (optional), phone, email, submittedAt, status ("new" | "reviewed") — created via API, hidden from creation in Studio UI but listable
 
 ## Project Structure
 

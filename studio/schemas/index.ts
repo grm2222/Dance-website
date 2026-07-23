@@ -5,6 +5,7 @@ import { event } from './event';
 import { galleryImage } from './galleryImage';
 import { siteSettings } from './siteSettings';
 import { registrationRequest } from './registrationRequest';
+import { dancerRegistrationRequest } from './dancerRegistrationRequest';
 
 export const schemaTypes = [
   // objects
@@ -18,4 +19,5 @@ export const schemaTypes = [
   galleryImage,
   siteSettings,
   registrationRequest,
+  dancerRegistrationRequest,
 ];

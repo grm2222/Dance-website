@@ -10,6 +10,7 @@ import {
   ImagesIcon,
   SparkleIcon,
   TagIcon,
+  UserIcon,
 } from '@sanity/icons';
 import { schemaTypes } from './schemas';
 
@@ -19,7 +20,7 @@ const apiVersion = '2026-06-01';
 
 // siteSettings is a singleton; registrationRequest is created only via the
 // website form — both are kept out of the "new document" menu.
-const HIDDEN_FROM_CREATE = ['siteSettings', 'registrationRequest'];
+const HIDDEN_FROM_CREATE = ['siteSettings', 'registrationRequest', 'dancerRegistrationRequest'];
 
 // Federation colors, matching the website (see src/styles/global.css)
 const theme = buildLegacyTheme({
@@ -114,11 +115,11 @@ const structure: StructureResolver = (S) =>
       S.divider(),
 
       S.listItem()
-        .title('Registration requests')
+        .title('Club registrations')
         .icon(EnvelopeIcon)
         .child(
           S.list()
-            .title('Registration requests')
+            .title('Club registrations')
             .items([
               S.listItem()
                 .title('New — needs review')
@@ -144,6 +145,37 @@ const structure: StructureResolver = (S) =>
               S.documentTypeListItem('registrationRequest').title('All requests'),
             ]),
         ),
+      S.listItem()
+        .title('Dancer registrations')
+        .icon(UserIcon)
+        .child(
+          S.list()
+            .title('Dancer registrations')
+            .items([
+              S.listItem()
+                .title('New — needs review')
+                .icon(UserIcon)
+                .child(
+                  S.documentList()
+                    .title('New requests')
+                    .apiVersion(apiVersion)
+                    .filter('_type == "dancerRegistrationRequest" && status == "new"')
+                    .defaultOrdering([{ field: 'submittedAt', direction: 'desc' }]),
+                ),
+              S.listItem()
+                .title('Reviewed')
+                .icon(CheckmarkCircleIcon)
+                .child(
+                  S.documentList()
+                    .title('Reviewed requests')
+                    .apiVersion(apiVersion)
+                    .filter('_type == "dancerRegistrationRequest" && status == "reviewed"')
+                    .defaultOrdering([{ field: 'submittedAt', direction: 'desc' }]),
+                ),
+              S.divider(),
+              S.documentTypeListItem('dancerRegistrationRequest').title('All requests'),
+            ]),
+        ),
     ]);
 
 export default defineConfig({
@@ -160,7 +192,7 @@ export default defineConfig({
     newDocumentOptions: (prev) =>
       prev.filter((item) => !HIDDEN_FROM_CREATE.includes(item.templateId)),
     badges: (prev, context) => {
-      if (context.schemaType === 'registrationRequest') {
+      if (context.schemaType === 'registrationRequest' || context.schemaType === 'dancerRegistrationRequest') {
         return [
           ...prev,
           (props: DocumentBadgeProps) => {

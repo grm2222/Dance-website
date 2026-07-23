@@ -95,3 +95,13 @@ export interface RegistrationRequestInput {
   phone: string;
   email: string;
 }
+
+export interface DancerRegistrationInput {
+  lastName: string;
+  firstName: string;
+  birthDate: string;
+  gender: 'male' | 'female';
+  club?: string;
+  phone: string;
+  email: string;
+}
