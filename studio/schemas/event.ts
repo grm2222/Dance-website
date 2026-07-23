@@ -51,6 +51,15 @@ export const event = defineType({
       description: 'Placings and winners. Each line is shown separately on the website.',
       type: 'localeText',
       hidden: ({ parent }) => parent?.type !== 'result',
+      validation: (rule) =>
+        rule.custom((value, context) => {
+          const parent = context.parent as { type?: string } | undefined;
+          const mn = (value as { mn?: string } | undefined)?.mn;
+          if (parent?.type === 'result' && !mn) {
+            return 'Result events need result details — add the placings before publishing';
+          }
+          return true;
+        }),
     }),
   ],
   orderings: [

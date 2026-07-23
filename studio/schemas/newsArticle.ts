@@ -21,7 +21,8 @@ export const newsArticle = defineType({
     defineField({
       name: 'slug',
       title: 'Slug',
-      description: 'The article’s web address. Click "Generate" after writing the title.',
+      description:
+        'The article’s web address. Click "Generate" after writing the title. ⚠ Avoid changing it after publishing — old links and shares will stop working.',
       type: 'slug',
       group: 'meta',
       options: { source: 'title.mn', maxLength: 96 },
@@ -40,6 +41,10 @@ export const newsArticle = defineType({
           title: 'Alternative text',
           description: 'Short description of the photo for screen readers and search engines.',
           type: 'string',
+          validation: (rule) =>
+            rule
+              .required()
+              .warning('Add a short photo description — it helps blind readers and Google'),
         }),
       ],
     }),

@@ -93,6 +93,7 @@ const structure: StructureResolver = (S) =>
                     .apiVersion(apiVersion)
                     .filter('_type == "event" && type == "schedule"')
                     .defaultOrdering([{ field: 'date', direction: 'asc' }])
+                    .initialValueTemplates([S.initialValueTemplateItem('event-schedule')])
                     .canHandleIntent(S.documentTypeList('event').getCanHandleIntent()),
                 ),
               S.listItem()
@@ -104,14 +105,29 @@ const structure: StructureResolver = (S) =>
                     .apiVersion(apiVersion)
                     .filter('_type == "event" && type == "result"')
                     .defaultOrdering([{ field: 'date', direction: 'desc' }])
+                    .initialValueTemplates([S.initialValueTemplateItem('event-result')])
                     .canHandleIntent(S.documentTypeList('event').getCanHandleIntent()),
                 ),
               S.divider(),
-              S.documentTypeListItem('event').title('All events'),
+              S.listItem()
+                .title('All events')
+                .icon(CalendarIcon)
+                .child(
+                  S.documentTypeList('event')
+                    .title('All events')
+                    .defaultOrdering([{ field: 'date', direction: 'desc' }]),
+                ),
             ]),
         ),
 
-      S.documentTypeListItem('galleryImage').title('Gallery').icon(ImagesIcon),
+      S.listItem()
+        .title('Gallery')
+        .icon(ImagesIcon)
+        .child(
+          S.documentTypeList('galleryImage')
+            .title('Gallery')
+            .defaultOrdering([{ field: 'order', direction: 'asc' }]),
+        ),
       S.divider(),
 
       S.listItem()
@@ -126,7 +142,7 @@ const structure: StructureResolver = (S) =>
                 .icon(EnvelopeIcon)
                 .child(
                   S.documentList()
-                    .title('New requests')
+                    .title('New club requests')
                     .apiVersion(apiVersion)
                     .filter('_type == "registrationRequest" && status == "new"')
                     .defaultOrdering([{ field: 'submittedAt', direction: 'desc' }]),
@@ -136,13 +152,20 @@ const structure: StructureResolver = (S) =>
                 .icon(CheckmarkCircleIcon)
                 .child(
                   S.documentList()
-                    .title('Reviewed requests')
+                    .title('Reviewed club requests')
                     .apiVersion(apiVersion)
                     .filter('_type == "registrationRequest" && status == "reviewed"')
                     .defaultOrdering([{ field: 'submittedAt', direction: 'desc' }]),
                 ),
               S.divider(),
-              S.documentTypeListItem('registrationRequest').title('All requests'),
+              S.listItem()
+                .title('All club requests')
+                .icon(EnvelopeIcon)
+                .child(
+                  S.documentTypeList('registrationRequest')
+                    .title('All club requests')
+                    .defaultOrdering([{ field: 'submittedAt', direction: 'desc' }]),
+                ),
             ]),
         ),
       S.listItem()
@@ -157,7 +180,7 @@ const structure: StructureResolver = (S) =>
                 .icon(UserIcon)
                 .child(
                   S.documentList()
-                    .title('New requests')
+                    .title('New dancer requests')
                     .apiVersion(apiVersion)
                     .filter('_type == "dancerRegistrationRequest" && status == "new"')
                     .defaultOrdering([{ field: 'submittedAt', direction: 'desc' }]),
@@ -167,13 +190,20 @@ const structure: StructureResolver = (S) =>
                 .icon(CheckmarkCircleIcon)
                 .child(
                   S.documentList()
-                    .title('Reviewed requests')
+                    .title('Reviewed dancer requests')
                     .apiVersion(apiVersion)
                     .filter('_type == "dancerRegistrationRequest" && status == "reviewed"')
                     .defaultOrdering([{ field: 'submittedAt', direction: 'desc' }]),
                 ),
               S.divider(),
-              S.documentTypeListItem('dancerRegistrationRequest').title('All requests'),
+              S.listItem()
+                .title('All dancer requests')
+                .icon(UserIcon)
+                .child(
+                  S.documentTypeList('dancerRegistrationRequest')
+                    .title('All dancer requests')
+                    .defaultOrdering([{ field: 'submittedAt', direction: 'desc' }]),
+                ),
             ]),
         ),
     ]);
@@ -187,6 +217,21 @@ export default defineConfig({
   plugins: [structureTool({ structure }), visionTool()],
   schema: {
     types: schemaTypes,
+    templates: (prev) => [
+      ...prev,
+      {
+        id: 'event-schedule',
+        title: 'Scheduled competition',
+        schemaType: 'event',
+        value: { type: 'schedule' },
+      },
+      {
+        id: 'event-result',
+        title: 'Competition result',
+        schemaType: 'event',
+        value: { type: 'result' },
+      },
+    ],
   },
   document: {
     newDocumentOptions: (prev) =>

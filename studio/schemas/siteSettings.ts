@@ -32,16 +32,28 @@ export const siteSettings = defineType({
     defineField({
       name: 'phone',
       title: 'Phone number',
-      description: 'Shown in the header top bar and footer.',
+      description: 'Shown in the header top bar and footer, e.g. +976 8808-7418.',
       type: 'string',
       group: 'contact',
+      validation: (rule) =>
+        rule
+          .regex(/^[+\d][\d\s-]{5,20}$/)
+          .error('Enter a valid phone number (digits, spaces and dashes only)'),
     }),
     defineField({
       name: 'emails',
       title: 'Email addresses',
       description: 'The first one is shown in the header; all are listed in the footer.',
       type: 'array',
-      of: [{ type: 'string' }],
+      of: [
+        {
+          type: 'string',
+          validation: (rule) =>
+            rule
+              .regex(/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/)
+              .error('Enter a valid email address, e.g. info@dancesport.mn'),
+        },
+      ],
       group: 'contact',
     }),
     defineField({
