@@ -22,13 +22,15 @@ const apiVersion = '2026-06-01';
 // website form — both are kept out of the "new document" menu.
 const HIDDEN_FROM_CREATE = ['siteSettings', 'registrationRequest', 'dancerRegistrationRequest'];
 
-// Federation colors, matching the website (see src/styles/global.css)
+// Federation colors, matching the website (see src/styles/global.css).
+// accent-700 (#0b6ea8), not the decorative accent-500 — Studio puts white text
+// on these fills, and #4db2ec is only 2.36:1 against white.
 const theme = buildLegacyTheme({
-  '--brand-primary': '#eb0029',
-  '--default-button-primary-color': '#eb0029',
-  '--main-navigation-color': '#242936',
+  '--brand-primary': '#0b6ea8',
+  '--default-button-primary-color': '#0b6ea8',
+  '--main-navigation-color': '#000000',
   '--main-navigation-color--inverted': '#ffffff',
-  '--focus-color': '#eb0029',
+  '--focus-color': '#0b6ea8',
 });
 
 const structure: StructureResolver = (S) =>

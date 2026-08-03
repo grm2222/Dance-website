@@ -1,9 +1,11 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import BlockTitle from '../components/BlockTitle.astro';
 import Hero from '../components/Hero.astro';
 import NewsCard from '../components/NewsCard.astro';
 import EventList from '../components/EventList.astro';
 import Gallery from '../components/Gallery.astro';
+import RegisterCards from '../components/RegisterCards.astro';
 import { sanityFetch } from '../lib/sanity';
 import {
   latestNewsQuery,
@@ -12,12 +14,9 @@ import {
   galleryQuery,
   siteSettingsQuery,
 } from '../lib/queries';
-import type {
-  DanceEvent,
-  GalleryImage,
-  NewsArticlePreview,
-  SiteSettings,
-} from '../lib/types';
+import { t } from '../lib/format';
+import type { DanceEvent, GalleryImage, NewsArticlePreview, SiteSettings } from '../lib/types';
+
 
 const [settings, latestNews, upcomingEvents, recentResults, galleryImages] = await Promise.all([
   sanityFetch<SiteSettings | null>(siteSettingsQuery, null),
@@ -27,99 +26,75 @@ const [settings, latestNews, upcomingEvents, recentResults, galleryImages] = awa
   sanityFetch<GalleryImage[]>(galleryQuery, []),
 ]);
 
-const siteName = settings?.siteName?.mn ?? 'Монголын Чөлөөт Бүжгийн Холбоо';
+const siteName = t(settings?.siteName) || 'Монголын Бүжгийн Спортын Холбоо';
+const aboutText = t(settings?.aboutText);
 ---
 
 <BaseLayout title={siteName}>
   <Hero settings={settings} />
 
-  {
-    settings?.aboutText?.mn && (
-      <section class="mx-auto max-w-6xl px-4 py-12 sm:py-16" aria-labelledby="about-heading">
-        <p class="text-sm font-semibold uppercase tracking-wide text-theme-600 mb-1">
-          Холбооны тухай
-        </p>
-        <h2 id="about-heading" class="text-2xl sm:text-3xl font-bold text-title-600 mb-4">
-          {settings.aboutTitle?.mn ?? 'Бидний тухай'}
-        </h2>
-        <p class="max-w-3xl text-body-500 leading-relaxed whitespace-pre-line">
-          {settings.aboutText.mn}
-        </p>
-      </section>
-    )
-  }
+  <!-- ═══ Latest news ═══ -->
+  <section class="py-s12 md:py-s18" aria-labelledby="news-heading">
+    <div class="mx-auto max-w-page px-s4">
+      <BlockTitle id="news-heading" title="Сүүлийн мэдээ" moreHref={'/news'} />
+      {
+        latestNews.length === 0 ? (
+          <p class="text-nav text-ink-600">Одоогоор мэдээ алга байна.</p>
+        ) : (
+          <div class="grid gap-s6 sm:grid-cols-2 lg:grid-cols-3">
+            {latestNews.slice(0, 3).map((article) => (
+              <NewsCard article={article} />
+            ))}
+          </div>
+        )
+      }
+    </div>
+  </section>
 
-  <!-- Schedule + results side by side, as on the reference site -->
-  <section class="bg-smoke-100" aria-labelledby="events-heading">
-    <div class="mx-auto max-w-6xl px-4 py-12 sm:py-16">
-      <div class="flex items-center justify-between mb-2">
-        <h2 id="events-heading" class="sr-only">Тэмцээний мэдээлэл</h2>
-        <span aria-hidden="true"></span>
-        <a href="/calendar" class="text-sm font-semibold text-theme-600 hover:text-theme-700">
-          Бүрэн хуанли →
-        </a>
+  <!-- ═══ Calendar: upcoming + results side by side ═══ -->
+  <section class="bg-paper-alt border-y border-line py-s12 md:py-s18" aria-labelledby="events-heading">
+    <h2 id="events-heading" class="sr-only">Тэмцээний мэдээлэл</h2>
+    <div class="mx-auto max-w-page px-s4 grid gap-s12 lg:grid-cols-2 lg:gap-s8">
+      <div>
+        <BlockTitle as="h3" title="Тэмцээний хуваарь" moreHref={'/calendar'} />
+        <EventList events={upcomingEvents} emptyText="Одоогоор товлогдсон тэмцээн алга байна." />
       </div>
-      <div class="grid gap-10 lg:grid-cols-2">
-        <div>
-          <h3 class="text-xl sm:text-2xl font-bold text-title-600 mb-5">Тэмцээний хуваарь</h3>
-          <EventList
-            events={upcomingEvents}
-            emptyText="Одоогоор товлогдсон тэмцээн алга байна."
-          />
-        </div>
-        <div>
-          <h3 class="text-xl sm:text-2xl font-bold text-title-600 mb-5">Тэмцээний үр дүн</h3>
-          <EventList events={recentResults} emptyText="Одоогоор үр дүн ороогүй байна." />
-        </div>
+      <div>
+        <BlockTitle as="h3" title="Тэмцээний дүн" moreHref={'/calendar#results'} />
+        <EventList events={recentResults} emptyText="Одоогоор үр дүн ороогүй байна." />
       </div>
     </div>
   </section>
 
-  <section class="mx-auto max-w-6xl px-4 py-12 sm:py-16" aria-labelledby="news-heading">
-    <div class="text-center mb-8">
-      <p class="text-sm font-semibold uppercase tracking-wide text-theme-600 mb-1">
-        Мэдээ, мэдээлэл
-      </p>
-      <h2 id="news-heading" class="text-2xl sm:text-3xl font-bold text-title-600">
-        Манай хамгийн сүүлийн үеийн мэдээ, нийтлэлүүд
-      </h2>
-    </div>
-    {
-      latestNews.length === 0 ? (
-        <p class="text-body-500 text-sm text-center">Одоогоор мэдээ алга байна.</p>
-      ) : (
-        <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {latestNews.map((article) => (
-            <NewsCard article={article} />
-          ))}
-        </div>
-      )
-    }
-    <div class="mt-8 text-center">
-      <a
-        href="/news"
-        class="inline-block rounded-md bg-theme-600 px-6 py-3 text-sm font-semibold text-white hover:bg-theme-700 transition-colors"
-      >
-        Бүх мэдээ үзэх
-      </a>
-    </div>
-  </section>
-
+  <!-- ═══ Gallery ═══ -->
   {
     galleryImages.length > 0 && (
-      <section class="bg-smoke-100" aria-labelledby="gallery-heading">
-        <div class="mx-auto max-w-6xl px-4 py-12 sm:py-16">
-          <div class="text-center mb-8">
-            <p class="text-sm font-semibold uppercase tracking-wide text-theme-600 mb-1">
-              Дурсамж
-            </p>
-            <h2 id="gallery-heading" class="text-2xl sm:text-3xl font-bold text-title-600">
-              Зургийн цомог
-            </h2>
-          </div>
-          <Gallery images={galleryImages} />
+      <section class="py-s12 md:py-s18" aria-labelledby="gallery-heading">
+        <div class="mx-auto max-w-page px-s4">
+          <BlockTitle id="gallery-heading" title="Гэрэл зураг" />
+          <Gallery images={galleryImages.slice(0, 8)} />
         </div>
       </section>
     )
   }
+
+  <!-- ═══ About ═══ -->
+  {
+    aboutText && (
+      <section class="py-s12 md:py-s18 border-t border-line" aria-labelledby="about-heading">
+        <div class="mx-auto max-w-page px-s4">
+          <BlockTitle id="about-heading" title={t(settings?.aboutTitle) || 'Холбооны тухай'} />
+          <p class="max-w-[70ch] whitespace-pre-line leading-[1.75]">{aboutText}</p>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- ═══ Registration ═══ -->
+  <section class="bg-paper-alt border-y border-line py-s12 md:py-s18" aria-labelledby="register-heading">
+    <div class="mx-auto max-w-page px-s4">
+      <BlockTitle id="register-heading" title="Бүртгэл" />
+      <RegisterCards settings={settings} />
+    </div>
+  </section>
 </BaseLayout>

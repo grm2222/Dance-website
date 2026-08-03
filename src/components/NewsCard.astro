@@ -1,6 +1,6 @@
 ---
 import { urlFor } from '../lib/sanity';
-import { formatDate } from '../lib/format';
+import { formatDate, t } from '../lib/format';
 import type { NewsArticlePreview } from '../lib/types';
 
 interface Props {
@@ -8,65 +8,50 @@ interface Props {
 }
 
 const { article } = Astro.props;
-const imageUrl = article.mainImage
-  ? urlFor(article.mainImage).width(640).height(360).url()
-  : null;
+
+const title = t(article.title);
+const imageUrl = article.mainImage ? urlFor(article.mainImage).width(800).height(450).url() : null;
 ---
 
-<article class="flex flex-col rounded-xl border border-smoke-100 bg-white shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-  <a href={`/news/${article.slug}`} class="block">
+<!-- The whole card is one link; hairline border rather than a shadow, per the design. -->
+<a
+  href={`/news/${article.slug}`}
+  class="group flex flex-col border border-line rounded-flat bg-paper overflow-hidden hover:border-line-strong transition-colors"
+>
+  <div class="aspect-video overflow-hidden bg-ink-800">
     {
       imageUrl ? (
         <img
           src={imageUrl}
-          alt={article.mainImage?.alt ?? article.title.mn}
-          width="640"
-          height="360"
+          alt={article.mainImage?.alt ?? ''}
+          width="800"
+          height="450"
           loading="lazy"
           decoding="async"
-          class="aspect-video w-full object-cover"
+          class="h-full w-full object-cover transition-transform duration-[250ms] group-hover:scale-[1.03] motion-reduce:group-hover:scale-100"
         />
       ) : (
-        <div aria-hidden="true" class="aspect-video w-full bg-smoke-100 grid place-items-center text-theme-600 font-bold text-2xl">
+        <!-- white/60, not /35: this is real text and needs 4.5:1 on ink-800 -->
+        <div aria-hidden="true" class="h-full w-full grid place-items-center text-white/60 text-meta uppercase tracking-[.1em]">
           Мэдээ
         </div>
       )
     }
-  </a>
-  <div class="flex flex-col flex-1 p-4">
-    <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-body-500 mb-2">
-      <time datetime={article.publishedAt} class="flex items-center gap-1">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Zm0 16H5V10h14v10ZM5 8V6h14v2H5Z" />
-        </svg>
-        {formatDate(article.publishedAt)}
-      </time>
-      {
-        typeof article.viewCount === 'number' && (
-          <span class="flex items-center gap-1">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M12 4.5C7 4.5 2.7 7.6 1 12c1.7 4.4 6 7.5 11 7.5s9.3-3.1 11-7.5c-1.7-4.4-6-7.5-11-7.5Zm0 12.5a5 5 0 1 1 0-10 5 5 0 0 1 0 10Zm0-8a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z" />
-            </svg>
-            {article.viewCount}
-          </span>
-        )
-      }
-      {
-        article.category && (
-          <span class="rounded-full bg-theme-50 text-theme-700 px-2 py-0.5 font-medium">
-            {article.category.title.mn}
-          </span>
-        )
-      }
-    </div>
-    <h3 class="font-bold leading-snug line-clamp-2 text-dark-800">
-      <a href={`/news/${article.slug}`} class="hover:text-theme-600">{article.title.mn}</a>
-    </h3>
-    <a
-      href={`/news/${article.slug}`}
-      class="mt-4 inline-block self-start rounded-md bg-theme-600 px-4 py-2 text-xs font-semibold text-white hover:bg-theme-700 transition-colors"
-    >
-      Дэлгэрэнгүй
-    </a>
   </div>
-</article>
+  <div class="flex flex-col flex-1 p-s4">
+    {
+      article.category && (
+        <span class="block text-meta font-bold uppercase tracking-[.08em] text-ink-600 mb-s2 group-hover:text-accent-700 transition-colors">
+          {t(article.category.title)}
+        </span>
+      )
+    }
+    <h3 class="font-display text-head font-medium leading-[1.35] text-ink-800 mb-s3 line-clamp-3 group-hover:text-accent-700 transition-colors">
+      {title}
+    </h3>
+    <!-- mt-auto pins the date to the bottom so ragged titles still align across a row -->
+    <time datetime={article.publishedAt} class="mt-auto text-meta tracking-[.04em] text-ink-600">
+      {formatDate(article.publishedAt)}
+    </time>
+  </div>
+</a>

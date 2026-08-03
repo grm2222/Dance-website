@@ -1,0 +1,47 @@
+---
+import { t } from '../lib/format';
+import type { NewsCategory } from '../lib/types';
+
+interface Props {
+  categories: NewsCategory[];
+  /** Slug of the active category; omit on the "all news" page. */
+  activeSlug?: string;
+}
+
+const { categories, activeSlug } = Astro.props;
+
+
+const base =
+  'inline-flex items-center min-h-[var(--tap)] px-s4 rounded-flat text-nav font-bold uppercase tracking-[.04em] transition-colors';
+const active = 'bg-accent-700 text-white';
+const idle = 'border border-line-strong text-ink-800 hover:border-ink-800 hover:bg-paper-alt';
+---
+
+{
+  categories.length > 0 && (
+    <nav aria-label="Мэдээний ангилал" class="mb-s8">
+      <ul class="flex flex-wrap gap-s2">
+        <li>
+          <a
+            href="/news"
+            class:list={[base, activeSlug ? idle : active]}
+            aria-current={activeSlug ? undefined : 'page'}
+          >
+            Бүгд
+          </a>
+        </li>
+        {categories.map((category) => (
+          <li>
+            <a
+              href={`/news/category/${category.slug}`}
+              class:list={[base, category.slug === activeSlug ? active : idle]}
+              aria-current={category.slug === activeSlug ? 'page' : undefined}
+            >
+              {t(category.title)}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  )
+}

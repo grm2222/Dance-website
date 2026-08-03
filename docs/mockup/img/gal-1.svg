@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="600" height="600" preserveAspectRatio="xMidYMid slice" role="img">
+<defs>
+<linearGradient id="b" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#04121e"/><stop offset="1" stop-color="#0e3350"/></linearGradient>
+<radialGradient id="g" cx="40%" cy="40%" r="62%"><stop offset="0" stop-color="#4db2ec" stop-opacity=".5"/><stop offset="1" stop-color="#4db2ec" stop-opacity="0"/></radialGradient>
+<radialGradient id="v" cx="50%" cy="50%" r="75%"><stop offset="55%" stop-color="#000" stop-opacity="0"/><stop offset="100%" stop-color="#000" stop-opacity=".55"/></radialGradient>
+</defs>
+<rect width="600" height="600" fill="url(#b)"/>
+<rect width="600" height="600" fill="url(#g)"/>
+<path d="M-60 198 Q 300 286 660 202" fill="none" stroke="#4db2ec" stroke-opacity="0.057" stroke-width="3.1"/><path d="M-60 403 Q 300 -11 660 111" fill="none" stroke="#ffffff" stroke-opacity="0.183" stroke-width="2.5"/><path d="M-60 406 Q 300 195 660 259" fill="none" stroke="#ffffff" stroke-opacity="0.152" stroke-width="1.7"/><path d="M-60 153 Q 300 67 660 145" fill="none" stroke="#4db2ec" stroke-opacity="0.125" stroke-width="3.4"/><path d="M-60 315 Q 300 144 660 299" fill="none" stroke="#ffffff" stroke-opacity="0.134" stroke-width="1.6"/><path d="M-60 327 Q 300 499 660 488" fill="none" stroke="#ffffff" stroke-opacity="0.065" stroke-width="4.0"/><path d="M-60 368 Q 300 203 660 323" fill="none" stroke="#4db2ec" stroke-opacity="0.202" stroke-width="3.2"/><path d="M-60 248 Q 300 222 660 393" fill="none" stroke="#ffffff" stroke-opacity="0.162" stroke-width="2.2"/><path d="M-60 305 Q 300 216 660 96" fill="none" stroke="#ffffff" stroke-opacity="0.104" stroke-width="2.3"/><path d="M-60 138 Q 300 128 660 480" fill="none" stroke="#4db2ec" stroke-opacity="0.229" stroke-width="3.0"/><path d="M-60 391 Q 300 415 660 279" fill="none" stroke="#ffffff" stroke-opacity="0.165" stroke-width="2.3"/><path d="M-60 186 Q 300 321 660 301" fill="none" stroke="#ffffff" stroke-opacity="0.224" stroke-width="3.5"/><path d="M-60 404 Q 300 52 660 332" fill="none" stroke="#4db2ec" stroke-opacity="0.108" stroke-width="4.0"/><path d="M-60 291 Q 300 243 660 196" fill="none" stroke="#ffffff" stroke-opacity="0.055" stroke-width="3.3"/>
+<rect width="600" height="600" fill="url(#v)"/>
+</svg>

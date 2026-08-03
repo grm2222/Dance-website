@@ -1,46 +1,71 @@
 ---
+import { dateParts, isToday, t } from '../lib/format';
 import type { DanceEvent } from '../lib/types';
 
 interface Props {
   events: DanceEvent[];
   emptyText?: string;
+  /** Link each result row through to the calendar entry. */
+  resultHref?: string;
 }
 
-const { events, emptyText = 'Одоогоор мэдээлэл алга байна.' } = Astro.props;
 
-function dateParts(iso: string): { day: string; month: string } {
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return { day: '–', month: '' };
-  return { day: String(d.getDate()), month: `${d.getMonth() + 1}-р сар` };
-}
+const {
+  events,
+  emptyText = 'Одоогоор мэдээлэл алга байна.',
+  resultHref = '/calendar',
+} = Astro.props;
 ---
 
 {
   events.length === 0 ? (
-    <p class="text-body-500 text-sm">{emptyText}</p>
+    <p class="text-nav text-ink-600">{emptyText}</p>
   ) : (
-    <ol class="space-y-3">
-      {events.map((event) => {
+    <ol>
+      {events.map((event, i) => {
         const { day, month } = dateParts(event.date);
+        const today = event.type === 'schedule' && isToday(event.date);
         return (
-          <li class="flex items-center gap-4 rounded-xl border border-smoke-100 bg-white p-4 shadow-sm">
+          <li
+            class:list={[
+              'flex flex-wrap sm:flex-nowrap items-stretch gap-s3 sm:gap-s4 py-s4 border-b border-line',
+              i === 0 && 'border-t',
+            ]}
+          >
             <time
               datetime={event.date}
-              class="shrink-0 grid h-16 w-16 place-content-center rounded-lg bg-theme-600 text-white text-center"
+              class="shrink-0 h-[52px] w-[52px] sm:h-16 sm:w-16 grid place-content-center text-center leading-[1.1] bg-ink-900 text-white rounded-flat"
             >
-              <span class="block text-2xl font-extrabold leading-none">{day}</span>
-              <span class="block text-[11px] font-medium mt-1">{month}</span>
+              <span class="block font-display text-head sm:text-num font-medium">{day}</span>
+              <span class="block text-meta uppercase tracking-[.06em] text-white/60 mt-s1">{month}</span>
             </time>
-            <div class="min-w-0 flex-1">
-              <h3 class="font-semibold leading-snug text-dark-800">{event.title.mn}</h3>
-              {event.location?.mn && (
-                <p class="text-sm text-body-500 mt-0.5">{event.location.mn}</p>
+
+            <div class="flex-1 min-w-0 flex flex-col justify-center">
+              <h3 class="font-display text-head font-medium text-ink-800 mb-s1">{t(event.title)}</h3>
+              {t(event.location) && <p class="text-nav text-ink-600">{t(event.location)}</p>}
+              {t(event.description) && (
+                <p class="text-nav text-ink-600 line-clamp-2">{t(event.description)}</p>
               )}
-              {event.description?.mn && (
-                <p class="text-sm text-body-500 mt-1 line-clamp-2">{event.description.mn}</p>
-              )}
-              {event.type === 'result' && event.resultDetails?.mn && (
-                <p class="text-sm text-dark-800 mt-1 whitespace-pre-line">{event.resultDetails.mn}</p>
+            </div>
+
+            {/* Three-level status ladder in one hue — see docs/design-wdc.md §6.
+                Results get link affordance, not a badge: they are a destination. */}
+            <div class="shrink-0 self-center max-sm:self-start max-sm:ml-16 max-sm:w-full">
+              {event.type === 'result' ? (
+                <a
+                  href={resultHref}
+                  class="inline-flex items-center gap-s1 min-h-[var(--tap)] text-nav font-bold text-ink-800 whitespace-nowrap hover:text-accent-700 transition-colors"
+                >
+                  Дүн үзэх →
+                </a>
+              ) : today ? (
+                <span class="inline-block px-s3 py-s1 rounded-flat bg-accent-700 text-white text-meta font-bold uppercase tracking-[.06em] whitespace-nowrap">
+                  Өнөөдөр
+                </span>
+              ) : (
+                <span class="inline-block px-s3 py-s1 rounded-flat border border-line-strong text-ink-600 text-meta font-bold uppercase tracking-[.06em] whitespace-nowrap">
+                  Хуваарь
+                </span>
               )}
             </div>
           </li>

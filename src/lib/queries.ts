@@ -82,7 +82,24 @@ export const galleryQuery = `
 
 export const siteSettingsQuery = `
 *[_type == "siteSettings"][0]{
-  siteName, logo, phone, emails, address, facebookUrl, footerText,
-  heroTitle, heroTitleAccent, heroSubtitle, heroImage, aboutTitle, aboutText
+  siteName, tagline, logo,
+  navigation[]{ label, href, children[]{ label, href } },
+  phone, emails, address, facebookUrl, instagramUrl, youtubeUrl,
+  heroEyebrow, heroTitle, heroSubtitle, heroImage,
+  heroPrimaryCta{ label, href }, heroSecondaryCta{ label, href },
+  aboutTitle, aboutText,
+  clubCardText, dancerCardText, registerNote,
+  footerText, footerLinks[]{ label, href }
+}
+`;
+
+/**
+ * The single next scheduled competition, for the header's "next up" strip.
+ * Derived from the events an admin already maintains — deliberately not a
+ * separate field, so nobody has to remember to update it.
+ */
+export const nextEventQuery = `
+*[_type == "event" && type == "schedule" && date >= now()] | order(date asc)[0]{
+  _id, title, date, location, type
 }
 `;

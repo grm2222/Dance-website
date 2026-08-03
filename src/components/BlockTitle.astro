@@ -1,0 +1,38 @@
+---
+
+// The signature element of the design: a small uppercase label sitting on a
+// rule that runs to the container edge, with a 3px accent bar under the label.
+// See docs/design-wdc.md §6.
+
+interface Props {
+  title: string;
+  /** Optional right-aligned link, e.g. "Бүгдийг үзэх →" */
+  moreHref?: string;
+  moreLabel?: string;
+  /** Heading level — pages with one <h1> already should pass 'h2'. */
+  as?: 'h2' | 'h3';
+  id?: string;
+}
+
+const { title, moreHref, moreLabel = 'Бүгдийг үзэх →', as: Tag = 'h2', id } = Astro.props;
+---
+
+<div class="flex items-end gap-s3 mb-s6">
+  <Tag
+    id={id}
+    class="shrink-0 text-nav font-bold uppercase tracking-[.06em] text-ink-800 pb-s2 border-b-[3px] border-accent-500"
+  >
+    {title}
+  </Tag>
+  <span aria-hidden="true" class="flex-1 h-px bg-line mb-s1"></span>
+  {
+    moreHref && (
+      <a
+        href={moreHref}
+        class="tap shrink-0 inline-flex items-center text-nav font-semibold text-ink-800 whitespace-nowrap hover:text-accent-700 transition-colors"
+      >
+        {moreLabel}
+      </a>
+    )
+  }
+</div>

@@ -1,5 +1,6 @@
 ---
 import { urlFor } from '../lib/sanity';
+import { t } from '../lib/format';
 import type { SiteSettings } from '../lib/types';
 
 interface Props {
@@ -7,54 +8,73 @@ interface Props {
 }
 
 const { settings } = Astro.props;
-const title = settings?.heroTitle?.mn ?? 'Монголын Чөлөөт';
-const accent = settings?.heroTitleAccent?.mn ?? 'Бүжгийн Холбоо';
-const subtitle =
-  settings?.heroSubtitle?.mn ??
-  'Спорт бүжгийн тэмцээн, сургалт, мэдээ мэдээллийн нэгдсэн төв';
+
+
+const eyebrow = t(settings?.heroEyebrow);
+const title = t(settings?.heroTitle) || 'Монголын бүжгийн спортын албан ёсны холбоо';
+const subtitle = t(settings?.heroSubtitle) || 'Тэмцээний хуваарь, дүн, мэдээ мэдээлэл, клуб болон тамирчны бүртгэл — нэг дороос.';
+
 const heroImageUrl = settings?.heroImage
-  ? urlFor(settings.heroImage).width(1600).height(900).url()
+  ? urlFor(settings.heroImage).width(1920).height(1000).url()
   : null;
+
+const primary = settings?.heroPrimaryCta;
+const secondary = settings?.heroSecondaryCta;
+const primaryLabel = t(primary?.label) || 'Бүртгүүлэх';
+const primaryHref = primary?.href || '/register';
+const secondaryLabel = t(secondary?.label) || 'Хуанли үзэх';
+const secondaryHref = secondary?.href || '/calendar';
 ---
 
-<section class="relative bg-dark-800 text-white overflow-hidden">
+<section class="relative isolate bg-ink-900 text-white overflow-hidden">
   {
     heroImageUrl && (
       <img
         src={heroImageUrl}
         alt=""
-        class="absolute inset-0 h-full w-full object-cover opacity-40"
-        loading="eager"
+        width="1920"
+        height="1000"
         fetchpriority="high"
+        decoding="async"
+        class="absolute inset-0 -z-20 h-full w-full object-cover"
       />
     )
   }
-  <!-- angled accent shape, echoing the reference hero_shape svg -->
+  <!-- Left-to-right scrim keeps the headline legible over any photo. -->
   <div
     aria-hidden="true"
-    class="absolute -left-24 top-0 h-full w-64 bg-theme-600/20 hidden lg:block"
-    style="transform: skewX(-12deg);"
+    class="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgb(0_0_0/.88)_0%,rgb(0_0_0/.72)_45%,rgb(0_0_0/.35)_100%)]"
   >
   </div>
-  <div class="relative mx-auto max-w-6xl px-4 py-20 sm:py-28">
-    <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight uppercase leading-tight text-balance">
-      {title}
-      {accent && <span class="block text-theme-600">{accent}</span>}
-    </h1>
-    <p class="mt-5 text-base sm:text-lg text-white/80 max-w-2xl">{subtitle}</p>
-    <div class="mt-8 flex flex-col sm:flex-row gap-3">
-      <a
-        href="/register"
-        class="inline-block rounded-md bg-theme-600 text-white text-center font-semibold px-7 py-3.5 hover:bg-theme-700 transition-colors"
-      >
-        Гишүүнээр бүртгүүлэх
-      </a>
-      <a
-        href="/news"
-        class="inline-block rounded-md border border-white/40 text-center font-semibold px-7 py-3.5 hover:bg-white/10 transition-colors"
-      >
-        Дэлгэрэнгүй
-      </a>
+
+  <div class="mx-auto max-w-page px-s4 py-s12 md:py-s18">
+    <!-- Left-aligned, matching the rest of the page — a centred hero breaks the axis. -->
+    <div class="max-w-[660px]">
+      {
+        eyebrow && (
+          <span class="inline-block text-meta font-bold tracking-[.14em] uppercase bg-white/[.14] px-s3 py-s1 rounded-flat mb-s6">
+            {eyebrow}
+          </span>
+        )
+      }
+      <h1 class="font-display text-section md:text-hero font-normal leading-[1.15] mb-s4">
+        {title}
+      </h1>
+      <p class="text-white/80 mb-s8 max-w-[52ch] whitespace-pre-line">{subtitle}</p>
+      <div class="flex flex-wrap gap-s3">
+        <a
+          href={primaryHref}
+          class="inline-flex items-center justify-center min-h-[var(--tap)] px-s6 py-s3 rounded-flat bg-accent-700 text-white text-nav font-bold uppercase tracking-[.04em] hover:bg-accent-800 transition-colors"
+        >
+          {primaryLabel}
+        </a>
+        <a
+          href={secondaryHref}
+          class="inline-flex items-center justify-center min-h-[var(--tap)] px-s6 py-s3 rounded-flat bg-white text-ink-900 text-nav font-bold uppercase tracking-[.04em] hover:bg-white/85 transition-colors"
+        >
+          {secondaryLabel}
+        </a>
+      </div>
     </div>
   </div>
 </section>

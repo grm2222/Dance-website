@@ -1,4 +1,5 @@
 ---
+
 // Posts to our own endpoint only; the Sanity write token stays server-side.
 ---
 
@@ -10,8 +11,8 @@
   novalidate
 >
   <div>
-    <label for="orgName" class="block text-sm font-medium mb-1">
-      Байгууллага / клубын нэр <span class="text-red-600" aria-hidden="true">*</span>
+    <label for="orgName" class="field-label">
+      Байгууллага / клубын нэр <span class="field-req" aria-hidden="true">*</span>
     </label>
     <input
       type="text"
@@ -20,13 +21,13 @@
       required
       maxlength="200"
       autocomplete="organization"
-      class="w-full rounded-lg border border-gray-300 px-3 py-3 focus:border-theme-600 focus:ring-2 focus:ring-theme-100 outline-none"
+      class="field-input"
     />
   </div>
 
   <div>
-    <label for="about" class="block text-sm font-medium mb-1">
-      Танилцуулга <span class="text-red-600" aria-hidden="true">*</span>
+    <label for="about" class="field-label">
+      Танилцуулга <span class="field-req" aria-hidden="true">*</span>
     </label>
     <textarea
       id="about"
@@ -34,13 +35,13 @@
       required
       rows="4"
       maxlength="2000"
-      class="w-full rounded-lg border border-gray-300 px-3 py-3 focus:border-theme-600 focus:ring-2 focus:ring-theme-100 outline-none"
+      class="field-input"
       placeholder="Үйл ажиллагааныхаа талаар товч бичнэ үү"></textarea>
   </div>
 
   <div>
-    <label for="address" class="block text-sm font-medium mb-1">
-      Хаяг <span class="text-red-600" aria-hidden="true">*</span>
+    <label for="address" class="field-label">
+      Хаяг <span class="field-req" aria-hidden="true">*</span>
     </label>
     <input
       type="text"
@@ -49,14 +50,14 @@
       required
       maxlength="300"
       autocomplete="street-address"
-      class="w-full rounded-lg border border-gray-300 px-3 py-3 focus:border-theme-600 focus:ring-2 focus:ring-theme-100 outline-none"
+      class="field-input"
     />
   </div>
 
   <div class="grid gap-5 sm:grid-cols-2">
     <div>
-      <label for="phone" class="block text-sm font-medium mb-1">
-        Утасны дугаар <span class="text-red-600" aria-hidden="true">*</span>
+      <label for="phone" class="field-label">
+        Утасны дугаар <span class="field-req" aria-hidden="true">*</span>
       </label>
       <input
         type="tel"
@@ -65,12 +66,12 @@
         required
         maxlength="30"
         autocomplete="tel"
-        class="w-full rounded-lg border border-gray-300 px-3 py-3 focus:border-theme-600 focus:ring-2 focus:ring-theme-100 outline-none"
+        class="field-input"
       />
     </div>
     <div>
-      <label for="email" class="block text-sm font-medium mb-1">
-        Имэйл хаяг <span class="text-red-600" aria-hidden="true">*</span>
+      <label for="email" class="field-label">
+        Имэйл хаяг <span class="field-req" aria-hidden="true">*</span>
       </label>
       <input
         type="email"
@@ -79,7 +80,7 @@
         required
         maxlength="200"
         autocomplete="email"
-        class="w-full rounded-lg border border-gray-300 px-3 py-3 focus:border-theme-600 focus:ring-2 focus:ring-theme-100 outline-none"
+        class="field-input"
       />
     </div>
   </div>
@@ -95,14 +96,14 @@
     role="status"
     aria-live="polite"
     tabindex="-1"
-    class="hidden rounded-lg px-4 py-3 text-sm"
+    class="hidden form-status"
   >
   </p>
 
   <button
     type="submit"
     id="form-submit"
-    class="w-full sm:w-auto rounded-lg bg-theme-600 px-8 py-3 font-semibold text-white hover:bg-theme-700 transition-colors disabled:opacity-60"
+    class="btn-primary w-full sm:w-auto"
   >
     Хүсэлт илгээх
   </button>
@@ -116,8 +117,8 @@
   function showStatus(message: string, ok: boolean) {
     if (!status) return;
     status.textContent = message;
-    status.classList.remove('hidden', 'bg-green-50', 'text-green-800', 'bg-red-50', 'text-red-800');
-    status.classList.add(ok ? 'bg-green-50' : 'bg-red-50', ok ? 'text-green-800' : 'text-red-800');
+    status.classList.remove('hidden', 'form-status-ok', 'form-status-error');
+    status.classList.add(ok ? 'form-status-ok' : 'form-status-error');
     // Bring the result into view for keyboard and screen-reader users
     status.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
     status.focus({ preventScroll: true });

@@ -72,20 +72,46 @@ export interface GalleryImage {
   order?: number;
 }
 
+/** A link with a label — used for buttons and footer links. */
+export interface CtaLink {
+  label: LocaleString;
+  href: string;
+}
+
+/** Header menu entry; `children` renders as a dropdown. */
+export interface NavItem extends CtaLink {
+  children?: CtaLink[];
+}
+
 export interface SiteSettings {
   siteName?: LocaleString;
+  tagline?: LocaleString;
   logo?: SanityImage;
+
+  navigation?: NavItem[];
+
   phone?: string;
   emails?: string[];
   address?: LocaleText;
   facebookUrl?: string;
-  footerText?: LocaleText;
+  instagramUrl?: string;
+  youtubeUrl?: string;
+
+  heroEyebrow?: LocaleString;
   heroTitle?: LocaleString;
-  heroTitleAccent?: LocaleString;
   heroSubtitle?: LocaleText;
   heroImage?: SanityImage;
+  heroPrimaryCta?: CtaLink;
+  heroSecondaryCta?: CtaLink;
   aboutTitle?: LocaleString;
   aboutText?: LocaleText;
+
+  clubCardText?: LocaleText;
+  dancerCardText?: LocaleText;
+  registerNote?: LocaleText;
+
+  footerText?: LocaleText;
+  footerLinks?: CtaLink[];
 }
 
 export interface RegistrationRequestInput {

@@ -1,0 +1,46 @@
+---
+import { t } from '../lib/format';
+import type { SiteSettings } from '../lib/types';
+
+interface Props {
+  settings: SiteSettings | null;
+}
+
+const { settings } = Astro.props;
+
+
+// A club and a dancer are different audiences, not a primary and a fallback —
+// so both cards carry equal weight. See docs/design-wdc.md §6 (Buttons).
+const cards = [
+  {
+    href: '/register/club',
+    title: 'Клуб бүртгүүлэх',
+    text: t(settings?.clubCardText) || 'Бүжгийн клуб, сургалтын төвүүд холбооны гишүүнээр элсэх хүсэлт гаргана.',
+  },
+  {
+    href: '/register/dancer',
+    title: 'Тамирчин бүртгүүлэх',
+    text: t(settings?.dancerCardText) || 'Тамирчид тэмцээнд оролцох, зэрэг ахиулах бүртгэлээ хийлгэнэ.',
+  },
+];
+
+const note = t(settings?.registerNote) || 'Хүсэлтийг холбооны ажилтан хянаад богино хугацаанд хариу өгнө.';
+---
+
+<div class="grid gap-s4 md:grid-cols-2">
+  {
+    cards.map((card) => (
+      <a
+        href={card.href}
+        class="flex flex-col gap-s2 p-s6 bg-paper border border-line border-l-[3px] border-l-accent-500 rounded-flat hover:shadow-[0_2px_10px_rgb(0_0_0/0.07)] transition-shadow"
+      >
+        <h3 class="font-display text-head font-medium text-ink-800">{card.title}</h3>
+        <p class="text-nav text-ink-600">{card.text}</p>
+        <span class="mt-s2 inline-flex items-center gap-s1 text-nav font-bold uppercase tracking-[.04em] text-accent-700">
+          Хүсэлт илгээх →
+        </span>
+      </a>
+    ))
+  }
+</div>
+{note && <p class="mt-s4 text-nav text-ink-600 whitespace-pre-line">{note}</p>}

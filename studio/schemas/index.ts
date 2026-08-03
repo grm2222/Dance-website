@@ -1,4 +1,5 @@
 import { localeBlockContent, localeString, localeText } from './locale';
+import { ctaLink, navChild, navItem } from './navItem';
 import { newsArticle } from './newsArticle';
 import { newsCategory } from './newsCategory';
 import { event } from './event';
@@ -12,6 +13,9 @@ export const schemaTypes = [
   localeString,
   localeText,
   localeBlockContent,
+  ctaLink,
+  navChild,
+  navItem,
   // documents
   newsArticle,
   newsCategory,

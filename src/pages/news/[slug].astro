@@ -2,7 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { sanityFetch, urlFor } from '../../lib/sanity';
 import { newsArticleBySlugQuery, newsSlugsQuery } from '../../lib/queries';
-import { formatDate, renderPortableText } from '../../lib/format';
+import { formatDate, renderPortableText, t } from '../../lib/format';
 import type { NewsArticle } from '../../lib/types';
 
 export async function getStaticPaths() {
@@ -17,31 +17,50 @@ if (!article) {
   return Astro.redirect('/news');
 }
 
+const title = t(article.title);
 const imageUrl = article.mainImage
   ? urlFor(article.mainImage).width(1280).height(720).url()
-  : null;
+  : undefined;
 const bodyHtml = renderPortableText(article.body?.mn);
 ---
 
-<BaseLayout title={article.title.mn}>
-  <article class="mx-auto max-w-3xl px-4 py-10 sm:py-14">
+<BaseLayout title={title} ogImage={imageUrl}>
+  <article class="mx-auto max-w-[760px] px-s4 py-s12 md:py-s18">
     <header>
-      <div class="flex items-center gap-2 text-sm text-gray-500 mb-3">
-        {
-          article.category && (
-            <a
-              href={`/news/category/${article.category.slug}`}
-              class="rounded-full bg-theme-50 text-theme-700 px-3 py-1 text-xs font-medium hover:bg-theme-100"
-            >
-              {article.category.title.mn}
-            </a>
-          )
-        }
-        <time datetime={article.publishedAt}>{formatDate(article.publishedAt)}</time>
-      </div>
-      <h1 class="text-2xl sm:text-4xl font-extrabold leading-tight text-balance">
-        {article.title.mn}
+      <nav aria-label="Замын мөр" class="mb-s4">
+        <ol class="flex flex-wrap items-center gap-s2 text-meta uppercase tracking-[.08em] text-ink-600">
+          <li class="flex items-center gap-s2">
+            <a href="/" class="tap hover:text-accent-700 transition-colors">Нүүр</a>
+            <span aria-hidden="true">›</span>
+          </li>
+          <li class="flex items-center gap-s2">
+            <a href="/news" class="tap hover:text-accent-700 transition-colors">Мэдээ</a>
+            {article.category && <span aria-hidden="true">›</span>}
+          </li>
+          {
+            article.category && (
+              <li>
+                <a
+                  href={`/news/category/${article.category.slug}`}
+                  class="tap hover:text-accent-700 transition-colors"
+                >
+                  {t(article.category.title)}
+                </a>
+              </li>
+            )
+          }
+        </ol>
+      </nav>
+
+      <h1 class="font-display text-section font-normal leading-[1.15] text-ink-800 text-balance">
+        {title}
       </h1>
+
+      <p class="mt-s3 pb-s6 border-b border-line">
+        <time datetime={article.publishedAt} class="text-meta uppercase tracking-[.06em] text-ink-600">
+          {formatDate(article.publishedAt)}
+        </time>
+      </p>
     </header>
 
     {
@@ -51,15 +70,19 @@ const bodyHtml = renderPortableText(article.body?.mn);
           alt={article.mainImage?.alt ?? ''}
           width="1280"
           height="720"
-          class="mt-6 w-full rounded-xl object-cover"
+          decoding="async"
+          class="mt-s8 w-full rounded-flat object-cover"
         />
       )
     }
 
-    <div class="prose-news mt-8 text-gray-800" set:html={bodyHtml} />
+    <div class="prose-news mt-s8" set:html={bodyHtml} />
 
-    <footer class="mt-10 border-t border-gray-100 pt-6">
-      <a href="/news" class="text-sm font-semibold text-theme-600 hover:text-theme-700">
+    <footer class="mt-s12 border-t border-line pt-s6">
+      <a
+        href="/news"
+        class="tap inline-flex items-center text-nav font-bold uppercase tracking-[.04em] text-accent-700 hover:text-accent-800 transition-colors"
+      >
         ← Бүх мэдээ рүү буцах
       </a>
     </footer>

@@ -1,0 +1,40 @@
+---
+
+// Interior-page title band. Mirrors the hero's dark chrome so pages below the
+// homepage still read as part of the same system, without needing a photo.
+
+interface Props {
+  title: string;
+  /** Optional one-line lead under the title. */
+  lead?: string;
+  /** Breadcrumb trail, excluding the current page. Hrefs are locale-neutral. */
+  crumbs?: { label: string; href: string }[];
+}
+
+const { title, lead, crumbs = [] } = Astro.props;
+
+---
+
+<section class="bg-ink-900 text-white">
+  <div class="mx-auto max-w-page px-s4 py-s8 md:py-s12">
+    {
+      crumbs.length > 0 && (
+        <nav aria-label="Замын мөр" class="mb-s3">
+          <ol class="flex flex-wrap items-center gap-s2 text-meta uppercase tracking-[.08em] text-white/50">
+            {crumbs.map((crumb) => (
+              <li class="flex items-center gap-s2">
+                <a href={crumb.href} class="tap hover:text-white transition-colors">
+                  {crumb.label}
+                </a>
+                <span aria-hidden="true">›</span>
+              </li>
+            ))}
+            <li aria-current="page" class="text-white/80">{title}</li>
+          </ol>
+        </nav>
+      )
+    }
+    <h1 class="font-display text-section font-normal leading-[1.15]">{title}</h1>
+    {lead && <p class="mt-s3 text-white/75 max-w-[60ch]">{lead}</p>}
+  </div>
+</section>

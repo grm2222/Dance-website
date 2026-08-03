@@ -1,0 +1,979 @@
+<!doctype html>
+<html lang="mn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Монголын Бүжгийн Спортын Холбоо — Design mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Roboto:wght@400;500&display=swap&subset=latin,cyrillic-ext" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   TOKENS
+   WDC blue is the brand. data-accent="red" on <html> switches to
+   the dancesport.mn red — a pure token swap, kept for comparison.
+   ═══════════════════════════════════════════════════════════════ */
+:root {
+  /* ── chrome ─────────────────────────────────────────────── */
+  --ink-900:#000; --ink-800:#111; --ink-700:#222; --ink-600:#5a5a5a;
+  --paper:#fff; --paper-alt:#f4f4f5;
+  --line:#e5e5e5; --line-strong:#ccc;
+  --body:#333;
+
+  /* ── accent (WDC sky blue) ──────────────────────────────── */
+  --accent-500:#4db2ec;   /* DECORATIVE ONLY — bars, rules, glows. 2.36:1, never text */
+  --accent-600:#1c8fd0;   /* non-text UI only — 3.57:1 */
+  --accent-700:#0b6ea8;   /* TEXT-SAFE — 5.5:1 on white; filled buttons, marks */
+  --accent-800:#08557f;   /* pressed / hover on filled surfaces */
+
+  /* ── type scale: 7 steps, each clearly distinct ─────────── */
+  --fs-meta:11px;   /* dates, eyebrows, pills   */
+  --fs-sm:13px;     /* menu, captions, dropdown */
+  --fs-body:15px;   /* body copy                */
+  --fs-title:18px;  /* card + row headlines     */
+  --fs-lg:24px;     /* calendar date numeral    */
+  --fs-section:32px;/* section headings         */
+  --fs-hero:44px;   /* hero only                */
+
+  /* ── spacing: 4px grid, no arbitrary values ─────────────── */
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s6:24px; --s8:32px; --s12:48px; --s18:72px;
+
+  --container:1100px;
+  --font-ui:"Open Sans","Noto Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font-display:"Roboto","Noto Sans",system-ui,sans-serif;
+  --radius:2px;
+  --tap:44px;              /* minimum touch target */
+}
+:root[data-accent="red"] {
+  --accent-500:#eb0029;
+  --accent-600:#c70023;
+  --accent-700:#a3001d;   /* 8.2:1 on white */
+  --accent-800:#7d0016;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:var(--font-ui);
+  font-size:var(--fs-body); line-height:1.6;
+  color:var(--body); background:var(--paper);
+}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+ul{list-style:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+
+:focus-visible{outline:2px solid var(--accent-700);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
+}
+
+.wrap{max-width:var(--container);margin-inline:auto;padding-inline:var(--s4)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* Expands the hit area to 44px without changing the visual box.
+   Used on compact chrome controls where 44px of ink would be too heavy. */
+.tap{position:relative}
+.tap::after{
+  content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:max(100%,var(--tap));height:max(100%,var(--tap));
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   1. UTILITY BAR
+   ═══════════════════════════════════════════════════════════════ */
+.utility{background:var(--ink-700);color:rgb(255 255 255/.72);font-size:var(--fs-meta)}
+.utility .wrap{min-height:40px;display:flex;align-items:center;gap:var(--s6)}
+.utility a{transition:color .15s}
+.utility a:hover{color:#fff}
+.u-date{white-space:nowrap;letter-spacing:.02em}
+.u-links{display:flex;gap:var(--s6)}
+.u-right{margin-left:auto;display:flex;align-items:center;gap:var(--s4)}
+
+.lang{display:flex;align-items:center;border:1px solid rgb(255 255 255/.24);border-radius:var(--radius)}
+.lang button{
+  padding:var(--s1) var(--s3);font-size:var(--fs-meta);font-weight:700;letter-spacing:.04em;
+  color:rgb(255 255 255/.62);transition:background .15s,color .15s;border-radius:1px;
+}
+.lang button:hover{color:#fff}
+.lang button[aria-pressed="true"]{background:var(--accent-700);color:#fff}
+
+.social{display:flex;gap:var(--s2)}
+.social a{
+  width:24px;height:24px;display:grid;place-items:center;border-radius:var(--radius);
+  background:rgb(255 255 255/.08);transition:background .15s
+}
+.social a:hover{background:var(--accent-700);color:#fff}
+.social svg{width:12px;height:12px;fill:currentColor}
+
+@media (max-width:767px){
+  .u-date,.u-links{display:none}
+  .u-right{margin-left:0;width:100%;justify-content:space-between}
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   2. LOGO BAND  (desktop only — merged into the menu bar on mobile)
+   ═══════════════════════════════════════════════════════════════ */
+.logoband{background:var(--ink-900)}
+.logoband .wrap{min-height:96px;display:flex;align-items:center;gap:var(--s4)}
+.logo{display:flex;align-items:center;gap:var(--s4)}
+.logo .mark{
+  width:52px;height:52px;flex:none;border-radius:50%;
+  /* accent-700, not -500: this circle carries a letter, so it needs 4.5:1 against white */
+  background:var(--accent-700);color:#fff;
+  display:grid;place-items:center;
+  font-family:var(--font-display);font-size:var(--fs-lg);font-weight:500
+}
+.logo .name{
+  font-family:var(--font-display);color:#fff;font-size:var(--fs-title);font-weight:500;line-height:1.2
+}
+.logo .name small{
+  display:block;font-family:var(--font-ui);font-size:var(--fs-meta);font-weight:400;
+  letter-spacing:.1em;text-transform:uppercase;color:rgb(255 255 255/.45);margin-top:var(--s1)
+}
+
+/* fills the dead space WDC leaves for an ad slot */
+.nextup{
+  margin-left:auto;display:flex;align-items:center;gap:var(--s3);
+  padding:var(--s3) var(--s4);border-left:3px solid var(--accent-500);
+  background:rgb(255 255 255/.04);border-radius:var(--radius)
+}
+.nextup .lbl{
+  display:block;font-size:var(--fs-meta);letter-spacing:.1em;text-transform:uppercase;
+  color:rgb(255 255 255/.5);margin-bottom:var(--s1)
+}
+.nextup .val{display:block;font-family:var(--font-display);font-size:var(--fs-sm);color:#fff}
+.nextup .days{
+  flex:none;text-align:center;padding-left:var(--s4);border-left:1px solid rgb(255 255 255/.12)
+}
+.nextup .days b{display:block;font-family:var(--font-display);font-size:var(--fs-lg);color:#fff;font-weight:500;line-height:1}
+.nextup .days span{font-size:var(--fs-meta);color:rgb(255 255 255/.5);text-transform:uppercase}
+@media (max-width:1023px){.logoband{display:none}}
+@media (max-width:1199px){.nextup{display:none}}
+
+/* ═══════════════════════════════════════════════════════════════
+   3. MENU BAR
+   ═══════════════════════════════════════════════════════════════ */
+.menubar{
+  background:var(--paper);border-bottom:1px solid var(--line);
+  position:sticky;top:0;z-index:50;box-shadow:0 1px 3px rgb(0 0 0/.08)
+}
+.menubar .wrap{min-height:56px;display:flex;align-items:center}
+.nav{display:flex;align-self:stretch}
+.nav > li{position:relative;display:flex}
+.nav > li > a,.nav > li > button{
+  display:flex;align-items:center;gap:var(--s1);padding:0 var(--s4);
+  font-size:var(--fs-sm);font-weight:700;text-transform:uppercase;letter-spacing:.03em;
+  color:var(--ink-800);
+  border-bottom:3px solid transparent;transition:color .15s,border-color .15s
+}
+.nav > li > a:hover,.nav > li > button:hover,
+.nav > li:focus-within > a,.nav > li:focus-within > button{color:var(--accent-700)}
+.nav > li.active > a{color:var(--accent-700);border-bottom-color:var(--accent-500)}
+.caret{width:9px;height:9px;fill:currentColor;transition:transform .15s}
+.nav > li[data-open="true"] .caret{transform:rotate(180deg)}
+
+.dropdown{
+  position:absolute;top:100%;left:0;min-width:240px;
+  background:var(--paper);border:1px solid var(--line);border-top:3px solid var(--accent-500);
+  box-shadow:0 6px 18px rgb(0 0 0/.1);
+  opacity:0;visibility:hidden;transform:translateY(-4px);
+  transition:opacity .15s,transform .15s,visibility .15s
+}
+.nav > li:hover .dropdown,
+.nav > li[data-open="true"] .dropdown{opacity:1;visibility:visible;transform:none}
+.dropdown a{
+  display:block;padding:var(--s3) var(--s4);font-size:var(--fs-sm);color:var(--body);
+  border-bottom:1px solid var(--line);transition:background .12s,color .12s
+}
+.dropdown li:last-child a{border-bottom:0}
+.dropdown a:hover{background:var(--paper-alt);color:var(--accent-700)}
+
+.menu-right{margin-left:auto;display:flex;align-items:center;gap:var(--s1)}
+.iconbtn{width:var(--tap);height:var(--tap);display:grid;place-items:center;border-radius:var(--radius);transition:background .15s}
+.iconbtn:hover{background:var(--paper-alt)}
+.iconbtn svg{width:18px;height:18px;fill:none;stroke:var(--ink-800);stroke-width:2}
+.burger{display:none}
+
+/* compact mark: fades in on desktop once the logo band scrolls away;
+   on mobile it IS the brand, since the logo band is gone entirely */
+.menu-mark{display:none;align-items:center;gap:var(--s3);min-height:var(--tap);opacity:0;transition:opacity .15s}
+body[data-scrolled="true"] .menu-mark{opacity:1}
+.menu-mark .mark{
+  width:34px;height:34px;flex:none;border-radius:50%;background:var(--accent-700);color:#fff;
+  display:grid;place-items:center;font-family:var(--font-display);font-size:var(--fs-title);font-weight:500
+}
+.menu-mark span{font-size:var(--fs-sm);font-weight:700;color:var(--ink-800);line-height:1.2}
+
+@media (max-width:1023px){
+  .nav{display:none}
+  .burger{display:grid}
+  /* one dark bar replaces the logo band + menu bar: 96px of chrome instead of 157px */
+  .menubar{background:var(--ink-900);border-bottom:0}
+  .menu-mark{display:flex;opacity:1}
+  .menu-mark span{color:#fff}
+  .iconbtn svg{stroke:#fff}
+  .iconbtn:hover{background:rgb(255 255 255/.1)}
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   MOBILE PANEL
+   ═══════════════════════════════════════════════════════════════ */
+.mobile{
+  position:fixed;inset:0;z-index:100;background:var(--paper);
+  display:none;flex-direction:column;overflow-y:auto
+}
+.mobile[data-open="true"]{display:flex}
+@media (min-width:1024px){.mobile[data-open="true"]{display:none}}
+.mobile-top{
+  min-height:56px;flex:none;display:flex;align-items:center;justify-content:space-between;
+  padding-inline:var(--s4);background:var(--ink-900);color:#fff
+}
+.mobile-top .iconbtn svg{stroke:#fff}
+.m-nav{padding-bottom:var(--s8)}
+.m-nav > li{border-bottom:1px solid var(--line)}
+.m-nav > li > a,.m-nav > li > button{
+  width:100%;min-height:56px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 var(--s4);font-size:var(--fs-body);font-weight:700;text-transform:uppercase;
+  letter-spacing:.03em;color:var(--ink-800)
+}
+.m-nav > li[data-open="true"] > button{color:var(--accent-700)}
+.m-nav > li[data-open="true"] .caret{transform:rotate(180deg)}
+.m-sub{display:none;background:var(--paper-alt);border-top:1px solid var(--line)}
+.m-nav > li[data-open="true"] .m-sub{display:block}
+.m-sub a{
+  display:flex;align-items:center;min-height:var(--tap);
+  padding:var(--s3) var(--s4) var(--s3) var(--s8);
+  font-size:var(--fs-body);font-weight:400;text-transform:none;color:var(--body)
+}
+.m-sub a:not(:last-child){border-bottom:1px solid var(--line)}
+
+/* ═══════════════════════════════════════════════════════════════
+   BLOCK TITLE — the signature element
+   ═══════════════════════════════════════════════════════════════ */
+.blocktitle{display:flex;align-items:flex-end;gap:var(--s3);margin-bottom:var(--s6)}
+.blocktitle h2{
+  font-family:var(--font-ui);font-size:var(--fs-sm);font-weight:700;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--ink-800);
+  padding-bottom:var(--s2);border-bottom:3px solid var(--accent-500);flex:none
+}
+.blocktitle .rule{flex:1;height:1px;background:var(--line);margin-bottom:var(--s1)}
+.blocktitle .more{
+  flex:none;display:inline-flex;align-items:center;
+  font-size:var(--fs-sm);font-weight:600;color:var(--ink-800);white-space:nowrap;
+  transition:color .15s;
+  position:relative               /* .tap expands the hit area to 44px */
+}
+.blocktitle .more:hover{color:var(--accent-700)}
+
+section{padding-block:var(--s12)}
+@media (min-width:768px){section{padding-block:var(--s18)}}
+.alt{background:var(--paper-alt);border-block:1px solid var(--line)}
+
+/* ═══════════════════════════════════════════════════════════════
+   HERO — full-bleed image + scrim, left-aligned to match the page
+   ═══════════════════════════════════════════════════════════════ */
+.hero{position:relative;background:var(--ink-900);color:#fff;overflow:hidden;isolation:isolate}
+.hero img{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2
+}
+.hero::after{
+  content:"";position:absolute;inset:0;z-index:-1;
+  background:linear-gradient(90deg,rgb(0 0 0/.88) 0%,rgb(0 0 0/.72) 45%,rgb(0 0 0/.35) 100%)
+}
+.hero .wrap{padding-block:var(--s12);max-width:var(--container)}
+.hero .inner{max-width:660px}
+.hero .eyebrow{
+  display:inline-block;font-size:var(--fs-meta);font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;color:#fff;background:rgb(255 255 255/.14);
+  padding:var(--s1) var(--s3);border-radius:var(--radius);margin-bottom:var(--s6)
+}
+.hero h1{
+  font-family:var(--font-display);font-size:var(--fs-section);font-weight:400;
+  line-height:1.15;color:#fff;margin-bottom:var(--s4)
+}
+@media (min-width:768px){
+  .hero .wrap{padding-block:var(--s18)}
+  .hero h1{font-size:var(--fs-hero)}
+}
+.hero p{color:rgb(255 255 255/.82);font-size:var(--fs-body);margin-bottom:var(--s8);max-width:52ch}
+.hero .btns{display:flex;gap:var(--s3);flex-wrap:wrap}
+
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-height:var(--tap);padding:var(--s3) var(--s6);border-radius:var(--radius);
+  font-size:var(--fs-sm);font-weight:700;text-transform:uppercase;letter-spacing:.04em;
+  transition:background .15s,color .15s,border-color .15s
+}
+/* accent-700, not -600: filled buttons carry 13px text and must clear 4.5:1 in BOTH themes */
+.btn-primary{background:var(--accent-700);color:#fff}
+.btn-primary:hover{background:var(--accent-800)}
+.btn-ondark{background:#fff;color:var(--ink-900)}
+.btn-ondark:hover{background:rgb(255 255 255/.85)}
+.btn-secondary{border:1px solid var(--line-strong);color:var(--ink-800)}
+.btn-secondary:hover{border-color:var(--ink-800);background:var(--paper-alt)}
+
+/* ═══════════════════════════════════════════════════════════════
+   NEWS GRID
+   ═══════════════════════════════════════════════════════════════ */
+.grid3{display:grid;gap:var(--s6);grid-template-columns:1fr}
+@media (min-width:640px){.grid3{grid-template-columns:repeat(2,1fr)}}
+@media (min-width:1024px){.grid3{grid-template-columns:repeat(3,1fr)}}
+
+.card{
+  border:1px solid var(--line);border-radius:var(--radius);background:var(--paper);
+  overflow:hidden;display:flex;flex-direction:column;transition:border-color .15s
+}
+.card:hover{border-color:var(--line-strong)}
+.card .thumb{aspect-ratio:16/9;overflow:hidden;background:var(--ink-800)}
+.card .thumb img{width:100%;height:100%;object-fit:cover;transition:transform .25s}
+.card:hover .thumb img{transform:scale(1.03)}
+@media (prefers-reduced-motion:reduce){.card:hover .thumb img{transform:none}}
+.card .pad{padding:var(--s4);display:flex;flex-direction:column;flex:1}
+.eyebrow{
+  display:block;font-size:var(--fs-meta);font-weight:700;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--ink-600);margin-bottom:var(--s2);transition:color .15s
+}
+.card:hover .eyebrow{color:var(--accent-700)}
+.card h3{
+  font-family:var(--font-display);font-size:var(--fs-title);font-weight:500;line-height:1.35;
+  color:var(--ink-800);margin-bottom:var(--s3);
+  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;
+  transition:color .15s
+}
+.card:hover h3{color:var(--accent-700)}
+/* pins the date to the bottom so ragged title lengths still align */
+.card time{margin-top:auto;font-size:var(--fs-meta);letter-spacing:.04em;color:var(--ink-600)}
+
+/* ═══════════════════════════════════════════════════════════════
+   CALENDAR ROWS
+   ═══════════════════════════════════════════════════════════════ */
+.evt{display:flex;align-items:stretch;gap:var(--s4);padding:var(--s4) 0;border-bottom:1px solid var(--line)}
+.evt:first-of-type{border-top:1px solid var(--line)}
+.evt .date{
+  width:64px;height:64px;flex:none;background:var(--ink-900);color:#fff;border-radius:var(--radius);
+  display:grid;place-content:center;text-align:center;line-height:1.1
+}
+.evt .date .d{font-family:var(--font-display);font-size:var(--fs-lg);font-weight:500}
+.evt .date .m{font-size:var(--fs-meta);text-transform:uppercase;letter-spacing:.06em;color:rgb(255 255 255/.6);margin-top:var(--s1)}
+.evt .info{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center}
+.evt .info h3{font-family:var(--font-display);font-size:var(--fs-title);font-weight:500;color:var(--ink-800);margin-bottom:var(--s1)}
+.evt .info p{font-size:var(--fs-sm);color:var(--ink-600)}
+.evt .status{align-self:center;flex:none}
+
+/* three-level ladder: neutral outline → accent text → accent filled.
+   One warm colour, so the levels read as a system rather than as decoration. */
+.pill{
+  display:inline-block;padding:var(--s1) var(--s3);border-radius:var(--radius);
+  font-size:var(--fs-meta);font-weight:700;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap
+}
+.pill-sched{border:1px solid var(--line-strong);color:var(--ink-600)}
+.pill-today{background:var(--accent-700);color:#fff}
+/* results are a destination, not a state — so it reads as a link */
+.link-result{
+  display:inline-flex;align-items:center;gap:var(--s1);min-height:var(--tap);
+  font-size:var(--fs-sm);font-weight:700;color:var(--ink-800);white-space:nowrap;transition:color .15s
+}
+.link-result:hover{color:var(--accent-700)}
+
+@media (max-width:639px){
+  .evt{flex-wrap:wrap;gap:var(--s3)}
+  .evt .date{width:52px;height:52px}
+  .evt .status{align-self:flex-start;margin-left:64px}
+}
+
+.cal-cols{display:grid;gap:var(--s12);grid-template-columns:1fr}
+@media (min-width:1024px){.cal-cols{grid-template-columns:1fr 1fr;gap:var(--s8)}}
+
+/* ═══════════════════════════════════════════════════════════════
+   GALLERY
+   ═══════════════════════════════════════════════════════════════ */
+.gal{display:grid;gap:var(--s3);grid-template-columns:repeat(2,1fr)}
+@media (min-width:768px){.gal{grid-template-columns:repeat(4,1fr)}}
+.gal a{position:relative;aspect-ratio:1;border-radius:var(--radius);overflow:hidden;display:block}
+.gal img{width:100%;height:100%;object-fit:cover;transition:transform .25s}
+.gal a:hover img{transform:scale(1.05)}
+@media (prefers-reduced-motion:reduce){.gal a:hover img{transform:none}}
+.gal figcaption{
+  position:absolute;inset-inline:0;bottom:0;padding:var(--s6) var(--s3) var(--s3);
+  font-size:var(--fs-sm);color:#fff;
+  background:linear-gradient(transparent,rgb(0 0 0/.8))
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   REGISTRATION — two peer audiences, so two equal cards
+   ═══════════════════════════════════════════════════════════════ */
+.reg{display:grid;gap:var(--s4);grid-template-columns:1fr}
+@media (min-width:768px){.reg{grid-template-columns:1fr 1fr}}
+.regcard{
+  display:flex;flex-direction:column;gap:var(--s2);
+  padding:var(--s6);background:var(--paper);
+  border:1px solid var(--line);border-left:3px solid var(--accent-500);border-radius:var(--radius);
+  transition:border-color .15s,box-shadow .15s
+}
+.regcard:hover{box-shadow:0 2px 10px rgb(0 0 0/.07)}
+.regcard h3{font-family:var(--font-display);font-size:var(--fs-title);font-weight:500;color:var(--ink-800)}
+.regcard p{font-size:var(--fs-sm);color:var(--ink-600)}
+.regcard .go{
+  margin-top:var(--s2);display:inline-flex;align-items:center;gap:var(--s1);
+  font-size:var(--fs-sm);font-weight:700;text-transform:uppercase;letter-spacing:.04em;
+  color:var(--accent-700)
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FOOTER
+   ═══════════════════════════════════════════════════════════════ */
+footer{background:var(--ink-900);color:rgb(255 255 255/.72);padding-top:var(--s12);font-size:var(--fs-body)}
+.f-cols{display:grid;gap:var(--s8);grid-template-columns:1fr}
+@media (min-width:768px){.f-cols{grid-template-columns:2fr 1fr 1fr;gap:var(--s12)}}
+footer h2{
+  font-size:var(--fs-sm);font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#fff;
+  padding-bottom:var(--s2);border-bottom:3px solid var(--accent-500);
+  display:inline-block;margin-bottom:var(--s4)
+}
+footer p{margin-bottom:var(--s3);line-height:1.7;font-size:var(--fs-sm)}
+.f-links a{display:flex;align-items:center;min-height:var(--tap);font-size:var(--fs-sm);transition:color .15s}
+.f-links a:hover{color:#fff}
+.f-social{display:flex;gap:var(--s3)}
+.f-social a{
+  width:var(--tap);height:var(--tap);display:grid;place-items:center;border-radius:var(--radius);
+  background:rgb(255 255 255/.08);transition:background .15s
+}
+.f-social a:hover{background:var(--accent-700);color:#fff}
+.f-social svg{width:18px;height:18px;fill:currentColor}
+.f-bottom{
+  margin-top:var(--s12);border-top:1px solid rgb(255 255 255/.1);
+  padding-block:var(--s4);font-size:var(--fs-sm);color:rgb(255 255 255/.55)
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   MOCKUP-ONLY CONTROL (not part of the design)
+   ═══════════════════════════════════════════════════════════════ */
+.devbar{
+  position:fixed;right:var(--s3);bottom:var(--s3);z-index:200;
+  background:rgb(0 0 0/.88);color:#fff;border-radius:var(--radius);
+  padding:var(--s2) var(--s3);display:flex;align-items:center;gap:var(--s2);
+  font-size:var(--fs-meta);letter-spacing:.04em;backdrop-filter:blur(6px)
+}
+.devbar span{color:rgb(255 255 255/.5);text-transform:uppercase}
+.devbar button{
+  padding:var(--s1) var(--s2);border:1px solid rgb(255 255 255/.25);
+  border-radius:var(--radius);font-size:var(--fs-meta);font-weight:700
+}
+.devbar button[aria-pressed="true"]{background:#fff;color:#000;border-color:#fff}
+@media print{.devbar{display:none}}
+</style>
+</head>
+<body>
+
+<!-- ═══════════ 1. UTILITY BAR ═══════════ -->
+<div class="utility">
+  <div class="wrap">
+    <span class="u-date" data-mn="2026 оны 8 дугаар сарын 3, Даваа" data-en="Monday, August 3, 2026">2026 оны 8 дугаар сарын 3, Даваа</span>
+    <ul class="u-links">
+      <li><a href="#" class="tap" data-mn="Холбоо барих" data-en="Contact">Холбоо барих</a></li>
+      <li><a href="tel:+97611123456" class="tap">+976 11 123456</a></li>
+      <li><a href="mailto:info@dancesport.mn" class="tap">info@dancesport.mn</a></li>
+    </ul>
+    <div class="u-right">
+      <!-- LANGUAGE SELECTOR -->
+      <div class="lang" role="group" aria-label="Хэл сонгох / Select language">
+        <button type="button" class="tap" data-lang="mn" aria-pressed="true" lang="mn">МН</button>
+        <button type="button" class="tap" data-lang="en" aria-pressed="false" lang="en">EN</button>
+      </div>
+      <div class="social">
+        <a href="#" class="tap" aria-label="Facebook"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 9h3V6h-3c-2.2 0-4 1.8-4 4v2H8v3h2v7h3v-7h3l1-3h-4v-2c0-.6.4-1 1-1z"/></svg></a>
+        <a href="#" class="tap" aria-label="Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c2.7 0 3 0 4.1.1 1.1 0 1.8.2 2.4.5.7.2 1.2.6 1.7 1.1s.9 1 1.1 1.7c.3.6.4 1.3.5 2.4C22 8.9 22 9.3 22 12s0 3.1-.1 4.2c0 1.1-.2 1.8-.5 2.4-.2.7-.6 1.2-1.1 1.7s-1 .9-1.7 1.1c-.6.3-1.3.4-2.4.5-1.1.1-1.4.1-4.2.1s-3.1 0-4.2-.1c-1.1 0-1.8-.2-2.4-.5-.7-.2-1.2-.6-1.7-1.1s-.9-1-1.1-1.7c-.3-.6-.4-1.3-.5-2.4C2 15.1 2 14.7 2 12s0-3.1.1-4.2c0-1.1.2-1.8.5-2.4.2-.7.6-1.2 1.1-1.7s1-.9 1.7-1.1c.6-.3 1.3-.4 2.4-.5C8.9 2 9.3 2 12 2zm0 5a5 5 0 100 10 5 5 0 000-10zm0 8.2a3.2 3.2 0 110-6.4 3.2 3.2 0 010 6.4zM17.8 7.4a1.2 1.2 0 11-2.4 0 1.2 1.2 0 012.4 0z"/></svg></a>
+        <a href="#" class="tap" aria-label="YouTube"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.6 7.2s-.2-1.4-.8-2c-.7-.8-1.5-.8-1.9-.8C16.2 4.2 12 4.2 12 4.2s-4.2 0-6.9.2c-.4 0-1.2 0-1.9.8-.6.6-.8 2-.8 2S2.2 8.8 2.2 10.5v1.6c0 1.6.2 3.3.2 3.3s.2 1.4.8 2c.7.8 1.7.7 2.1.8 1.5.2 6.7.2 6.7.2s4.2 0 6.9-.2c.4 0 1.2 0 1.9-.8.6-.6.8-2 .8-2s.2-1.6.2-3.3v-1.6c0-1.7-.2-3.3-.2-3.3zM9.9 14.3V8.6l5.4 2.9-5.4 2.8z"/></svg></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ 2. LOGO BAND (desktop) ═══════════ -->
+<div class="logoband">
+  <div class="wrap">
+    <a href="#" class="logo">
+      <span class="mark" aria-hidden="true">Б</span>
+      <span class="name">
+        <span data-mn="Монголын Бүжгийн Спортын Холбоо" data-en="Mongolian DanceSport Federation">Монголын Бүжгийн Спортын Холбоо</span>
+        <small data-mn="1996 оноос хойш" data-en="Established 1996">1996 оноос хойш</small>
+      </span>
+    </a>
+    <a href="#" class="nextup">
+      <span>
+        <span class="lbl" data-mn="Дараагийн тэмцээн" data-en="Next competition">Дараагийн тэмцээн</span>
+        <span class="val" data-mn="Улаанбаатар нээлттэй тэмцээн · 8/15" data-en="Ulaanbaatar Open · 15 Aug">Улаанбаатар нээлттэй тэмцээн · 8/15</span>
+      </span>
+      <span class="days"><b>12</b><span data-mn="хоног" data-en="days">хоног</span></span>
+    </a>
+  </div>
+</div>
+
+<!-- ═══════════ 3. MENU BAR ═══════════ -->
+<div class="menubar">
+  <div class="wrap">
+    <a href="#" class="menu-mark">
+      <span class="mark" aria-hidden="true">Б</span>
+      <span data-mn="Бүжгийн Спортын Холбоо" data-en="DanceSport Federation">Бүжгийн Спортын Холбоо</span>
+    </a>
+    <nav aria-label="Үндсэн цэс">
+      <ul class="nav">
+        <li>
+          <button type="button" aria-expanded="false">
+            <span data-mn="Холбооны тухай" data-en="About">Холбооны тухай</span>
+            <svg class="caret" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 4l4 4 4-4z"/></svg>
+          </button>
+          <ul class="dropdown">
+            <li><a href="#" data-mn="Бидний тухай" data-en="Who we are">Бидний тухай</a></li>
+            <li><a href="#" data-mn="Удирдах зөвлөл" data-en="Board of directors">Удирдах зөвлөл</a></li>
+            <li><a href="#" data-mn="Гишүүн клубууд" data-en="Member clubs">Гишүүн клубууд</a></li>
+            <li><a href="#" data-mn="Дүрэм, журам" data-en="Statutes &amp; rules">Дүрэм, журам</a></li>
+            <li><a href="#" data-mn="Холбоо барих" data-en="Contact">Холбоо барих</a></li>
+          </ul>
+        </li>
+        <li class="active"><a href="#" data-mn="Мэдээ" data-en="News">Мэдээ</a></li>
+        <li><a href="#" data-mn="Хуанли" data-en="Calendar">Хуанли</a></li>
+        <li>
+          <button type="button" aria-expanded="false">
+            <span data-mn="Тэмцээн" data-en="Competitions">Тэмцээн</span>
+            <svg class="caret" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 4l4 4 4-4z"/></svg>
+          </button>
+          <ul class="dropdown">
+            <li><a href="#" data-mn="Тэмцээний хуваарь" data-en="Schedule">Тэмцээний хуваарь</a></li>
+            <li><a href="#" data-mn="Тэмцээний дүн" data-en="Results">Тэмцээний дүн</a></li>
+            <li><a href="#" data-mn="Дүрэм, журам" data-en="Competition rules">Дүрэм, журам</a></li>
+            <li><a href="#" data-mn="Зохион байгуулагчид" data-en="For organisers">Зохион байгуулагчид</a></li>
+            <li><a href="#" data-mn="Ангилал, зэрэглэл" data-en="Divisions &amp; grades">Ангилал, зэрэглэл</a></li>
+          </ul>
+        </li>
+        <li>
+          <button type="button" aria-expanded="false">
+            <span data-mn="Сургалт" data-en="Education">Сургалт</span>
+            <svg class="caret" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 4l4 4 4-4z"/></svg>
+          </button>
+          <ul class="dropdown">
+            <li><a href="#" data-mn="Багш нарын жагсаалт" data-en="Teacher directory">Багш нарын жагсаалт</a></li>
+            <li><a href="#" data-mn="Шүүгчийн сургалт" data-en="Adjudicator training">Шүүгчийн сургалт</a></li>
+            <li><a href="#" data-mn="Зэрэг олгох журам" data-en="Certification">Зэрэг олгох журам</a></li>
+          </ul>
+        </li>
+        <li><a href="#" data-mn="Галерей" data-en="Gallery">Галерей</a></li>
+        <li>
+          <button type="button" aria-expanded="false">
+            <span data-mn="Бүртгэл" data-en="Register">Бүртгэл</span>
+            <svg class="caret" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 4l4 4 4-4z"/></svg>
+          </button>
+          <ul class="dropdown">
+            <li><a href="#" data-mn="Клуб бүртгүүлэх" data-en="Register a club">Клуб бүртгүүлэх</a></li>
+            <li><a href="#" data-mn="Тамирчин бүртгүүлэх" data-en="Register a dancer">Тамирчин бүртгүүлэх</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+    <div class="menu-right">
+      <button type="button" class="iconbtn" aria-label="Хайх">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5" stroke-linecap="round"/></svg>
+      </button>
+      <button type="button" class="iconbtn burger" id="burger" aria-label="Цэс нээх" aria-expanded="false" aria-controls="mobilemenu">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ MOBILE PANEL ═══════════ -->
+<div class="mobile" id="mobilemenu" data-open="false">
+  <div class="mobile-top">
+    <span class="menu-mark" style="display:flex;opacity:1">
+      <span class="mark" aria-hidden="true">Б</span>
+      <span style="color:#fff" data-mn="Бүжгийн Спортын Холбоо" data-en="DanceSport Federation">Бүжгийн Спортын Холбоо</span>
+    </span>
+    <button type="button" class="iconbtn" id="mclose" aria-label="Цэс хаах">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+  <nav aria-label="Үндсэн цэс">
+    <ul class="m-nav">
+      <li data-open="false">
+        <button type="button" aria-expanded="false">
+          <span data-mn="Холбооны тухай" data-en="About">Холбооны тухай</span>
+          <svg class="caret" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 4l4 4 4-4z"/></svg>
+        </button>
+        <div class="m-sub">
+          <a href="#" data-mn="Бидний тухай" data-en="Who we are">Бидний тухай</a>
+          <a href="#" data-mn="Удирдах зөвлөл" data-en="Board of directors">Удирдах зөвлөл</a>
+          <a href="#" data-mn="Гишүүн клубууд" data-en="Member clubs">Гишүүн клубууд</a>
+          <a href="#" data-mn="Дүрэм, журам" data-en="Statutes &amp; rules">Дүрэм, журам</a>
+          <a href="#" data-mn="Холбоо барих" data-en="Contact">Холбоо барих</a>
+        </div>
+      </li>
+      <li><a href="#" data-mn="Мэдээ" data-en="News">Мэдээ</a></li>
+      <li><a href="#" data-mn="Хуанли" data-en="Calendar">Хуанли</a></li>
+      <li data-open="false">
+        <button type="button" aria-expanded="false">
+          <span data-mn="Тэмцээн" data-en="Competitions">Тэмцээн</span>
+          <svg class="caret" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 4l4 4 4-4z"/></svg>
+        </button>
+        <div class="m-sub">
+          <a href="#" data-mn="Тэмцээний хуваарь" data-en="Schedule">Тэмцээний хуваарь</a>
+          <a href="#" data-mn="Тэмцээний дүн" data-en="Results">Тэмцээний дүн</a>
+          <a href="#" data-mn="Дүрэм, журам" data-en="Competition rules">Дүрэм, журам</a>
+          <a href="#" data-mn="Зохион байгуулагчид" data-en="For organisers">Зохион байгуулагчид</a>
+          <a href="#" data-mn="Ангилал, зэрэглэл" data-en="Divisions &amp; grades">Ангилал, зэрэглэл</a>
+        </div>
+      </li>
+      <li data-open="false">
+        <button type="button" aria-expanded="false">
+          <span data-mn="Сургалт" data-en="Education">Сургалт</span>
+          <svg class="caret" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 4l4 4 4-4z"/></svg>
+        </button>
+        <div class="m-sub">
+          <a href="#" data-mn="Багш нарын жагсаалт" data-en="Teacher directory">Багш нарын жагсаалт</a>
+          <a href="#" data-mn="Шүүгчийн сургалт" data-en="Adjudicator training">Шүүгчийн сургалт</a>
+          <a href="#" data-mn="Зэрэг олгох журам" data-en="Certification">Зэрэг олгох журам</a>
+        </div>
+      </li>
+      <li><a href="#" data-mn="Галерей" data-en="Gallery">Галерей</a></li>
+      <li data-open="false">
+        <button type="button" aria-expanded="false">
+          <span data-mn="Бүртгэл" data-en="Register">Бүртгэл</span>
+          <svg class="caret" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 4l4 4 4-4z"/></svg>
+        </button>
+        <div class="m-sub">
+          <a href="#" data-mn="Клуб бүртгүүлэх" data-en="Register a club">Клуб бүртгүүлэх</a>
+          <a href="#" data-mn="Тамирчин бүртгүүлэх" data-en="Register a dancer">Тамирчин бүртгүүлэх</a>
+        </div>
+      </li>
+    </ul>
+  </nav>
+</div>
+
+<!-- ═══════════ HERO ═══════════ -->
+<div class="hero">
+  <!-- PHOTO SLOT: swap img/hero.svg for a real 1920×1000 .jpg — nothing else changes -->
+  <img src="data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%201920%201000%22%20width%3D%221920%22%20height%3D%221000%22%20preserveAspectRatio%3D%22xMidYMid%20slice%22%20role%3D%22img%22%3E%0A%3Cdefs%3E%0A%3ClinearGradient%20id%3D%22b%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%2302090f%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%2307223a%22%2F%3E%3C%2FlinearGradient%3E%0A%3CradialGradient%20id%3D%22g%22%20cx%3D%2274%25%22%20cy%3D%2242%25%22%20r%3D%2262%25%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%234db2ec%22%20stop-opacity%3D%22.5%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%234db2ec%22%20stop-opacity%3D%220%22%2F%3E%3C%2FradialGradient%3E%0A%3CradialGradient%20id%3D%22v%22%20cx%3D%2250%25%22%20cy%3D%2250%25%22%20r%3D%2275%25%22%3E%3Cstop%20offset%3D%2255%25%22%20stop-color%3D%22%23000%22%20stop-opacity%3D%220%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%23000%22%20stop-opacity%3D%22.55%22%2F%3E%3C%2FradialGradient%3E%0A%3C%2Fdefs%3E%0A%3Crect%20width%3D%221920%22%20height%3D%221000%22%20fill%3D%22url(%23b)%22%2F%3E%0A%3Crect%20width%3D%221920%22%20height%3D%221000%22%20fill%3D%22url(%23g)%22%2F%3E%0A%3Cpath%20d%3D%22M-192%20317%20Q%20960%20624%202112%20789%22%20fill%3D%22none%22%20stroke%3D%22%234db2ec%22%20stroke-opacity%3D%220.059%22%20stroke-width%3D%223.8%22%2F%3E%3Cpath%20d%3D%22M-192%20749%20Q%20960%208%202112%20403%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.227%22%20stroke-width%3D%221.2%22%2F%3E%3Cpath%20d%3D%22M-192%20831%20Q%20960%20447%202112%20522%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.159%22%20stroke-width%3D%222.6%22%2F%3E%3Cpath%20d%3D%22M-192%20694%20Q%20960%20410%202112%20696%22%20fill%3D%22none%22%20stroke%3D%22%234db2ec%22%20stroke-opacity%3D%220.203%22%20stroke-width%3D%222.4%22%2F%3E%3Cpath%20d%3D%22M-192%20404%20Q%20960%2051%202112%20487%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.200%22%20stroke-width%3D%223.2%22%2F%3E%3Cpath%20d%3D%22M-192%20401%20Q%20960%201030%202112%20275%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.132%22%20stroke-width%3D%221.4%22%2F%3E%3Cpath%20d%3D%22M-192%20469%20Q%20960%2075%202112%20226%22%20fill%3D%22none%22%20stroke%3D%22%234db2ec%22%20stroke-opacity%3D%220.189%22%20stroke-width%3D%222.9%22%2F%3E%3Cpath%20d%3D%22M-192%20209%20Q%20960%20969%202112%20574%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.156%22%20stroke-width%3D%221.8%22%2F%3E%3Cpath%20d%3D%22M-192%20397%20Q%20960%20514%202112%20369%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.106%22%20stroke-width%3D%223.1%22%2F%3E%3Cpath%20d%3D%22M-192%20261%20Q%20960%20638%202112%20762%22%20fill%3D%22none%22%20stroke%3D%22%234db2ec%22%20stroke-opacity%3D%220.229%22%20stroke-width%3D%222.1%22%2F%3E%3Cpath%20d%3D%22M-192%20489%20Q%20960%20229%202112%20275%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.156%22%20stroke-width%3D%223.8%22%2F%3E%3Cpath%20d%3D%22M-192%20495%20Q%20960%20427%202112%20272%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.050%22%20stroke-width%3D%221.5%22%2F%3E%3Cpath%20d%3D%22M-192%20634%20Q%20960%20109%202112%20682%22%20fill%3D%22none%22%20stroke%3D%22%234db2ec%22%20stroke-opacity%3D%220.184%22%20stroke-width%3D%222.6%22%2F%3E%3Cpath%20d%3D%22M-192%20768%20Q%20960%20397%202112%20410%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.199%22%20stroke-width%3D%222.9%22%2F%3E%0A%3Crect%20width%3D%221920%22%20height%3D%221000%22%20fill%3D%22url(%23v)%22%2F%3E%0A%3C%2Fsvg%3E" alt="" width="1920" height="1000" fetchpriority="high">
+  <div class="wrap">
+    <div class="inner">
+      <span class="eyebrow" data-mn="Улаанбаатар Оупэн 2026" data-en="Ulaanbaatar Open 2026">Улаанбаатар Оупэн 2026</span>
+      <h1 data-mn="Монголын бүжгийн спортын албан ёсны холбоо" data-en="The official DanceSport federation of Mongolia">Монголын бүжгийн спортын албан ёсны холбоо</h1>
+      <p data-mn="Тэмцээний хуваарь, дүн, мэдээ мэдээлэл, клуб болон тамирчны бүртгэл — нэг дороос." data-en="Competition schedules, results, news, and club and dancer registration — all in one place.">Тэмцээний хуваарь, дүн, мэдээ мэдээлэл, клуб болон тамирчны бүртгэл — нэг дороос.</p>
+      <div class="btns">
+        <a href="#" class="btn btn-primary" data-mn="Бүртгүүлэх" data-en="Register now">Бүртгүүлэх</a>
+        <a href="#" class="btn btn-ondark" data-mn="Хуанли үзэх" data-en="View calendar">Хуанли үзэх</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ NEWS ═══════════ -->
+<section>
+  <div class="wrap">
+    <div class="blocktitle">
+      <h2 data-mn="Сүүлийн мэдээ" data-en="Latest news">Сүүлийн мэдээ</h2>
+      <span class="rule"></span>
+      <a href="#" class="more tap" data-mn="Бүгдийг үзэх →" data-en="View all →">Бүгдийг үзэх →</a>
+    </div>
+    <div class="grid3">
+      <a href="#" class="card">
+        <div class="thumb"><img src="data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20800%20450%22%20width%3D%22800%22%20height%3D%22450%22%20preserveAspectRatio%3D%22xMidYMid%20slice%22%20role%3D%22img%22%3E%0A%3Cdefs%3E%0A%3ClinearGradient%20id%3D%22b%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%2304121f%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%230d3350%22%2F%3E%3C%2FlinearGradient%3E%0A%3CradialGradient%20id%3D%22g%22%20cx%3D%2265%25%22%20cy%3D%2240%25%22%20r%3D%2262%25%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%234db2ec%22%20stop-opacity%3D%22.5%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%234db2ec%22%20stop-opacity%3D%220%22%2F%3E%3C%2FradialGradient%3E%0A%3CradialGradient%20id%3D%22v%22%20cx%3D%2250%25%22%20cy%3D%2250%25%22%20r%3D%2275%25%22%3E%3Cstop%20offset%3D%2255%25%22%20stop-color%3D%22%23000%22%20stop-opacity%3D%220%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%23000%22%20stop-opacity%3D%22.55%22%2F%3E%3C%2FradialGradient%3E%0A%3C%2Fdefs%3E%0A%3Crect%20width%3D%22800%22%20height%3D%22450%22%20fill%3D%22url(%23b)%22%2F%3E%0A%3Crect%20width%3D%22800%22%20height%3D%22450%22%20fill%3D%22url(%23g)%22%2F%3E%0A%3Cpath%20d%3D%22M-80%20144%20Q%20400%2076%20880%20125%22%20fill%3D%22none%22%20stroke%3D%22%234db2ec%22%20stroke-opacity%3D%220.118%22%20stroke-width%3D%222.3%22%2F%3E%3Cpath%20d%3D%22M-80%20169%20Q%20400%20413%20880%20192%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.192%22%20stroke-width%3D%221.6%22%2F%3E%3Cpath%20d%3D%22M-80%20170%20Q%20400%2041%20880%20105%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.194%22%20stroke-width%3D%223.6%22%2F%3E%3Cpath%20d%3D%22M-80%20163%20Q%20400%20290%20880%20359%22%20fill%3D%22none%22%20stroke%3D%22%234db2ec%22%20stroke-opacity%3D%220.098%22%20stroke-width%3D%223.0%22%2F%3E%3Cpath%20d%3D%22M-80%2079%20Q%20400%20213%20880%20181%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.136%22%20stroke-width%3D%223.3%22%2F%3E%3Cpath%20d%3D%22M-80%20239%20Q%20400%20334%20880%20247%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.067%22%20stroke-width%3D%222.4%22%2F%3E%3Cpath%20d%3D%22M-80%20283%20Q%20400%20275%20880%20156%22%20fill%3D%22none%22%20stroke%3D%22%234db2ec%22%20stroke-opacity%3D%220.110%22%20stroke-width%3D%221.3%22%2F%3E%3Cpath%20d%3D%22M-80%2068%20Q%20400%20193%20880%20256%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.166%22%20stroke-width%3D%223.5%22%2F%3E%3Cpath%20d%3D%22M-80%20259%20Q%20400%20149%20880%20309%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.188%22%20stroke-width%3D%222.5%22%2F%3E%3Cpath%20d%3D%22M-80%20113%20Q%20400%20-16%20880%20204%22%20fill%3D%22none%22%20stroke%3D%22%234db2ec%22%20stroke-opacity%3D%220.222%22%20stroke-width%3D%222.6%22%2F%3E%3Cpath%20d%3D%22M-80%20123%20Q%20400%20453%20880%20135%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.174%22%20stroke-width%3D%223.6%22%2F%3E%3Cpath%20d%3D%22M-80%20146%20Q%20400%20145%20880%20284%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.056%22%20stroke-width%3D%222.4%22%2F%3E%3Cpath%20d%3D%22M-80%20304%20Q%20400%2046%20880%20251%22%20fill%3D%22none%22%20stroke%3D%22%234db2ec%22%20stroke-opacity%3D%220.102%22%20stroke-width%3D%223.2%22%2F%3E%3Cpath%20d%3D%22M-80%2098%20Q%20400%20283%20880%20239%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.090%22%20stroke-width%3D%222.4%22%2F%3E%0A%3Crect%20width%3D%22800%22%20height%3D%22450%22%20fill%3D%22url(%23v)%22%2F%3E%0A%3C%2Fsvg%3E" alt="" width="800" height="450" loading="lazy"></div>
+        <div class="pad">
+          <span class="eyebrow" data-mn="Дотоод мэдээ" data-en="Domestic">Дотоод мэдээ</span>
+          <h3 data-mn="Улаанбаатар Оупэн 2026 тэмцээний бүртгэл нээгдлээ" data-en="Registration opens for the Ulaanbaatar Open 2026">Улаанбаатар Оупэн 2026 тэмцээний бүртгэл нээгдлээ</h3>
+          <time data-mn="2026.08.01" data-en="1 Aug 2026">2026.08.01</time>
+        </div>
+      </a>
+      <a href="#" class="card">
+        <div class="thumb"><img src="data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20800%20450%22%20width%3D%22800%22%20height%3D%22450%22%20preserveAspectRatio%3D%22xMidYMid%20slice%22%20role%3D%22img%22%3E%0A%3Cdefs%3E%0A%3ClinearGradient%20id%3D%22b%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23031614%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%230a3733%22%2F%3E%3C%2FlinearGradient%3E%0A%3CradialGradient%20id%3D%22g%22%20cx%3D%2235%25%22%20cy%3D%2255%25%22%20r%3D%2262%25%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%234ec8bd%22%20stop-opacity%3D%22.5%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%234ec8bd%22%20stop-opacity%3D%220%22%2F%3E%3C%2FradialGradient%3E%0A%3CradialGradient%20id%3D%22v%22%20cx%3D%2250%25%22%20cy%3D%2250%25%22%20r%3D%2275%25%22%3E%3Cstop%20offset%3D%2255%25%22%20stop-color%3D%22%23000%22%20stop-opacity%3D%220%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%23000%22%20stop-opacity%3D%22.55%22%2F%3E%3C%2FradialGradient%3E%0A%3C%2Fdefs%3E%0A%3Crect%20width%3D%22800%22%20height%3D%22450%22%20fill%3D%22url(%23b)%22%2F%3E%0A%3Crect%20width%3D%22800%22%20height%3D%22450%22%20fill%3D%22url(%23g)%22%2F%3E%0A%3Cpath%20d%3D%22M-80%20146%20Q%20400%2027%20880%20182%22%20fill%3D%22none%22%20stroke%3D%22%234ec8bd%22%20stroke-opacity%3D%220.058%22%20stroke-width%3D%223.8%22%2F%3E%3Cpath%20d%3D%22M-80%2081%20Q%20400%20368%20880%20382%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.146%22%20stroke-width%3D%223.4%22%2F%3E%3Cpath%20d%3D%22M-80%20138%20Q%20400%20387%20880%2074%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.189%22%20stroke-width%3D%221.7%22%2F%3E%3Cpath%20d%3D%22M-80%20182%20Q%20400%20388%20880%20356%22%20fill%3D%22none%22%20stroke%3D%22%234ec8bd%22%20stroke-opacity%3D%220.193%22%20stroke-width%3D%222.6%22%2F%3E%3Cpath%20d%3D%22M-80%2074%20Q%20400%2071%20880%20281%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.051%22%20stroke-width%3D%223.1%22%2F%3E%3Cpath%20d%3D%22M-80%20158%20Q%20400%20320%20880%20181%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.072%22%20stroke-width%3D%224.0%22%2F%3E%3Cpath%20d%3D%22M-80%20169%20Q%20400%2039%20880%20161%22%20fill%3D%22none%22%20stroke%3D%22%234ec8bd%22%20stroke-opacity%3D%220.140%22%20stroke-width%3D%224.0%22%2F%3E%3Cpath%20d%3D%22M-80%20382%20Q%20400%2037%20880%20298%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.148%22%20stroke-width%3D%222.6%22%2F%3E%3Cpath%20d%3D%22M-80%20109%20Q%20400%20285%20880%20172%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.161%22%20stroke-width%3D%223.2%22%2F%3E%3Cpath%20d%3D%22M-80%20110%20Q%20400%20303%20880%20254%22%20fill%3D%22none%22%20stroke%3D%22%234ec8bd%22%20stroke-opacity%3D%220.150%22%20stroke-width%3D%222.3%22%2F%3E%3Cpath%20d%3D%22M-80%20281%20Q%20400%20282%20880%20191%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.229%22%20stroke-width%3D%221.1%22%2F%3E%3Cpath%20d%3D%22M-80%20255%20Q%20400%20312%20880%20141%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.126%22%20stroke-width%3D%222.3%22%2F%3E%3Cpath%20d%3D%22M-80%20118%20Q%20400%2043%20880%20334%22%20fill%3D%22none%22%20stroke%3D%22%234ec8bd%22%20stroke-opacity%3D%220.141%22%20stroke-width%3D%223.2%22%2F%3E%3Cpath%20d%3D%22M-80%20274%20Q%20400%20274%20880%20380%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.219%22%20stroke-width%3D%222.6%22%2F%3E%0A%3Crect%20width%3D%22800%22%20height%3D%22450%22%20fill%3D%22url(%23v)%22%2F%3E%0A%3C%2Fsvg%3E" alt="" width="800" height="450" loading="lazy"></div>
+        <div class="pad">
+          <span class="eyebrow" data-mn="Гадаад мэдээ" data-en="International">Гадаад мэдээ</span>
+          <h3 data-mn="Монголын тамирчид Азийн аварга шалгаруулах тэмцээнд оролцоно" data-en="Mongolian dancers to compete at the Asian Championships">Монголын тамирчид Азийн аварга шалгаруулах тэмцээнд оролцоно</h3>
+          <time data-mn="2026.07.28" data-en="28 Jul 2026">2026.07.28</time>
+        </div>
+      </a>
+      <a href="#" class="card">
+        <div class="thumb"><img src="data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20800%20450%22%20width%3D%22800%22%20height%3D%22450%22%20preserveAspectRatio%3D%22xMidYMid%20slice%22%20role%3D%22img%22%3E%0A%3Cdefs%3E%0A%3ClinearGradient%20id%3D%22b%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%230a0c1c%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%231d2246%22%2F%3E%3C%2FlinearGradient%3E%0A%3CradialGradient%20id%3D%22g%22%20cx%3D%2260%25%22%20cy%3D%2235%25%22%20r%3D%2262%25%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%237f8ad8%22%20stop-opacity%3D%22.5%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%237f8ad8%22%20stop-opacity%3D%220%22%2F%3E%3C%2FradialGradient%3E%0A%3CradialGradient%20id%3D%22v%22%20cx%3D%2250%25%22%20cy%3D%2250%25%22%20r%3D%2275%25%22%3E%3Cstop%20offset%3D%2255%25%22%20stop-color%3D%22%23000%22%20stop-opacity%3D%220%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%23000%22%20stop-opacity%3D%22.55%22%2F%3E%3C%2FradialGradient%3E%0A%3C%2Fdefs%3E%0A%3Crect%20width%3D%22800%22%20height%3D%22450%22%20fill%3D%22url(%23b)%22%2F%3E%0A%3Crect%20width%3D%22800%22%20height%3D%22450%22%20fill%3D%22url(%23g)%22%2F%3E%0A%3Cpath%20d%3D%22M-80%20148%20Q%20400%20317%20880%20267%22%20fill%3D%22none%22%20stroke%3D%22%237f8ad8%22%20stroke-opacity%3D%220.117%22%20stroke-width%3D%222.3%22%2F%3E%3Cpath%20d%3D%22M-80%20229%20Q%20400%20282%20880%2078%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.111%22%20stroke-width%3D%223.8%22%2F%3E%3Cpath%20d%3D%22M-80%20249%20Q%20400%20227%20880%20259%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.224%22%20stroke-width%3D%222.7%22%2F%3E%3Cpath%20d%3D%22M-80%20347%20Q%20400%20-2%20880%2086%22%20fill%3D%22none%22%20stroke%3D%22%237f8ad8%22%20stroke-opacity%3D%220.088%22%20stroke-width%3D%223.1%22%2F%3E%3Cpath%20d%3D%22M-80%20287%20Q%20400%20260%20880%20243%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.167%22%20stroke-width%3D%223.1%22%2F%3E%3Cpath%20d%3D%22M-80%20216%20Q%20400%20191%20880%20304%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.188%22%20stroke-width%3D%222.0%22%2F%3E%3Cpath%20d%3D%22M-80%20240%20Q%20400%20279%20880%20215%22%20fill%3D%22none%22%20stroke%3D%22%237f8ad8%22%20stroke-opacity%3D%220.062%22%20stroke-width%3D%222.5%22%2F%3E%3Cpath%20d%3D%22M-80%20356%20Q%20400%20289%20880%20296%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.158%22%20stroke-width%3D%221.3%22%2F%3E%3Cpath%20d%3D%22M-80%20189%20Q%20400%20203%20880%20316%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.063%22%20stroke-width%3D%222.6%22%2F%3E%3Cpath%20d%3D%22M-80%20106%20Q%20400%20-0%20880%20115%22%20fill%3D%22none%22%20stroke%3D%22%237f8ad8%22%20stroke-opacity%3D%220.143%22%20stroke-width%3D%222.8%22%2F%3E%3Cpath%20d%3D%22M-80%20184%20Q%20400%20137%20880%20203%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.066%22%20stroke-width%3D%223.9%22%2F%3E%3Cpath%20d%3D%22M-80%20178%20Q%20400%20265%20880%20303%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.132%22%20stroke-width%3D%223.1%22%2F%3E%3Cpath%20d%3D%22M-80%20136%20Q%20400%2040%20880%20277%22%20fill%3D%22none%22%20stroke%3D%22%237f8ad8%22%20stroke-opacity%3D%220.059%22%20stroke-width%3D%223.7%22%2F%3E%3Cpath%20d%3D%22M-80%20342%20Q%20400%20378%20880%20120%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.110%22%20stroke-width%3D%222.1%22%2F%3E%0A%3Crect%20width%3D%22800%22%20height%3D%22450%22%20fill%3D%22url(%23v)%22%2F%3E%0A%3C%2Fsvg%3E" alt="" width="800" height="450" loading="lazy"></div>
+        <div class="pad">
+          <span class="eyebrow" data-mn="Дотоод мэдээ" data-en="Domestic">Дотоод мэдээ</span>
+          <h3 data-mn="Шүүгчийн эрх олгох сургалт 9 дүгээр сард зохион байгуулагдана" data-en="Adjudicator certification course scheduled for September">Шүүгчийн эрх олгох сургалт 9 дүгээр сард зохион байгуулагдана</h3>
+          <time data-mn="2026.07.22" data-en="22 Jul 2026">2026.07.22</time>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ CALENDAR ═══════════ -->
+<section class="alt">
+  <div class="wrap cal-cols">
+    <div>
+      <div class="blocktitle">
+        <h2 data-mn="Тэмцээний хуваарь" data-en="Upcoming">Тэмцээний хуваарь</h2>
+        <span class="rule"></span>
+      </div>
+      <div class="evt">
+        <div class="date"><span class="d">03</span><span class="m" data-mn="8-р сар" data-en="Aug">8-р сар</span></div>
+        <div class="info">
+          <h3 data-mn="Зуны цом — залуучуудын шалгаруулалт" data-en="Summer Cup — junior qualifier">Зуны цом — залуучуудын шалгаруулалт</h3>
+          <p data-mn="Буянт-Ухаа спорт цогцолбор, Улаанбаатар" data-en="Buyant-Ukhaa Sports Complex, Ulaanbaatar">Буянт-Ухаа спорт цогцолбор, Улаанбаатар</p>
+        </div>
+        <span class="status"><span class="pill pill-today" data-mn="Өнөөдөр" data-en="Today">Өнөөдөр</span></span>
+      </div>
+      <div class="evt">
+        <div class="date"><span class="d">15</span><span class="m" data-mn="8-р сар" data-en="Aug">8-р сар</span></div>
+        <div class="info">
+          <h3 data-mn="Улаанбаатар нээлттэй тэмцээн" data-en="Ulaanbaatar Open">Улаанбаатар нээлттэй тэмцээн</h3>
+          <p data-mn="Спортын төв ордон, Улаанбаатар" data-en="Central Sports Palace, Ulaanbaatar">Спортын төв ордон, Улаанбаатар</p>
+        </div>
+        <span class="status"><span class="pill pill-sched" data-mn="Хуваарь" data-en="Scheduled">Хуваарь</span></span>
+      </div>
+      <div class="evt">
+        <div class="date"><span class="d">05</span><span class="m" data-mn="9-р сар" data-en="Sep">9-р сар</span></div>
+        <div class="info">
+          <h3 data-mn="Улсын аварга шалгаруулах тэмцээн" data-en="National Championships">Улсын аварга шалгаруулах тэмцээн</h3>
+          <p data-mn="Спортын төв ордон, Улаанбаатар" data-en="Central Sports Palace, Ulaanbaatar">Спортын төв ордон, Улаанбаатар</p>
+        </div>
+        <span class="status"><span class="pill pill-sched" data-mn="Хуваарь" data-en="Scheduled">Хуваарь</span></span>
+      </div>
+    </div>
+    <div>
+      <div class="blocktitle">
+        <h2 data-mn="Тэмцээний дүн" data-en="Results">Тэмцээний дүн</h2>
+        <span class="rule"></span>
+      </div>
+      <div class="evt">
+        <div class="date"><span class="d">20</span><span class="m" data-mn="6-р сар" data-en="Jun">6-р сар</span></div>
+        <div class="info">
+          <h3 data-mn="Хаврын цом 2026" data-en="Spring Cup 2026">Хаврын цом 2026</h3>
+          <p data-mn="Ballroom, Latin — бүх ангилал" data-en="Ballroom, Latin — all divisions">Ballroom, Latin — бүх ангилал</p>
+        </div>
+        <span class="status"><a href="#" class="link-result" data-mn="Дүн үзэх →" data-en="Results →">Дүн үзэх →</a></span>
+      </div>
+      <div class="evt">
+        <div class="date"><span class="d">12</span><span class="m" data-mn="5-р сар" data-en="May">5-р сар</span></div>
+        <div class="info">
+          <h3 data-mn="Дархан-Уул аймгийн аварга" data-en="Darkhan-Uul Provincial Championship">Дархан-Уул аймгийн аварга</h3>
+          <p data-mn="Дархан хот" data-en="Darkhan">Дархан хот</p>
+        </div>
+        <span class="status"><a href="#" class="link-result" data-mn="Дүн үзэх →" data-en="Results →">Дүн үзэх →</a></span>
+      </div>
+      <div class="evt">
+        <div class="date"><span class="d">28</span><span class="m" data-mn="3-р сар" data-en="Mar">3-р сар</span></div>
+        <div class="info">
+          <h3 data-mn="Оюутны бүжгийн наадам" data-en="University DanceSport Festival">Оюутны бүжгийн наадам</h3>
+          <p data-mn="МУИС спорт заал, Улаанбаатар" data-en="NUM Sports Hall, Ulaanbaatar">МУИС спорт заал, Улаанбаатар</p>
+        </div>
+        <span class="status"><a href="#" class="link-result" data-mn="Дүн үзэх →" data-en="Results →">Дүн үзэх →</a></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ GALLERY ═══════════ -->
+<section>
+  <div class="wrap">
+    <div class="blocktitle">
+      <h2 data-mn="Гэрэл зураг" data-en="Gallery">Гэрэл зураг</h2>
+      <span class="rule"></span>
+      <a href="#" class="more tap" data-mn="Бүгдийг үзэх →" data-en="View all →">Бүгдийг үзэх →</a>
+    </div>
+    <div class="gal">
+      <a href="#"><figure><img src="data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20600%20600%22%20width%3D%22600%22%20height%3D%22600%22%20preserveAspectRatio%3D%22xMidYMid%20slice%22%20role%3D%22img%22%3E%0A%3Cdefs%3E%0A%3ClinearGradient%20id%3D%22b%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%2304121e%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%230e3350%22%2F%3E%3C%2FlinearGradient%3E%0A%3CradialGradient%20id%3D%22g%22%20cx%3D%2240%25%22%20cy%3D%2240%25%22%20r%3D%2262%25%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%234db2ec%22%20stop-opacity%3D%22.5%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%234db2ec%22%20stop-opacity%3D%220%22%2F%3E%3C%2FradialGradient%3E%0A%3CradialGradient%20id%3D%22v%22%20cx%3D%2250%25%22%20cy%3D%2250%25%22%20r%3D%2275%25%22%3E%3Cstop%20offset%3D%2255%25%22%20stop-color%3D%22%23000%22%20stop-opacity%3D%220%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%23000%22%20stop-opacity%3D%22.55%22%2F%3E%3C%2FradialGradient%3E%0A%3C%2Fdefs%3E%0A%3Crect%20width%3D%22600%22%20height%3D%22600%22%20fill%3D%22url(%23b)%22%2F%3E%0A%3Crect%20width%3D%22600%22%20height%3D%22600%22%20fill%3D%22url(%23g)%22%2F%3E%0A%3Cpath%20d%3D%22M-60%20198%20Q%20300%20286%20660%20202%22%20fill%3D%22none%22%20stroke%3D%22%234db2ec%22%20stroke-opacity%3D%220.057%22%20stroke-width%3D%223.1%22%2F%3E%3Cpath%20d%3D%22M-60%20403%20Q%20300%20-11%20660%20111%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.183%22%20stroke-width%3D%222.5%22%2F%3E%3Cpath%20d%3D%22M-60%20406%20Q%20300%20195%20660%20259%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.152%22%20stroke-width%3D%221.7%22%2F%3E%3Cpath%20d%3D%22M-60%20153%20Q%20300%2067%20660%20145%22%20fill%3D%22none%22%20stroke%3D%22%234db2ec%22%20stroke-opacity%3D%220.125%22%20stroke-width%3D%223.4%22%2F%3E%3Cpath%20d%3D%22M-60%20315%20Q%20300%20144%20660%20299%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.134%22%20stroke-width%3D%221.6%22%2F%3E%3Cpath%20d%3D%22M-60%20327%20Q%20300%20499%20660%20488%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.065%22%20stroke-width%3D%224.0%22%2F%3E%3Cpath%20d%3D%22M-60%20368%20Q%20300%20203%20660%20323%22%20fill%3D%22none%22%20stroke%3D%22%234db2ec%22%20stroke-opacity%3D%220.202%22%20stroke-width%3D%223.2%22%2F%3E%3Cpath%20d%3D%22M-60%20248%20Q%20300%20222%20660%20393%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.162%22%20stroke-width%3D%222.2%22%2F%3E%3Cpath%20d%3D%22M-60%20305%20Q%20300%20216%20660%2096%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.104%22%20stroke-width%3D%222.3%22%2F%3E%3Cpath%20d%3D%22M-60%20138%20Q%20300%20128%20660%20480%22%20fill%3D%22none%22%20stroke%3D%22%234db2ec%22%20stroke-opacity%3D%220.229%22%20stroke-width%3D%223.0%22%2F%3E%3Cpath%20d%3D%22M-60%20391%20Q%20300%20415%20660%20279%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.165%22%20stroke-width%3D%222.3%22%2F%3E%3Cpath%20d%3D%22M-60%20186%20Q%20300%20321%20660%20301%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.224%22%20stroke-width%3D%223.5%22%2F%3E%3Cpath%20d%3D%22M-60%20404%20Q%20300%2052%20660%20332%22%20fill%3D%22none%22%20stroke%3D%22%234db2ec%22%20stroke-opacity%3D%220.108%22%20stroke-width%3D%224.0%22%2F%3E%3Cpath%20d%3D%22M-60%20291%20Q%20300%20243%20660%20196%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.055%22%20stroke-width%3D%223.3%22%2F%3E%0A%3Crect%20width%3D%22600%22%20height%3D%22600%22%20fill%3D%22url(%23v)%22%2F%3E%0A%3C%2Fsvg%3E" alt="" width="600" height="600" loading="lazy"><figcaption data-mn="Хаврын цом 2026" data-en="Spring Cup 2026">Хаврын цом 2026</figcaption></figure></a>
+      <a href="#"><figure><img src="data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20600%20600%22%20width%3D%22600%22%20height%3D%22600%22%20preserveAspectRatio%3D%22xMidYMid%20slice%22%20role%3D%22img%22%3E%0A%3Cdefs%3E%0A%3ClinearGradient%20id%3D%22b%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23031614%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%230c3a35%22%2F%3E%3C%2FlinearGradient%3E%0A%3CradialGradient%20id%3D%22g%22%20cx%3D%2260%25%22%20cy%3D%2245%25%22%20r%3D%2262%25%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%234ec8bd%22%20stop-opacity%3D%22.5%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%234ec8bd%22%20stop-opacity%3D%220%22%2F%3E%3C%2FradialGradient%3E%0A%3CradialGradient%20id%3D%22v%22%20cx%3D%2250%25%22%20cy%3D%2250%25%22%20r%3D%2275%25%22%3E%3Cstop%20offset%3D%2255%25%22%20stop-color%3D%22%23000%22%20stop-opacity%3D%220%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%23000%22%20stop-opacity%3D%22.55%22%2F%3E%3C%2FradialGradient%3E%0A%3C%2Fdefs%3E%0A%3Crect%20width%3D%22600%22%20height%3D%22600%22%20fill%3D%22url(%23b)%22%2F%3E%0A%3Crect%20width%3D%22600%22%20height%3D%22600%22%20fill%3D%22url(%23g)%22%2F%3E%0A%3Cpath%20d%3D%22M-60%20199%20Q%20300%20149%20660%20469%22%20fill%3D%22none%22%20stroke%3D%22%234ec8bd%22%20stroke-opacity%3D%220.177%22%20stroke-width%3D%223.9%22%2F%3E%3Cpath%20d%3D%22M-60%20502%20Q%20300%20261%20660%20119%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.076%22%20stroke-width%3D%221.1%22%2F%3E%3Cpath%20d%3D%22M-60%20480%20Q%20300%2088%20660%20172%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.079%22%20stroke-width%3D%223.7%22%2F%3E%3Cpath%20d%3D%22M-60%20263%20Q%20300%20138%20660%20175%22%20fill%3D%22none%22%20stroke%3D%22%234ec8bd%22%20stroke-opacity%3D%220.163%22%20stroke-width%3D%223.7%22%2F%3E%3Cpath%20d%3D%22M-60%20246%20Q%20300%20600%20660%20274%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.102%22%20stroke-width%3D%223.1%22%2F%3E%3Cpath%20d%3D%22M-60%20366%20Q%20300%2083%20660%20150%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.123%22%20stroke-width%3D%223.0%22%2F%3E%3Cpath%20d%3D%22M-60%20415%20Q%20300%2033%20660%20359%22%20fill%3D%22none%22%20stroke%3D%22%234ec8bd%22%20stroke-opacity%3D%220.163%22%20stroke-width%3D%223.9%22%2F%3E%3Cpath%20d%3D%22M-60%20441%20Q%20300%2060%20660%20391%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.167%22%20stroke-width%3D%223.0%22%2F%3E%3Cpath%20d%3D%22M-60%20359%20Q%20300%20161%20660%20192%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.145%22%20stroke-width%3D%222.0%22%2F%3E%3Cpath%20d%3D%22M-60%20136%20Q%20300%20256%20660%20388%22%20fill%3D%22none%22%20stroke%3D%22%234ec8bd%22%20stroke-opacity%3D%220.135%22%20stroke-width%3D%223.3%22%2F%3E%3Cpath%20d%3D%22M-60%20116%20Q%20300%20-12%20660%20287%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.084%22%20stroke-width%3D%223.7%22%2F%3E%3Cpath%20d%3D%22M-60%20134%20Q%20300%20289%20660%20199%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.137%22%20stroke-width%3D%223.9%22%2F%3E%3Cpath%20d%3D%22M-60%20206%20Q%20300%2050%20660%20295%22%20fill%3D%22none%22%20stroke%3D%22%234ec8bd%22%20stroke-opacity%3D%220.157%22%20stroke-width%3D%221.3%22%2F%3E%3Cpath%20d%3D%22M-60%20126%20Q%20300%20-17%20660%20233%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.180%22%20stroke-width%3D%221.5%22%2F%3E%0A%3Crect%20width%3D%22600%22%20height%3D%22600%22%20fill%3D%22url(%23v)%22%2F%3E%0A%3C%2Fsvg%3E" alt="" width="600" height="600" loading="lazy"><figcaption data-mn="Улсын аварга 2025" data-en="Nationals 2025">Улсын аварга 2025</figcaption></figure></a>
+      <a href="#"><figure><img src="data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20600%20600%22%20width%3D%22600%22%20height%3D%22600%22%20preserveAspectRatio%3D%22xMidYMid%20slice%22%20role%3D%22img%22%3E%0A%3Cdefs%3E%0A%3ClinearGradient%20id%3D%22b%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%230a0b1c%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23202547%22%2F%3E%3C%2FlinearGradient%3E%0A%3CradialGradient%20id%3D%22g%22%20cx%3D%2245%25%22%20cy%3D%2260%25%22%20r%3D%2262%25%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%237f8ad8%22%20stop-opacity%3D%22.5%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%237f8ad8%22%20stop-opacity%3D%220%22%2F%3E%3C%2FradialGradient%3E%0A%3CradialGradient%20id%3D%22v%22%20cx%3D%2250%25%22%20cy%3D%2250%25%22%20r%3D%2275%25%22%3E%3Cstop%20offset%3D%2255%25%22%20stop-color%3D%22%23000%22%20stop-opacity%3D%220%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%23000%22%20stop-opacity%3D%22.55%22%2F%3E%3C%2FradialGradient%3E%0A%3C%2Fdefs%3E%0A%3Crect%20width%3D%22600%22%20height%3D%22600%22%20fill%3D%22url(%23b)%22%2F%3E%0A%3Crect%20width%3D%22600%22%20height%3D%22600%22%20fill%3D%22url(%23g)%22%2F%3E%0A%3Cpath%20d%3D%22M-60%20201%20Q%20300%20256%20660%20392%22%20fill%3D%22none%22%20stroke%3D%22%237f8ad8%22%20stroke-opacity%3D%220.177%22%20stroke-width%3D%221.9%22%2F%3E%3Cpath%20d%3D%22M-60%20388%20Q%20300%20423%20660%20488%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.169%22%20stroke-width%3D%222.9%22%2F%3E%3Cpath%20d%3D%22M-60%2095%20Q%20300%20611%20660%20241%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.089%22%20stroke-width%3D%222.4%22%2F%3E%3Cpath%20d%3D%22M-60%20345%20Q%20300%20228%20660%20334%22%20fill%3D%22none%22%20stroke%3D%22%237f8ad8%22%20stroke-opacity%3D%220.159%22%20stroke-width%3D%222.8%22%2F%3E%3Cpath%20d%3D%22M-60%20339%20Q%20300%20621%20660%20301%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.113%22%20stroke-width%3D%222.0%22%2F%3E%3Cpath%20d%3D%22M-60%20356%20Q%20300%2019%20660%20315%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.223%22%20stroke-width%3D%223.9%22%2F%3E%3Cpath%20d%3D%22M-60%20116%20Q%20300%20476%20660%20105%22%20fill%3D%22none%22%20stroke%3D%22%237f8ad8%22%20stroke-opacity%3D%220.087%22%20stroke-width%3D%222.3%22%2F%3E%3Cpath%20d%3D%22M-60%20149%20Q%20300%20323%20660%20269%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.224%22%20stroke-width%3D%223.3%22%2F%3E%3Cpath%20d%3D%22M-60%20188%20Q%20300%20185%20660%20195%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.223%22%20stroke-width%3D%222.0%22%2F%3E%3Cpath%20d%3D%22M-60%20132%20Q%20300%2043%20660%20208%22%20fill%3D%22none%22%20stroke%3D%22%237f8ad8%22%20stroke-opacity%3D%220.168%22%20stroke-width%3D%222.3%22%2F%3E%3Cpath%20d%3D%22M-60%20423%20Q%20300%20288%20660%20177%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.108%22%20stroke-width%3D%223.8%22%2F%3E%3Cpath%20d%3D%22M-60%20429%20Q%20300%20342%20660%20487%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.103%22%20stroke-width%3D%223.2%22%2F%3E%3Cpath%20d%3D%22M-60%20132%20Q%20300%2047%20660%20307%22%20fill%3D%22none%22%20stroke%3D%22%237f8ad8%22%20stroke-opacity%3D%220.143%22%20stroke-width%3D%222.5%22%2F%3E%3Cpath%20d%3D%22M-60%2094%20Q%20300%2025%20660%20460%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.187%22%20stroke-width%3D%221.4%22%2F%3E%0A%3Crect%20width%3D%22600%22%20height%3D%22600%22%20fill%3D%22url(%23v)%22%2F%3E%0A%3C%2Fsvg%3E" alt="" width="600" height="600" loading="lazy"><figcaption data-mn="Оюутны наадам" data-en="University festival">Оюутны наадам</figcaption></figure></a>
+      <a href="#"><figure><img src="data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20600%20600%22%20width%3D%22600%22%20height%3D%22600%22%20preserveAspectRatio%3D%22xMidYMid%20slice%22%20role%3D%22img%22%3E%0A%3Cdefs%3E%0A%3ClinearGradient%20id%3D%22b%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23150e04%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%2338260c%22%2F%3E%3C%2FlinearGradient%3E%0A%3CradialGradient%20id%3D%22g%22%20cx%3D%2255%25%22%20cy%3D%2238%25%22%20r%3D%2262%25%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23c88a2a%22%20stop-opacity%3D%22.5%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23c88a2a%22%20stop-opacity%3D%220%22%2F%3E%3C%2FradialGradient%3E%0A%3CradialGradient%20id%3D%22v%22%20cx%3D%2250%25%22%20cy%3D%2250%25%22%20r%3D%2275%25%22%3E%3Cstop%20offset%3D%2255%25%22%20stop-color%3D%22%23000%22%20stop-opacity%3D%220%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%23000%22%20stop-opacity%3D%22.55%22%2F%3E%3C%2FradialGradient%3E%0A%3C%2Fdefs%3E%0A%3Crect%20width%3D%22600%22%20height%3D%22600%22%20fill%3D%22url(%23b)%22%2F%3E%0A%3Crect%20width%3D%22600%22%20height%3D%22600%22%20fill%3D%22url(%23g)%22%2F%3E%0A%3Cpath%20d%3D%22M-60%20203%20Q%20300%2019%20660%20199%22%20fill%3D%22none%22%20stroke%3D%22%23c88a2a%22%20stroke-opacity%3D%220.056%22%20stroke-width%3D%223.8%22%2F%3E%3Cpath%20d%3D%22M-60%20267%20Q%20300%20143%20660%20205%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.165%22%20stroke-width%3D%221.8%22%2F%3E%3Cpath%20d%3D%22M-60%20394%20Q%20300%20351%20660%2090%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.068%22%20stroke-width%3D%222.9%22%2F%3E%3Cpath%20d%3D%22M-60%20313%20Q%20300%20399%20660%20168%22%20fill%3D%22none%22%20stroke%3D%22%23c88a2a%22%20stroke-opacity%3D%220.173%22%20stroke-width%3D%223.0%22%2F%3E%3Cpath%20d%3D%22M-60%20233%20Q%20300%20221%20660%20120%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.112%22%20stroke-width%3D%222.7%22%2F%3E%3Cpath%20d%3D%22M-60%20151%20Q%20300%2046%20660%20394%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.132%22%20stroke-width%3D%223.2%22%2F%3E%3Cpath%20d%3D%22M-60%20112%20Q%20300%2064%20660%20373%22%20fill%3D%22none%22%20stroke%3D%22%23c88a2a%22%20stroke-opacity%3D%220.223%22%20stroke-width%3D%223.2%22%2F%3E%3Cpath%20d%3D%22M-60%20437%20Q%20300%20306%20660%20505%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.133%22%20stroke-width%3D%221.1%22%2F%3E%3Cpath%20d%3D%22M-60%20378%20Q%20300%20524%20660%20247%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.091%22%20stroke-width%3D%223.4%22%2F%3E%3Cpath%20d%3D%22M-60%20126%20Q%20300%20447%20660%20103%22%20fill%3D%22none%22%20stroke%3D%22%23c88a2a%22%20stroke-opacity%3D%220.172%22%20stroke-width%3D%222.5%22%2F%3E%3Cpath%20d%3D%22M-60%20116%20Q%20300%20194%20660%20436%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.194%22%20stroke-width%3D%221.7%22%2F%3E%3Cpath%20d%3D%22M-60%20424%20Q%20300%2076%20660%20239%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.097%22%20stroke-width%3D%223.8%22%2F%3E%3Cpath%20d%3D%22M-60%20131%20Q%20300%2042%20660%2096%22%20fill%3D%22none%22%20stroke%3D%22%23c88a2a%22%20stroke-opacity%3D%220.056%22%20stroke-width%3D%221.4%22%2F%3E%3Cpath%20d%3D%22M-60%20174%20Q%20300%20618%20660%20188%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.079%22%20stroke-width%3D%221.9%22%2F%3E%0A%3Crect%20width%3D%22600%22%20height%3D%22600%22%20fill%3D%22url(%23v)%22%2F%3E%0A%3C%2Fsvg%3E" alt="" width="600" height="600" loading="lazy"><figcaption data-mn="Шүүгчийн сургалт" data-en="Adjudicator course">Шүүгчийн сургалт</figcaption></figure></a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ REGISTRATION ═══════════ -->
+<section class="alt">
+  <div class="wrap">
+    <div class="blocktitle">
+      <h2 data-mn="Бүртгэл" data-en="Register">Бүртгэл</h2>
+      <span class="rule"></span>
+    </div>
+    <div class="reg">
+      <a href="#" class="regcard">
+        <h3 data-mn="Клуб бүртгүүлэх" data-en="Register a club">Клуб бүртгүүлэх</h3>
+        <p data-mn="Бүжгийн клуб, сургалтын төвүүд холбооны гишүүнээр элсэх хүсэлт гаргана." data-en="Dance clubs and training centres apply for federation membership.">Бүжгийн клуб, сургалтын төвүүд холбооны гишүүнээр элсэх хүсэлт гаргана.</p>
+        <span class="go" data-mn="Хүсэлт илгээх →" data-en="Submit request →">Хүсэлт илгээх →</span>
+      </a>
+      <a href="#" class="regcard">
+        <h3 data-mn="Тамирчин бүртгүүлэх" data-en="Register a dancer">Тамирчин бүртгүүлэх</h3>
+        <p data-mn="Тамирчид тэмцээнд оролцох, зэрэг ахиулах бүртгэлээ хийлгэнэ." data-en="Dancers register to compete and to advance their grade.">Тамирчид тэмцээнд оролцох, зэрэг ахиулах бүртгэлээ хийлгэнэ.</p>
+        <span class="go" data-mn="Хүсэлт илгээх →" data-en="Submit request →">Хүсэлт илгээх →</span>
+      </a>
+    </div>
+    <p style="margin-top:var(--s4);font-size:var(--fs-sm);color:var(--ink-600)" data-mn="Хүсэлтийг холбооны ажилтан хянаад 3 хоногийн дотор хариу өгнө." data-en="Requests are reviewed by federation staff and answered within three working days.">Хүсэлтийг холбооны ажилтан хянаад 3 хоногийн дотор хариу өгнө.</p>
+  </div>
+</section>
+
+<!-- ═══════════ FOOTER ═══════════ -->
+<footer>
+  <div class="wrap">
+    <div class="f-cols">
+      <div>
+        <h2 data-mn="Холбооны тухай" data-en="About us">Холбооны тухай</h2>
+        <p data-mn="Монголын Бүжгийн Спортын Холбоо нь 1996 онд байгуулагдсан бөгөөд Монгол Улсад бүжгийн спортыг хөгжүүлэх, тэмцээн зохион байгуулах, тамирчид болон багш нарыг бэлтгэх үүрэг бүхий албан ёсны байгууллага юм." data-en="The Mongolian DanceSport Federation, founded in 1996, is the official body responsible for developing dancesport in Mongolia, organising competitions, and training dancers and teachers.">Монголын Бүжгийн Спортын Холбоо нь 1996 онд байгуулагдсан бөгөөд Монгол Улсад бүжгийн спортыг хөгжүүлэх, тэмцээн зохион байгуулах, тамирчид болон багш нарыг бэлтгэх үүрэг бүхий албан ёсны байгууллага юм.</p>
+        <p><a href="mailto:info@dancesport.mn" class="tap" style="color:#fff;display:inline-block">info@dancesport.mn</a></p>
+      </div>
+      <div>
+        <h2 data-mn="Холбоос" data-en="Links">Холбоос</h2>
+        <ul class="f-links">
+          <li><a href="#" data-mn="Мэдээ" data-en="News">Мэдээ</a></li>
+          <li><a href="#" data-mn="Хуанли" data-en="Calendar">Хуанли</a></li>
+          <li><a href="#" data-mn="Тэмцээн" data-en="Competitions">Тэмцээн</a></li>
+          <li><a href="#" data-mn="Бүртгэл" data-en="Register">Бүртгэл</a></li>
+          <li><a href="#" data-mn="Холбоо барих" data-en="Contact">Холбоо барих</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2 data-mn="Биднийг дагаарай" data-en="Follow us">Биднийг дагаарай</h2>
+        <div class="f-social">
+          <a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 9h3V6h-3c-2.2 0-4 1.8-4 4v2H8v3h2v7h3v-7h3l1-3h-4v-2c0-.6.4-1 1-1z"/></svg></a>
+          <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c2.7 0 3 0 4.1.1 1.1 0 1.8.2 2.4.5.7.2 1.2.6 1.7 1.1s.9 1 1.1 1.7c.3.6.4 1.3.5 2.4C22 8.9 22 9.3 22 12s0 3.1-.1 4.2c0 1.1-.2 1.8-.5 2.4-.2.7-.6 1.2-1.1 1.7s-1 .9-1.7 1.1c-.6.3-1.3.4-2.4.5-1.1.1-1.4.1-4.2.1s-3.1 0-4.2-.1c-1.1 0-1.8-.2-2.4-.5-.7-.2-1.2-.6-1.7-1.1s-.9-1-1.1-1.7c-.3-.6-.4-1.3-.5-2.4C2 15.1 2 14.7 2 12s0-3.1.1-4.2c0-1.1.2-1.8.5-2.4.2-.7.6-1.2 1.1-1.7s1-.9 1.7-1.1c.6-.3 1.3-.4 2.4-.5C8.9 2 9.3 2 12 2zm0 5a5 5 0 100 10 5 5 0 000-10zm0 8.2a3.2 3.2 0 110-6.4 3.2 3.2 0 010 6.4zM17.8 7.4a1.2 1.2 0 11-2.4 0 1.2 1.2 0 012.4 0z"/></svg></a>
+          <a href="#" aria-label="YouTube"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.6 7.2s-.2-1.4-.8-2c-.7-.8-1.5-.8-1.9-.8C16.2 4.2 12 4.2 12 4.2s-4.2 0-6.9.2c-.4 0-1.2 0-1.9.8-.6.6-.8 2-.8 2S2.2 8.8 2.2 10.5v1.6c0 1.6.2 3.3.2 3.3s.2 1.4.8 2c.7.8 1.7.7 2.1.8 1.5.2 6.7.2 6.7.2s4.2 0 6.9-.2c.4 0 1.2 0 1.9-.8.6-.6.8-2 .8-2s.2-1.6.2-3.3v-1.6c0-1.7-.2-3.3-.2-3.3zM9.9 14.3V8.6l5.4 2.9-5.4 2.8z"/></svg></a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="f-bottom">
+    <div class="wrap" data-mn="© 2026 Монголын Бүжгийн Спортын Холбоо. Бүх эрх хуулиар хамгаалагдсан." data-en="© 2026 Mongolian DanceSport Federation. All rights reserved.">© 2026 Монголын Бүжгийн Спортын Холбоо. Бүх эрх хуулиар хамгаалагдсан.</div>
+  </div>
+</footer>
+
+<!-- ═══════════ MOCKUP-ONLY CONTROL ═══════════ -->
+<div class="devbar">
+  <span>Accent</span>
+  <button type="button" data-accent="blue" aria-pressed="true">WDC blue</button>
+  <button type="button" data-accent="red" aria-pressed="false">Улаан</button>
+</div>
+
+<script>
+/* ── Language selector ─────────────────────────────────────── */
+const LANG_LABELS = {
+  mn: { menu:'Цэс нээх', close:'Цэс хаах', search:'Хайх', nav:'Үндсэн цэс' },
+  en: { menu:'Open menu', close:'Close menu', search:'Search', nav:'Main menu' }
+};
+
+function setLang(lang) {
+  document.documentElement.lang = lang;
+  document.querySelectorAll('[data-mn]').forEach(el => {
+    const v = el.getAttribute('data-' + lang);
+    if (v !== null) el.textContent = v;
+  });
+  const L = LANG_LABELS[lang];
+  document.getElementById('burger').setAttribute('aria-label', L.menu);
+  document.getElementById('mclose').setAttribute('aria-label', L.close);
+  document.querySelector('.menu-right .iconbtn').setAttribute('aria-label', L.search);
+  document.querySelectorAll('nav[aria-label]').forEach(n => n.setAttribute('aria-label', L.nav));
+  document.querySelectorAll('.lang button').forEach(b =>
+    b.setAttribute('aria-pressed', String(b.dataset.lang === lang))
+  );
+  try { localStorage.setItem('lang', lang); } catch (e) {}
+}
+document.querySelectorAll('.lang button').forEach(b =>
+  b.addEventListener('click', () => setLang(b.dataset.lang))
+);
+try { if (localStorage.getItem('lang') === 'en') setLang('en'); } catch (e) {}
+
+/* ── Desktop dropdowns: CSS handles hover, JS adds click + Esc ── */
+document.querySelectorAll('.nav > li > button').forEach(btn => {
+  const li = btn.parentElement;
+  btn.addEventListener('click', e => {
+    e.stopPropagation();
+    const open = li.dataset.open === 'true';
+    document.querySelectorAll('.nav > li[data-open="true"]').forEach(o => {
+      o.dataset.open = 'false';
+      o.querySelector('button').setAttribute('aria-expanded', 'false');
+    });
+    li.dataset.open = String(!open);
+    btn.setAttribute('aria-expanded', String(!open));
+  });
+});
+document.addEventListener('click', () => {
+  document.querySelectorAll('.nav > li[data-open="true"]').forEach(o => {
+    o.dataset.open = 'false';
+    o.querySelector('button').setAttribute('aria-expanded', 'false');
+  });
+});
+
+/* ── Mobile panel ──────────────────────────────────────────── */
+const mobile = document.getElementById('mobilemenu');
+const burger = document.getElementById('burger');
+
+function openMobile() {
+  mobile.dataset.open = 'true';
+  burger.setAttribute('aria-expanded', 'true');
+  document.body.style.overflow = 'hidden';
+  document.getElementById('mclose').focus();
+}
+function closeMobile() {
+  mobile.dataset.open = 'false';
+  burger.setAttribute('aria-expanded', 'false');
+  document.body.style.overflow = '';
+  burger.focus();
+}
+burger.addEventListener('click', openMobile);
+document.getElementById('mclose').addEventListener('click', closeMobile);
+
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  const open = document.querySelector('.nav > li[data-open="true"]');
+  if (open) {
+    open.dataset.open = 'false';
+    const b = open.querySelector('button');
+    b.setAttribute('aria-expanded', 'false');
+    b.focus();
+    return;
+  }
+  if (mobile.dataset.open === 'true') closeMobile();
+});
+
+document.querySelectorAll('.m-nav > li > button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const li = btn.parentElement;
+    const open = li.dataset.open === 'true';
+    li.dataset.open = String(!open);
+    btn.setAttribute('aria-expanded', String(!open));
+  });
+});
+
+/* focus trap while the mobile panel is open */
+mobile.addEventListener('keydown', e => {
+  if (e.key !== 'Tab') return;
+  const f = mobile.querySelectorAll('a[href], button');
+  if (!f.length) return;
+  const first = f[0], last = f[f.length - 1];
+  if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+  else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+});
+
+/* CSS hides the panel above 1024px; also release the scroll lock */
+matchMedia('(min-width:1024px)').addEventListener('change', e => {
+  if (e.matches && mobile.dataset.open === 'true') {
+    mobile.dataset.open = 'false';
+    burger.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+  }
+});
+
+/* ── Sticky-bar compact mark: reveal once the logo band leaves view ── */
+new IntersectionObserver(
+  ([e]) => { document.body.dataset.scrolled = String(!e.isIntersecting); },
+  { threshold: 0 }
+).observe(document.querySelector('.logoband'));
+
+/* ── Mockup-only: accent swap ──────────────────────────────── */
+document.querySelectorAll('.devbar button').forEach(b => {
+  b.addEventListener('click', () => {
+    document.documentElement.dataset.accent = b.dataset.accent;
+    document.querySelectorAll('.devbar button').forEach(o =>
+      o.setAttribute('aria-pressed', String(o === b))
+    );
+  });
+});
+</script>
+</body>
+</html>
