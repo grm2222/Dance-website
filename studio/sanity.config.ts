@@ -10,6 +10,7 @@ import {
   ImagesIcon,
   SparkleIcon,
   TagIcon,
+  TranslateIcon,
   UserIcon,
 } from '@sanity/icons';
 import { schemaTypes } from './schemas';
@@ -129,6 +130,57 @@ const structure: StructureResolver = (S) =>
           S.documentTypeList('galleryImage')
             .title('Gallery')
             .defaultOrdering([{ field: 'order', direction: 'asc' }]),
+        ),
+
+      // Everything on the site is bilingual, but the English value is optional —
+      // the /en pages fall back to Mongolian when it is empty. These lists show
+      // exactly what is still untranslated so nobody has to hunt for it.
+      S.listItem()
+        .title('Needs English translation')
+        .icon(TranslateIcon)
+        .child(
+          S.list()
+            .title('Needs English translation')
+            .items([
+              S.listItem()
+                .title('News articles')
+                .icon(DocumentTextIcon)
+                .child(
+                  S.documentList()
+                    .title('Articles without English')
+                    .apiVersion(apiVersion)
+                    .filter('_type == "newsArticle" && (!defined(title.en) || !defined(body.en))')
+                    .defaultOrdering([{ field: 'publishedAt', direction: 'desc' }]),
+                ),
+              S.listItem()
+                .title('Events')
+                .icon(CalendarIcon)
+                .child(
+                  S.documentList()
+                    .title('Events without English')
+                    .apiVersion(apiVersion)
+                    .filter('_type == "event" && !defined(title.en)')
+                    .defaultOrdering([{ field: 'date', direction: 'desc' }]),
+                ),
+              S.listItem()
+                .title('News categories')
+                .icon(TagIcon)
+                .child(
+                  S.documentList()
+                    .title('Categories without English')
+                    .apiVersion(apiVersion)
+                    .filter('_type == "newsCategory" && !defined(title.en)'),
+                ),
+              S.listItem()
+                .title('Gallery captions')
+                .icon(ImagesIcon)
+                .child(
+                  S.documentList()
+                    .title('Captions without English')
+                    .apiVersion(apiVersion)
+                    .filter('_type == "galleryImage" && defined(caption) && !defined(caption.en)'),
+                ),
+            ]),
         ),
       S.divider(),
 

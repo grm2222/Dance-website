@@ -9,12 +9,19 @@ interface Props {
   emptyText?: string;
   /** Link each result row through to the calendar entry. */
   resultHref?: string;
+  /**
+   * Homepage variant. The two lists sit side by side there, so rows must be a
+   * uniform height or they stop lining up across the columns. Compact drops the
+   * description and reserves a fixed two lines for the title, which makes every
+   * row identical regardless of how long its content is.
+   */
+  compact?: boolean;
 }
 
 const lang = toLang(Astro.currentLocale);
 const s = strings(lang);
 
-const { events, emptyText, resultHref = '/calendar' } = Astro.props;
+const { events, emptyText, resultHref = '/calendar', compact = false } = Astro.props;
 const empty = emptyText ?? s.noUpcoming;
 const resultsLink = localizePath(resultHref, lang);
 ---
@@ -27,6 +34,8 @@ const resultsLink = localizePath(resultHref, lang);
       {events.map((event, i) => {
         const { day, month } = dateParts(event.date, lang);
         const today = event.type === 'schedule' && isToday(event.date);
+        const location = t(event.location, lang);
+        const description = t(event.description, lang);
         return (
           <li
             class:list={[
@@ -43,10 +52,21 @@ const resultsLink = localizePath(resultHref, lang);
             </time>
 
             <div class="flex-1 min-w-0 flex flex-col justify-center">
-              <h3 class="font-display text-head font-medium text-ink-800 mb-s1">{t(event.title, lang)}</h3>
-              {t(event.location, lang) && <p class="text-nav text-ink-600">{t(event.location, lang)}</p>}
-              {t(event.description, lang) && (
-                <p class="text-nav text-ink-600 line-clamp-2">{t(event.description, lang)}</p>
+              <h3
+                class:list={[
+                  'font-display text-head font-medium text-ink-800 mb-s1',
+                  // 2.7em = two lines at the 1.35 line-height below. Reserving the
+                  // space keeps one- and two-line titles the same height.
+                  compact && 'line-clamp-2 leading-[1.35] lg:min-h-[2.7em]',
+                ]}
+              >
+                {t(event.title, lang)}
+              </h3>
+              {location && (
+                <p class:list={['text-nav text-ink-600', compact && 'line-clamp-1']}>{location}</p>
+              )}
+              {!compact && description && (
+                <p class="text-nav text-ink-600 line-clamp-2">{description}</p>
               )}
             </div>
 
