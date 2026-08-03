@@ -1,6 +1,8 @@
 ---
 import { urlFor } from '../lib/sanity';
-import { daysUntil, formatDate, t } from '../lib/format';
+import { daysUntil, formatDate, formatLongDate, t } from '../lib/format';
+import { alternatePath, LANG_LABELS, localizePath, LOCALES, toLang } from '../lib/i18n';
+import { strings } from '../lib/ui';
 import type { DanceEvent, NavItem, SiteSettings } from '../lib/types';
 
 interface Props {
@@ -11,8 +13,11 @@ interface Props {
 
 const { settings, nextEvent = null } = Astro.props;
 
-const siteName = t(settings?.siteName) || 'Монголын Бүжгийн Спортын Холбоо';
-const tagline = t(settings?.tagline);
+const lang = toLang(Astro.currentLocale);
+const s = strings(lang);
+
+const siteName = t(settings?.siteName, lang) || s.siteNameFallback;
+const tagline = t(settings?.tagline, lang);
 const logoUrl = settings?.logo ? urlFor(settings.logo).width(104).height(104).url() : null;
 const phone = settings?.phone;
 const email = settings?.emails?.[0];
@@ -20,22 +25,31 @@ const email = settings?.emails?.[0];
 // Falls back to the Phase 1 routes that actually exist. Admins replace this
 // in Sanity → Site settings → Menu; see docs/design-wdc.md §2.
 const FALLBACK_NAV: NavItem[] = [
-  { label: { mn: 'Мэдээ' }, href: '/news' },
-  { label: { mn: 'Хуанли' }, href: '/calendar' },
+  { label: { mn: 'Мэдээ', en: 'News' }, href: '/news' },
+  { label: { mn: 'Хуанли', en: 'Calendar' }, href: '/calendar' },
   {
-    label: { mn: 'Бүртгэл' },
+    label: { mn: 'Бүртгэл', en: 'Register' },
     href: '/register',
     children: [
-      { label: { mn: 'Клуб бүртгүүлэх' }, href: '/register/club' },
-      { label: { mn: 'Тамирчин бүртгүүлэх' }, href: '/register/dancer' },
+      { label: { mn: 'Клуб бүртгүүлэх', en: 'Register a club' }, href: '/register/club' },
+      { label: { mn: 'Тамирчин бүртгүүлэх', en: 'Register a dancer' }, href: '/register/dancer' },
     ],
   },
 ];
 const navItems = settings?.navigation?.length ? settings.navigation : FALLBACK_NAV;
 
 const currentPath = Astro.url.pathname;
-const isActive = (target: string) =>
-  target === '/' ? currentPath === '/' : currentPath.startsWith(target);
+
+/** Internal links get the /en prefix; external ones are left alone. */
+const href = (target: string) =>
+  target.startsWith('/') ? localizePath(target, lang) : target;
+
+const isActive = (target: string) => {
+  const resolved = href(target);
+  if (!resolved.startsWith('/')) return false;
+  const base = resolved.replace(/\/$/, '') || '/';
+  return base === '/' ? currentPath.replace(/\/$/, '') === '' || currentPath === '/' : currentPath.startsWith(base);
+};
 
 const socials = [
   { url: settings?.facebookUrl, label: 'Facebook', path: 'M14 9h3V6h-3c-2.2 0-4 1.8-4 4v2H8v3h2v7h3v-7h3l1-3h-4v-2c0-.6.4-1 1-1z' },
@@ -43,21 +57,22 @@ const socials = [
   { url: settings?.youtubeUrl, label: 'YouTube', path: 'M21.6 7.2s-.2-1.4-.8-2c-.7-.8-1.5-.8-1.9-.8C16.2 4.2 12 4.2 12 4.2s-4.2 0-6.9.2c-.4 0-1.2 0-1.9.8-.6.6-.8 2-.8 2S2.2 8.8 2.2 10.5v1.6c0 1.6.2 3.3.2 3.3s.2 1.4.8 2c.7.8 1.7.7 2.1.8 1.5.2 6.7.2 6.7.2s4.2 0 6.9-.2c.4 0 1.2 0 1.9-.8.6-.6.8-2 .8-2s.2-1.6.2-3.3v-1.6c0-1.7-.2-3.3-.2-3.3zM9.9 14.3V8.6l5.4 2.9-5.4 2.8z' },
 ].filter((x): x is { url: string; label: string; path: string } => Boolean(x.url));
 
-const today = new Date();
-const todayLabel = `${today.getFullYear()} оны ${today.getMonth() + 1} дугаар сарын ${today.getDate()}`;
+const todayLabel = formatLongDate(new Date(), lang);
 const nextEventDays = nextEvent ? daysUntil(nextEvent.date) : 0;
+
+// The same page in the other language, so switching keeps the reader in place.
+const langLinks = LOCALES.map((code) => ({
+  code,
+  label: LANG_LABELS[code].short,
+  full: LANG_LABELS[code].full,
+  href: code === lang ? currentPath : alternatePath(currentPath, lang),
+  current: code === lang,
+}));
 ---
 
 <header data-scrolled="false">
-  <!-- ═══ 1. Utility bar ═══
-       Below 768px only the social icons remain, so with none configured the bar
-       would render as an empty black strip — hide it there instead. -->
-  <div
-    class:list={[
-      'bg-ink-700 text-white/70 text-meta',
-      socials.length === 0 && 'max-md:hidden',
-    ]}
-  >
+  <!-- ═══ 1. Utility bar ═══ -->
+  <div class="bg-ink-700 text-white/70 text-meta">
     <div class="mx-auto max-w-page px-s4 min-h-[40px] flex items-center gap-s6">
       <span class="hidden md:inline whitespace-nowrap tracking-[.02em]">{todayLabel}</span>
       <ul class="hidden md:flex gap-s6">
@@ -65,6 +80,31 @@ const nextEventDays = nextEvent ? daysUntil(nextEvent.date) : 0;
         {email && <li><a href={`mailto:${email}`} class="tap hover:text-white">{email}</a></li>}
       </ul>
       <div class="ml-auto max-md:ml-0 max-md:w-full flex items-center gap-s4 max-md:justify-between">
+        <!-- Language selector: real links to the same page in the other language,
+             so it works without JS and each language stays a crawlable URL. -->
+        <nav aria-label={s.selectLanguage}>
+          <ul class="flex items-center rounded-flat border border-white/25">
+            {
+              langLinks.map((link) => (
+                <li>
+                  <a
+                    href={link.href}
+                    hreflang={link.code}
+                    lang={link.code}
+                    aria-current={link.current ? 'true' : undefined}
+                    class:list={[
+                      'tap block px-s3 py-s1 text-meta font-bold tracking-[.04em] rounded-[1px] transition-colors',
+                      link.current ? 'bg-accent-700 text-white' : 'text-white/60 hover:text-white',
+                    ]}
+                  >
+                    <span class="sr-only">{link.full}</span>
+                    <span aria-hidden="true">{link.label}</span>
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </nav>
         {
           socials.length > 0 && (
             <div class="flex gap-s2">
@@ -89,7 +129,7 @@ const nextEventDays = nextEvent ? daysUntil(nextEvent.date) : 0;
   <!-- ═══ 2. Logo band — desktop only; below 1024px the menu bar carries the brand ═══ -->
   <div class="bg-ink-900 max-lg:hidden" id="logo-band">
     <div class="mx-auto max-w-page px-s4 min-h-[96px] flex items-center gap-s4">
-      <a href="/" class="flex items-center gap-s4">
+      <a href={href("/")} class="flex items-center gap-s4">
         {
           logoUrl ? (
             <img src={logoUrl} alt="" width="52" height="52" class="h-[52px] w-[52px] rounded-full object-cover" />
@@ -108,18 +148,18 @@ const nextEventDays = nextEvent ? daysUntil(nextEvent.date) : 0;
       {
         nextEvent && (
           <a
-            href="/calendar"
+            href={href("/calendar")}
             class="ml-auto max-xl:hidden flex items-center gap-s3 py-s3 px-s4 border-l-[3px] border-accent-500 bg-white/[.04] rounded-flat hover:bg-white/[.08] transition-colors"
           >
             <span>
-              <span class="block text-meta tracking-[.1em] uppercase text-white/50 mb-s1">Дараагийн тэмцээн</span>
+              <span class="block text-meta tracking-[.1em] uppercase text-white/50 mb-s1">{s.nextCompetition}</span>
               <span class="block font-display text-nav text-white">
-                {t(nextEvent.title)} · {formatDate(nextEvent.date)}
+                {t(nextEvent.title, lang)} · {formatDate(nextEvent.date, lang)}
               </span>
             </span>
             <span class="shrink-0 text-center pl-s4 border-l border-white/10">
               <b class="block font-display text-num text-white font-medium leading-none">{Math.max(nextEventDays, 0)}</b>
-              <span class="text-meta text-white/50 uppercase">хоног</span>
+              <span class="text-meta text-white/50 uppercase">{s.days}</span>
             </span>
           </a>
         )
@@ -135,14 +175,14 @@ const nextEventDays = nextEvent ? daysUntil(nextEvent.date) : 0;
            Visibility is driven by data-scrolled on <header> (see the style block
            below) rather than by utility classes, because while hidden it must
            take up no layout space — otherwise it pushes the nav off its origin. -->
-      <a href="/" id="menu-mark" class="menu-mark items-center gap-s3 min-h-[var(--tap)] transition-opacity">
+      <a href={href("/")} id="menu-mark" class="menu-mark items-center gap-s3 min-h-[var(--tap)] transition-opacity">
         <span aria-hidden="true" class="h-[34px] w-[34px] shrink-0 rounded-full bg-accent-700 text-white grid place-items-center font-display text-head font-medium">
           {siteName.charAt(0)}
         </span>
         <span class="text-nav font-bold leading-tight text-ink-800 max-lg:text-white">{siteName}</span>
       </a>
 
-      <nav aria-label="Үндсэн цэс" class="max-lg:hidden self-stretch">
+      <nav aria-label={s.mainMenu} class="max-lg:hidden self-stretch">
         <ul class="flex h-full">
           {
             navItems.map((item) => (
@@ -153,12 +193,12 @@ const nextEventDays = nextEvent ? daysUntil(nextEvent.date) : 0;
                     aria-expanded="false"
                     class="flex items-center gap-s1 px-s4 text-nav font-bold uppercase tracking-[.03em] text-ink-800 border-b-[3px] border-transparent hover:text-accent-700 transition-colors"
                   >
-                    <span>{t(item.label)}</span>
+                    <span>{t(item.label, lang)}</span>
                     <svg viewBox="0 0 12 12" class="h-[9px] w-[9px] fill-current transition-transform" aria-hidden="true"><path d="M2 4l4 4 4-4z" /></svg>
                   </button>
                 ) : (
                   <a
-                    href={item.href}
+                    href={href(item.href)}
                     aria-current={isActive(item.href) ? 'page' : undefined}
                     class:list={[
                       'flex items-center px-s4 text-nav font-bold uppercase tracking-[.03em] border-b-[3px] transition-colors',
@@ -167,7 +207,7 @@ const nextEventDays = nextEvent ? daysUntil(nextEvent.date) : 0;
                         : 'text-ink-800 border-transparent hover:text-accent-700',
                     ]}
                   >
-                    {t(item.label)}
+                    {t(item.label, lang)}
                   </a>
                 )}
 
@@ -176,10 +216,10 @@ const nextEventDays = nextEvent ? daysUntil(nextEvent.date) : 0;
                     {item.children.map((child) => (
                       <li>
                         <a
-                          href={child.href}
+                          href={href(child.href)}
                           class="block px-s4 py-s3 text-nav text-body border-b border-line last:border-b-0 hover:bg-paper-alt hover:text-accent-700 transition-colors"
                         >
-                          {t(child.label)}
+                          {t(child.label, lang)}
                         </a>
                       </li>
                     ))}
@@ -198,7 +238,7 @@ const nextEventDays = nextEvent ? daysUntil(nextEvent.date) : 0;
           class="lg:hidden grid h-[var(--tap)] w-[var(--tap)] place-items-center rounded-flat hover:bg-white/10"
           aria-expanded="false"
           aria-controls="mobile-menu"
-          aria-label="Цэс нээх"
+          aria-label={s.openMenu}
         >
           <svg viewBox="0 0 24 24" class="h-[18px] w-[18px] fill-none stroke-white stroke-2" aria-hidden="true">
             <path d="M4 6h16M4 12h16M4 18h16" stroke-linecap="round" />
@@ -221,14 +261,14 @@ const nextEventDays = nextEvent ? daysUntil(nextEvent.date) : 0;
         type="button"
         id="menu-close"
         class="grid h-[var(--tap)] w-[var(--tap)] place-items-center rounded-flat hover:bg-white/10"
-        aria-label="Цэс хаах"
+        aria-label={s.closeMenu}
       >
         <svg viewBox="0 0 24 24" class="h-[18px] w-[18px] fill-none stroke-white stroke-2" aria-hidden="true">
           <path d="M6 6l12 12M18 6L6 18" stroke-linecap="round" />
         </svg>
       </button>
     </div>
-    <nav aria-label="Үндсэн цэс">
+    <nav aria-label={s.mainMenu}>
       <ul class="pb-s8">
         {
           navItems.map((item) => (
@@ -240,30 +280,30 @@ const nextEventDays = nextEvent ? daysUntil(nextEvent.date) : 0;
                     aria-expanded="false"
                     class="m-sub-toggle w-full min-h-[56px] flex items-center justify-between px-s4 text-copy font-bold uppercase tracking-[.03em] text-ink-800"
                   >
-                    <span>{t(item.label)}</span>
+                    <span>{t(item.label, lang)}</span>
                     <svg viewBox="0 0 12 12" class="h-[9px] w-[9px] fill-current transition-transform" aria-hidden="true"><path d="M2 4l4 4 4-4z" /></svg>
                   </button>
                   <div class="m-sub hidden bg-paper-alt border-t border-line">
-                    <a href={item.href} class="flex items-center min-h-[var(--tap)] py-s3 pl-s8 pr-s4 text-copy text-body border-b border-line">
-                      {t(item.label)}
+                    <a href={href(item.href)} class="flex items-center min-h-[var(--tap)] py-s3 pl-s8 pr-s4 text-copy text-body border-b border-line">
+                      {t(item.label, lang)}
                     </a>
                     {item.children.map((child) => (
-                      <a href={child.href} class="flex items-center min-h-[var(--tap)] py-s3 pl-s8 pr-s4 text-copy text-body border-b border-line last:border-b-0">
-                        {t(child.label)}
+                      <a href={href(child.href)} class="flex items-center min-h-[var(--tap)] py-s3 pl-s8 pr-s4 text-copy text-body border-b border-line last:border-b-0">
+                        {t(child.label, lang)}
                       </a>
                     ))}
                   </div>
                 </>
               ) : (
                 <a
-                  href={item.href}
+                  href={href(item.href)}
                   aria-current={isActive(item.href) ? 'page' : undefined}
                   class:list={[
                     'w-full min-h-[56px] flex items-center px-s4 text-copy font-bold uppercase tracking-[.03em]',
                     isActive(item.href) ? 'text-accent-700' : 'text-ink-800',
                   ]}
                 >
-                  {t(item.label)}
+                  {t(item.label, lang)}
                 </a>
               )}
             </li>

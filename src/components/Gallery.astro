@@ -1,6 +1,7 @@
 ---
 import { urlFor } from '../lib/sanity';
 import { t } from '../lib/format';
+import { toLang } from '../lib/i18n';
 import type { GalleryImage } from '../lib/types';
 
 interface Props {
@@ -8,13 +9,14 @@ interface Props {
 }
 
 const { images } = Astro.props;
+const lang = toLang(Astro.currentLocale);
 ---
 
 {
   images.length > 0 && (
     <ul class="grid grid-cols-2 md:grid-cols-4 gap-s3">
       {images.map((item) => {
-        const caption = t(item.caption);
+        const caption = t(item.caption, lang);
         return (
           <li>
             <figure class="group relative aspect-square overflow-hidden rounded-flat">

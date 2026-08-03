@@ -1,6 +1,8 @@
 ---
 import { urlFor } from '../lib/sanity';
 import { t } from '../lib/format';
+import { localizePath, toLang } from '../lib/i18n';
+import { strings } from '../lib/ui';
 import type { SiteSettings } from '../lib/types';
 
 interface Props {
@@ -9,10 +11,13 @@ interface Props {
 
 const { settings } = Astro.props;
 
+const lang = toLang(Astro.currentLocale);
+const s = strings(lang);
+const href = (target: string) => (target.startsWith('/') ? localizePath(target, lang) : target);
 
-const eyebrow = t(settings?.heroEyebrow);
-const title = t(settings?.heroTitle) || 'Монголын бүжгийн спортын албан ёсны холбоо';
-const subtitle = t(settings?.heroSubtitle) || 'Тэмцээний хуваарь, дүн, мэдээ мэдээлэл, клуб болон тамирчны бүртгэл — нэг дороос.';
+const eyebrow = t(settings?.heroEyebrow, lang);
+const title = t(settings?.heroTitle, lang) || s.heroTitleFallback;
+const subtitle = t(settings?.heroSubtitle, lang) || s.heroSubtitleFallback;
 
 const heroImageUrl = settings?.heroImage
   ? urlFor(settings.heroImage).width(1920).height(1000).url()
@@ -20,10 +25,10 @@ const heroImageUrl = settings?.heroImage
 
 const primary = settings?.heroPrimaryCta;
 const secondary = settings?.heroSecondaryCta;
-const primaryLabel = t(primary?.label) || 'Бүртгүүлэх';
-const primaryHref = primary?.href || '/register';
-const secondaryLabel = t(secondary?.label) || 'Хуанли үзэх';
-const secondaryHref = secondary?.href || '/calendar';
+const primaryLabel = t(primary?.label, lang) || s.heroPrimaryFallback;
+const primaryHref = href(primary?.href || '/register');
+const secondaryLabel = t(secondary?.label, lang) || s.heroSecondaryFallback;
+const secondaryHref = href(secondary?.href || '/calendar');
 ---
 
 <section class="relative isolate bg-ink-900 text-white overflow-hidden">

@@ -1,0 +1,25 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import DancerRegistrationForm from '../components/DancerRegistrationForm.astro';
+import { toLang } from '../lib/i18n';
+import { strings } from '../lib/ui';
+
+const lang = toLang(Astro.currentLocale);
+const s = strings(lang);
+---
+
+<BaseLayout title={s.dancerFormTitle} description={s.dancerFormLead}>
+  <PageHeader
+    title={s.dancerFormTitle}
+    lead={s.dancerFormLead}
+    crumbs={[
+      { label: s.home, href: '/' },
+      { label: s.registration, href: '/register' },
+    ]}
+  />
+
+  <div class="mx-auto max-w-[560px] px-s4 py-s12 md:py-s18">
+    <DancerRegistrationForm />
+  </div>
+</BaseLayout>

@@ -1,23 +1,5 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import PageHeader from '../components/PageHeader.astro';
-import RegisterCards from '../components/RegisterCards.astro';
-import { sanityFetch } from '../lib/sanity';
-import { siteSettingsQuery } from '../lib/queries';
-import type { SiteSettings } from '../lib/types';
-
-
-const settings = await sanityFetch<SiteSettings | null>(siteSettingsQuery, null);
+import RegisterHubView from '../views/RegisterHubView.astro';
 ---
 
-<BaseLayout title="Бүртгэл" description="Холбоонд бүртгүүлэх төрлөө сонгоно уу.">
-  <PageHeader
-    title="Бүртгэл"
-    lead="Холбоонд бүртгүүлэх төрлөө сонгоно уу."
-    crumbs={[{ label: 'Нүүр', href: '/' }]}
-  />
-
-  <div class="mx-auto max-w-page px-s4 py-s12 md:py-s18">
-    <RegisterCards settings={settings} />
-  </div>
-</BaseLayout>
+<RegisterHubView />

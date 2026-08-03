@@ -1,5 +1,7 @@
 ---
 import { t } from '../lib/format';
+import { localizePath, toLang } from '../lib/i18n';
+import { strings } from '../lib/ui';
 import type { CtaLink, SiteSettings } from '../lib/types';
 
 interface Props {
@@ -8,18 +10,21 @@ interface Props {
 
 const { settings } = Astro.props;
 
+const lang = toLang(Astro.currentLocale);
+const s = strings(lang);
 
-const siteName = t(settings?.siteName) || 'Монголын Бүжгийн Спортын Холбоо';
-const footerText = t(settings?.footerText);
-const address = t(settings?.address);
+const siteName = t(settings?.siteName, lang) || s.siteNameFallback;
+const footerText = t(settings?.footerText, lang);
+const address = t(settings?.address, lang);
 const year = new Date().getFullYear();
 
+const href = (target: string) => (target.startsWith('/') ? localizePath(target, lang) : target);
 
 const FALLBACK_LINKS: CtaLink[] = [
-  { label: { mn: 'Мэдээ' }, href: '/news' },
-  { label: { mn: 'Хуанли' }, href: '/calendar' },
-  { label: { mn: 'Клуб бүртгүүлэх' }, href: '/register/club' },
-  { label: { mn: 'Тамирчин бүртгүүлэх' }, href: '/register/dancer' },
+  { label: { mn: 'Мэдээ', en: 'News' }, href: '/news' },
+  { label: { mn: 'Хуанли', en: 'Calendar' }, href: '/calendar' },
+  { label: { mn: 'Клуб бүртгүүлэх', en: 'Register a club' }, href: '/register/club' },
+  { label: { mn: 'Тамирчин бүртгүүлэх', en: 'Register a dancer' }, href: '/register/dancer' },
 ];
 const links = settings?.footerLinks?.length ? settings.footerLinks : FALLBACK_LINKS;
 
@@ -35,7 +40,7 @@ const socials = [
     <div class="grid gap-s8 md:grid-cols-[2fr_1fr_1fr] md:gap-s12">
       <div>
         <h2 class="text-nav font-bold uppercase tracking-[.06em] text-white pb-s2 border-b-[3px] border-accent-500 inline-block mb-s4">
-          Холбооны тухай
+          {s.aboutUs}
         </h2>
         {footerText && <p class="mb-s3 leading-[1.7] whitespace-pre-line">{footerText}</p>}
         {
@@ -53,14 +58,14 @@ const socials = [
 
       <div>
         <h2 class="text-nav font-bold uppercase tracking-[.06em] text-white pb-s2 border-b-[3px] border-accent-500 inline-block mb-s4">
-          Холбоос
+          {s.footerLinks}
         </h2>
         <ul>
           {
             links.map((link) => (
               <li>
-                <a href={link.href} class="flex items-center min-h-[var(--tap)] hover:text-white transition-colors">
-                  {t(link.label)}
+                <a href={href(link.href)} class="flex items-center min-h-[var(--tap)] hover:text-white transition-colors">
+                  {t(link.label, lang)}
                 </a>
               </li>
             ))
@@ -72,7 +77,7 @@ const socials = [
         socials.length > 0 && (
           <div>
             <h2 class="text-nav font-bold uppercase tracking-[.06em] text-white pb-s2 border-b-[3px] border-accent-500 inline-block mb-s4">
-              Биднийг дагаарай
+              {s.footerFollow}
             </h2>
             <div class="flex gap-s3">
               {socials.map((social) => (
@@ -95,7 +100,7 @@ const socials = [
 
   <div class="mt-s12 border-t border-white/10">
     <p class="mx-auto max-w-page px-s4 py-s4 text-nav text-white/55">
-      © {year} {siteName}. Бүх эрх хуулиар хамгаалагдсан.
+      © {year} {siteName}. {s.rightsReserved}
     </p>
   </div>
 </footer>

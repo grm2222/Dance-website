@@ -5,6 +5,8 @@ import Footer from '../components/Footer.astro';
 import { sanityFetch, urlFor } from '../lib/sanity';
 import { nextEventQuery, siteSettingsQuery } from '../lib/queries';
 import { t } from '../lib/format';
+import { alternates, toLang } from '../lib/i18n';
+import { strings } from '../lib/ui';
 import type { DanceEvent, SiteSettings } from '../lib/types';
 
 interface Props {
@@ -16,22 +18,29 @@ interface Props {
 
 const { title, description, ogImage } = Astro.props;
 
+const lang = toLang(Astro.currentLocale);
+const s = strings(lang);
+
 const [settings, nextEvent] = await Promise.all([
   sanityFetch<SiteSettings | null>(siteSettingsQuery, null),
   sanityFetch<DanceEvent | null>(nextEventQuery, null),
 ]);
 
-const siteName = t(settings?.siteName) || 'Монголын Бүжгийн Спортын Холбоо';
+const siteName = t(settings?.siteName, lang) || s.siteNameFallback;
 const fullTitle = title === siteName ? title : `${title} — ${siteName}`;
 const metaDescription =
-  description || t(settings?.heroSubtitle) || 'Монголын бүжгийн спортын холбооны албан ёсны сайт';
+  description || t(settings?.heroSubtitle, lang) || s.metaDescriptionFallback;
 const ogImageUrl =
   ogImage ??
   (settings?.heroImage ? urlFor(settings.heroImage).width(1200).height(630).url() : undefined);
+
+// Tells search engines the two language versions of this page are equivalent.
+const langAlternates = alternates(Astro.url.pathname);
+const ogLocale = lang === 'en' ? 'en' : 'mn_MN';
 ---
 
 <!doctype html>
-<html lang="mn">
+<html lang={lang}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -39,6 +48,8 @@ const ogImageUrl =
     <meta name="description" content={metaDescription} />
     <meta name="theme-color" content="#000000" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    {langAlternates.map((alt) => <link rel="alternate" hreflang={alt.lang} href={alt.href} />)}
+    <link rel="alternate" hreflang="x-default" href={langAlternates[0].href} />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <!-- cyrillic-ext is required: ү (U+04AF) and ө (U+04E9) live only in that subset -->
@@ -49,7 +60,7 @@ const ogImageUrl =
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={metaDescription} />
     <meta property="og:type" content="website" />
-    <meta property="og:locale" content="mn_MN" />
+    <meta property="og:locale" content={ogLocale} />
     {ogImageUrl && <meta property="og:image" content={ogImageUrl} />}
   </head>
   <body class="min-h-screen bg-paper text-body antialiased flex flex-col">
@@ -57,7 +68,7 @@ const ogImageUrl =
       href="#main"
       class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-flat focus:bg-accent-700 focus:px-4 focus:py-2 focus:text-white focus:font-bold"
     >
-      Агуулга руу шилжих
+      {s.skipToContent}
     </a>
     <Header settings={settings} nextEvent={nextEvent} />
     <main id="main" class="flex-1">

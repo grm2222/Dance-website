@@ -1,0 +1,105 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { urlFor } from '../lib/sanity';
+import { formatDate, renderPortableText, t } from '../lib/format';
+import { localizePath, toLang } from '../lib/i18n';
+import { strings } from '../lib/ui';
+import type { NewsArticle } from '../lib/types';
+
+interface Props {
+  article: NewsArticle;
+}
+
+const { article } = Astro.props;
+
+const lang = toLang(Astro.currentLocale);
+const s = strings(lang);
+
+const title = t(article.title, lang);
+const imageUrl = article.mainImage
+  ? urlFor(article.mainImage).width(1280).height(720).url()
+  : undefined;
+
+// Article bodies are translated one at a time. Falling back to the Mongolian
+// body keeps a partially translated site readable instead of showing a blank
+// page; `translated` drives the notice below so the reader knows why.
+const localisedBody = lang === 'en' ? article.body?.en : article.body?.mn;
+const bodyHtml = renderPortableText(localisedBody ?? article.body?.mn);
+const bodyIsFallback = lang === 'en' && !article.body?.en && Boolean(article.body?.mn);
+---
+
+<BaseLayout title={title} ogImage={imageUrl}>
+  <article class="mx-auto max-w-[760px] px-s4 py-s12 md:py-s18">
+    <header>
+      <nav aria-label={s.breadcrumb} class="mb-s4">
+        <ol class="flex flex-wrap items-center gap-s2 text-meta uppercase tracking-[.08em] text-ink-600">
+          <li class="flex items-center gap-s2">
+            <a href={localizePath('/', lang)} class="tap hover:text-accent-700 transition-colors">{s.home}</a>
+            <span aria-hidden="true">›</span>
+          </li>
+          <li class="flex items-center gap-s2">
+            <a href={localizePath('/news', lang)} class="tap hover:text-accent-700 transition-colors">{s.navNews}</a>
+            {article.category && <span aria-hidden="true">›</span>}
+          </li>
+          {
+            article.category && (
+              <li>
+                <a
+                  href={localizePath(`/news/category/${article.category.slug}`, lang)}
+                  class="tap hover:text-accent-700 transition-colors"
+                >
+                  {t(article.category.title, lang)}
+                </a>
+              </li>
+            )
+          }
+        </ol>
+      </nav>
+
+      <h1 class="font-display text-section font-normal leading-[1.15] text-ink-800 text-balance">
+        {title}
+      </h1>
+
+      <p class="mt-s3 pb-s6 border-b border-line">
+        <time datetime={article.publishedAt} class="text-meta uppercase tracking-[.06em] text-ink-600">
+          {formatDate(article.publishedAt, lang)}
+        </time>
+      </p>
+    </header>
+
+    {
+      bodyIsFallback && (
+        <p
+          lang="en"
+          class="mt-s8 px-s4 py-s3 border-l-[3px] border-accent-500 bg-paper-alt text-nav text-ink-600"
+        >
+          This article has not been translated yet and is shown in Mongolian.
+        </p>
+      )
+    }
+
+    {
+      imageUrl && (
+        <img
+          src={imageUrl}
+          alt={article.mainImage?.alt ?? ''}
+          width="1280"
+          height="720"
+          decoding="async"
+          class="mt-s8 w-full rounded-flat object-cover"
+        />
+      )
+    }
+
+    <div class="prose-news mt-s8" lang={bodyIsFallback ? 'mn' : undefined} set:html={bodyHtml} />
+
+    <footer class="mt-s12 border-t border-line pt-s6">
+      <a
+        href={localizePath('/news', lang)}
+        class="tap inline-flex items-center text-nav font-bold uppercase tracking-[.04em] text-accent-700 hover:text-accent-800 transition-colors"
+      >
+        {s.backToNews}
+      </a>
+    </footer>
+  </article>
+</BaseLayout>

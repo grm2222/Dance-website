@@ -1,8 +1,8 @@
 ---
-import CategoryView from '../../../views/CategoryView.astro';
-import { sanityFetch } from '../../../lib/sanity';
-import { newsCategoriesQuery } from '../../../lib/queries';
-import type { NewsCategory } from '../../../lib/types';
+import CategoryView from '../../../../views/CategoryView.astro';
+import { sanityFetch } from '../../../../lib/sanity';
+import { newsCategoriesQuery } from '../../../../lib/queries';
+import type { NewsCategory } from '../../../../lib/types';
 
 export async function getStaticPaths() {
   const categories = await sanityFetch<NewsCategory[]>(newsCategoriesQuery, []);

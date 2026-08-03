@@ -1,22 +1,26 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { localizePath, toLang } from '../lib/i18n';
+import { strings } from '../lib/ui';
+
+// One 404 serves both trees: a wrong URL under /en still lands here, so the
+// copy stays Mongolian-first with English links available from the header.
+const lang = toLang(Astro.currentLocale);
+const s = strings(lang);
 ---
 
-<BaseLayout title="Хуудас олдсонгүй">
+<BaseLayout title={s.notFoundTitle}>
   <div class="mx-auto max-w-[560px] px-s4 py-s18 text-center">
     <p class="font-display text-hero font-normal text-accent-700" aria-hidden="true">404</p>
-    <h1 class="mt-s4 font-display text-section font-normal text-ink-800">Хуудас олдсонгүй</h1>
-    <p class="mt-s3 text-ink-600">
-      Таны хайсан хуудас устгагдсан, нэр нь өөрчлөгдсөн эсвэл түр хугацаанд ашиглах боломжгүй
-      байж магадгүй.
-    </p>
+    <h1 class="mt-s4 font-display text-section font-normal text-ink-800">{s.notFoundTitle}</h1>
+    <p class="mt-s3 text-ink-600">{s.notFoundText}</p>
     <div class="mt-s8 flex flex-col sm:flex-row gap-s3 justify-center">
-      <a href="/" class="btn-primary">Нүүр хуудас руу буцах</a>
+      <a href={localizePath('/', lang)} class="btn-primary">{s.notFoundHome}</a>
       <a
-        href="/news"
+        href={localizePath('/news', lang)}
         class="inline-flex items-center justify-center min-h-[var(--tap)] px-s6 py-s3 rounded-flat border border-line-strong text-nav font-bold uppercase tracking-[.04em] text-ink-800 hover:border-ink-800 hover:bg-paper-alt transition-colors"
       >
-        Мэдээ үзэх
+        {s.notFoundNews}
       </a>
     </div>
   </div>

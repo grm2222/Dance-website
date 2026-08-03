@@ -1,21 +1,5 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import PageHeader from '../../components/PageHeader.astro';
-import RegistrationForm from '../../components/RegistrationForm.astro';
-
+import RegisterClubView from '../../views/RegisterClubView.astro';
 ---
 
-<BaseLayout title="Байгууллага, клубын бүртгэл" description="Холбоонд гишүүнээр элсэх хүсэлтэй байгууллага, клубууд доорх маягтыг бөглөж илгээнэ үү.">
-  <PageHeader
-    title="Байгууллага, клубын бүртгэл"
-    lead="Холбоонд гишүүнээр элсэх хүсэлтэй байгууллага, клубууд доорх маягтыг бөглөж илгээнэ үү."
-    crumbs={[
-      { label: 'Нүүр', href: '/' },
-      { label: 'Бүртгэл', href: '/register' },
-    ]}
-  />
-
-  <div class="mx-auto max-w-[560px] px-s4 py-s12 md:py-s18">
-    <RegistrationForm />
-  </div>
-</BaseLayout>
+<RegisterClubView />

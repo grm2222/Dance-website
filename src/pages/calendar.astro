@@ -1,35 +1,5 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import PageHeader from '../components/PageHeader.astro';
-import BlockTitle from '../components/BlockTitle.astro';
-import EventList from '../components/EventList.astro';
-import { sanityFetch } from '../lib/sanity';
-import { allUpcomingEventsQuery, allResultsQuery } from '../lib/queries';
-import type { DanceEvent } from '../lib/types';
-
-
-const [upcoming, results] = await Promise.all([
-  sanityFetch<DanceEvent[]>(allUpcomingEventsQuery, []),
-  sanityFetch<DanceEvent[]>(allResultsQuery, []),
-]);
+import CalendarView from '../views/CalendarView.astro';
 ---
 
-<BaseLayout title="Тэмцээний хуанли" description="Товлогдсон тэмцээний хуваарь болон гарсан дүн.">
-  <PageHeader
-    title="Тэмцээний хуанли"
-    lead="Товлогдсон тэмцээний хуваарь болон гарсан дүн."
-    crumbs={[{ label: 'Нүүр', href: '/' }]}
-  />
-
-  <div class="mx-auto max-w-page px-s4 py-s12 md:py-s18">
-    <section aria-labelledby="schedule-heading" class="mb-s18">
-      <BlockTitle id="schedule-heading" title="Тэмцээний хуваарь" />
-      <EventList events={upcoming} emptyText="Одоогоор товлогдсон тэмцээн алга байна." />
-    </section>
-
-    <section id="results" aria-labelledby="results-heading" class="scroll-mt-[72px]">
-      <BlockTitle id="results-heading" title="Тэмцээний дүн" />
-      <EventList events={results} emptyText="Одоогоор үр дүн ороогүй байна." />
-    </section>
-  </div>
-</BaseLayout>
+<CalendarView />

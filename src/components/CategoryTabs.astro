@@ -1,5 +1,7 @@
 ---
 import { t } from '../lib/format';
+import { localizePath, toLang } from '../lib/i18n';
+import { strings } from '../lib/ui';
 import type { NewsCategory } from '../lib/types';
 
 interface Props {
@@ -10,6 +12,8 @@ interface Props {
 
 const { categories, activeSlug } = Astro.props;
 
+const lang = toLang(Astro.currentLocale);
+const s = strings(lang);
 
 const base =
   'inline-flex items-center min-h-[var(--tap)] px-s4 rounded-flat text-nav font-bold uppercase tracking-[.04em] transition-colors';
@@ -19,25 +23,25 @@ const idle = 'border border-line-strong text-ink-800 hover:border-ink-800 hover:
 
 {
   categories.length > 0 && (
-    <nav aria-label="Мэдээний ангилал" class="mb-s8">
+    <nav aria-label={s.newsCategories} class="mb-s8">
       <ul class="flex flex-wrap gap-s2">
         <li>
           <a
-            href="/news"
+            href={localizePath('/news', lang)}
             class:list={[base, activeSlug ? idle : active]}
             aria-current={activeSlug ? undefined : 'page'}
           >
-            Бүгд
+            {s.allCategories}
           </a>
         </li>
         {categories.map((category) => (
           <li>
             <a
-              href={`/news/category/${category.slug}`}
+              href={localizePath(`/news/category/${category.slug}`, lang)}
               class:list={[base, category.slug === activeSlug ? active : idle]}
               aria-current={category.slug === activeSlug ? 'page' : undefined}
             >
-              {t(category.title)}
+              {t(category.title, lang)}
             </a>
           </li>
         ))}

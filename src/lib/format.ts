@@ -1,8 +1,9 @@
 import { toHTML } from '@portabletext/to-html';
 import type { LocaleString, LocaleText, PortableTextBlock } from './types';
 import { urlFor } from './sanity';
+import { DEFAULT_LANG, type Lang } from './i18n';
 
-export type Lang = 'mn' | 'en';
+export type { Lang };
 
 /**
  * Reads a localized field. Mongolian is primary; English falls back to it,
@@ -13,25 +14,55 @@ export type Lang = 'mn' | 'en';
  */
 export function t(
   value: LocaleString | LocaleText | undefined | null,
-  lang: Lang = 'mn',
+  lang: Lang = DEFAULT_LANG,
 ): string {
   if (!value) return '';
   if (lang === 'en' && value.en) return value.en;
   return value.mn ?? '';
 }
 
-/** e.g. "2026 оны 6 сарын 12" */
-export function formatDate(iso: string): string {
+/** True when a field has a real translation for `lang` (not just a fallback). */
+export function hasTranslation(
+  value: LocaleString | LocaleText | undefined | null,
+  lang: Lang,
+): boolean {
+  if (!value) return false;
+  return lang === 'mn' ? Boolean(value.mn) : Boolean(value.en);
+}
+
+const EN_MONTHS_SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+/** mn: "2026 оны 6 сарын 12" · en: "12 June 2026" */
+export function formatDate(iso: string, lang: Lang = DEFAULT_LANG): string {
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return '';
+  if (lang === 'en') {
+    return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+  }
   return `${d.getFullYear()} оны ${d.getMonth() + 1} сарын ${d.getDate()}`;
 }
 
-/** Day + month for the calendar date block, e.g. { day: "15", month: "8-р сар" } */
-export function dateParts(iso: string): { day: string; month: string } {
+/** Long form for the header's date line. mn: "2026 оны 8 дугаар сарын 3" */
+export function formatLongDate(d: Date, lang: Lang = DEFAULT_LANG): string {
+  if (lang === 'en') {
+    return d.toLocaleDateString('en-GB', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    });
+  }
+  return `${d.getFullYear()} оны ${d.getMonth() + 1} дугаар сарын ${d.getDate()}`;
+}
+
+/** Day + month for the calendar date block, e.g. { day: "15", month: "8-р сар" | "Aug" } */
+export function dateParts(iso: string, lang: Lang = DEFAULT_LANG): { day: string; month: string } {
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return { day: '–', month: '' };
-  return { day: String(d.getDate()).padStart(2, '0'), month: `${d.getMonth() + 1}-р сар` };
+  return {
+    day: String(d.getDate()).padStart(2, '0'),
+    month: lang === 'en' ? EN_MONTHS_SHORT[d.getMonth()] : `${d.getMonth() + 1}-р сар`,
+  };
 }
 
 /** True when the ISO date falls on today's calendar day, in the server's zone. */

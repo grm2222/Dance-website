@@ -1,6 +1,8 @@
 ---
 import { urlFor } from '../lib/sanity';
 import { formatDate, t } from '../lib/format';
+import { localizePath, toLang } from '../lib/i18n';
+import { strings } from '../lib/ui';
 import type { NewsArticlePreview } from '../lib/types';
 
 interface Props {
@@ -9,13 +11,15 @@ interface Props {
 
 const { article } = Astro.props;
 
-const title = t(article.title);
+const lang = toLang(Astro.currentLocale);
+const s = strings(lang);
+const title = t(article.title, lang);
 const imageUrl = article.mainImage ? urlFor(article.mainImage).width(800).height(450).url() : null;
 ---
 
 <!-- The whole card is one link; hairline border rather than a shadow, per the design. -->
 <a
-  href={`/news/${article.slug}`}
+  href={localizePath(`/news/${article.slug}`, lang)}
   class="group flex flex-col border border-line rounded-flat bg-paper overflow-hidden hover:border-line-strong transition-colors"
 >
   <div class="aspect-video overflow-hidden bg-ink-800">
@@ -33,7 +37,7 @@ const imageUrl = article.mainImage ? urlFor(article.mainImage).width(800).height
       ) : (
         <!-- white/60, not /35: this is real text and needs 4.5:1 on ink-800 -->
         <div aria-hidden="true" class="h-full w-full grid place-items-center text-white/60 text-meta uppercase tracking-[.1em]">
-          Мэдээ
+          {s.newsImagePlaceholder}
         </div>
       )
     }
@@ -42,7 +46,7 @@ const imageUrl = article.mainImage ? urlFor(article.mainImage).width(800).height
     {
       article.category && (
         <span class="block text-meta font-bold uppercase tracking-[.08em] text-ink-600 mb-s2 group-hover:text-accent-700 transition-colors">
-          {t(article.category.title)}
+          {t(article.category.title, lang)}
         </span>
       )
     }
@@ -51,7 +55,7 @@ const imageUrl = article.mainImage ? urlFor(article.mainImage).width(800).height
     </h3>
     <!-- mt-auto pins the date to the bottom so ragged titles still align across a row -->
     <time datetime={article.publishedAt} class="mt-auto text-meta tracking-[.04em] text-ink-600">
-      {formatDate(article.publishedAt)}
+      {formatDate(article.publishedAt, lang)}
     </time>
   </div>
 </a>

@@ -1,0 +1,106 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import BlockTitle from '../components/BlockTitle.astro';
+import Hero from '../components/Hero.astro';
+import NewsCard from '../components/NewsCard.astro';
+import EventList from '../components/EventList.astro';
+import Gallery from '../components/Gallery.astro';
+import RegisterCards from '../components/RegisterCards.astro';
+import { sanityFetch } from '../lib/sanity';
+import {
+  latestNewsQuery,
+  upcomingEventsQuery,
+  recentResultsQuery,
+  galleryQuery,
+  siteSettingsQuery,
+} from '../lib/queries';
+import { t } from '../lib/format';
+import { localizePath, toLang } from '../lib/i18n';
+import { strings } from '../lib/ui';
+import type { DanceEvent, GalleryImage, NewsArticlePreview, SiteSettings } from '../lib/types';
+
+// Rendered by both /  and /en/ — the locale comes from the URL via
+// Astro.currentLocale, so the body is written once.
+const lang = toLang(Astro.currentLocale);
+const s = strings(lang);
+
+const [settings, latestNews, upcomingEvents, recentResults, galleryImages] = await Promise.all([
+  sanityFetch<SiteSettings | null>(siteSettingsQuery, null),
+  sanityFetch<NewsArticlePreview[]>(latestNewsQuery, []),
+  sanityFetch<DanceEvent[]>(upcomingEventsQuery, []),
+  sanityFetch<DanceEvent[]>(recentResultsQuery, []),
+  sanityFetch<GalleryImage[]>(galleryQuery, []),
+]);
+
+const siteName = t(settings?.siteName, lang) || s.siteNameFallback;
+const aboutText = t(settings?.aboutText, lang);
+---
+
+<BaseLayout title={siteName}>
+  <Hero settings={settings} />
+
+  <!-- ═══ Latest news ═══ -->
+  <section class="py-s12 md:py-s18" aria-labelledby="news-heading">
+    <div class="mx-auto max-w-page px-s4">
+      <BlockTitle id="news-heading" title={s.latestNews} moreHref={localizePath('/news', lang)} />
+      {
+        latestNews.length === 0 ? (
+          <p class="text-nav text-ink-600">{s.noNews}</p>
+        ) : (
+          <div class="grid gap-s6 sm:grid-cols-2 lg:grid-cols-3">
+            {latestNews.slice(0, 3).map((article) => (
+              <NewsCard article={article} />
+            ))}
+          </div>
+        )
+      }
+    </div>
+  </section>
+
+  <!-- ═══ Calendar: upcoming + results side by side ═══ -->
+  <section class="bg-paper-alt border-y border-line py-s12 md:py-s18" aria-labelledby="events-heading">
+    <h2 id="events-heading" class="sr-only">{s.competitionInfo}</h2>
+    <div class="mx-auto max-w-page px-s4 grid gap-s12 lg:grid-cols-2 lg:gap-s8">
+      <div>
+        <BlockTitle as="h3" title={s.schedule} moreHref={localizePath('/calendar', lang)} />
+        <EventList events={upcomingEvents} emptyText={s.noUpcoming} />
+      </div>
+      <div>
+        <BlockTitle as="h3" title={s.results} moreHref={`${localizePath('/calendar', lang)}#results`} />
+        <EventList events={recentResults} emptyText={s.noResults} />
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ Gallery ═══ -->
+  {
+    galleryImages.length > 0 && (
+      <section class="py-s12 md:py-s18" aria-labelledby="gallery-heading">
+        <div class="mx-auto max-w-page px-s4">
+          <BlockTitle id="gallery-heading" title={s.gallery} />
+          <Gallery images={galleryImages.slice(0, 8)} />
+        </div>
+      </section>
+    )
+  }
+
+  <!-- ═══ About ═══ -->
+  {
+    aboutText && (
+      <section class="py-s12 md:py-s18 border-t border-line" aria-labelledby="about-heading">
+        <div class="mx-auto max-w-page px-s4">
+          <BlockTitle id="about-heading" title={t(settings?.aboutTitle, lang) || s.aboutUs} />
+          <p class="max-w-[70ch] whitespace-pre-line leading-[1.75]">{aboutText}</p>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- ═══ Registration ═══ -->
+  <section class="bg-paper-alt border-y border-line py-s12 md:py-s18" aria-labelledby="register-heading">
+    <div class="mx-auto max-w-page px-s4">
+      <BlockTitle id="register-heading" title={s.registration} />
+      <RegisterCards settings={settings} />
+    </div>
+  </section>
+</BaseLayout>

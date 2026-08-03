@@ -1,0 +1,27 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import RegisterCards from '../components/RegisterCards.astro';
+import { sanityFetch } from '../lib/sanity';
+import { siteSettingsQuery } from '../lib/queries';
+import { toLang } from '../lib/i18n';
+import { strings } from '../lib/ui';
+import type { SiteSettings } from '../lib/types';
+
+const lang = toLang(Astro.currentLocale);
+const s = strings(lang);
+
+const settings = await sanityFetch<SiteSettings | null>(siteSettingsQuery, null);
+---
+
+<BaseLayout title={s.registration} description={s.registerLead}>
+  <PageHeader
+    title={s.registration}
+    lead={s.registerLead}
+    crumbs={[{ label: s.home, href: '/' }]}
+  />
+
+  <div class="mx-auto max-w-page px-s4 py-s12 md:py-s18">
+    <RegisterCards settings={settings} />
+  </div>
+</BaseLayout>

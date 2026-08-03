@@ -1,10 +1,17 @@
 ---
+import { toLang } from '../lib/i18n';
+import { strings } from '../lib/ui';
 
 // Posts to our own endpoint only; the Sanity write token stays server-side.
+const lang = toLang(Astro.currentLocale);
+const s = strings(lang);
 ---
 
 <form
   id="registration-form"
+  data-msg-ok={s.formOk}
+  data-msg-error={s.formError}
+  data-msg-network={s.formNetworkError}
   method="post"
   action="/api/register"
   class="space-y-5"
@@ -12,7 +19,7 @@
 >
   <div>
     <label for="orgName" class="field-label">
-      Байгууллага / клубын нэр <span class="field-req" aria-hidden="true">*</span>
+      {s.fieldOrgName} <span class="field-req" aria-hidden="true">*</span>
     </label>
     <input
       type="text"
@@ -27,7 +34,7 @@
 
   <div>
     <label for="about" class="field-label">
-      Танилцуулга <span class="field-req" aria-hidden="true">*</span>
+      {s.fieldAbout} <span class="field-req" aria-hidden="true">*</span>
     </label>
     <textarea
       id="about"
@@ -36,12 +43,12 @@
       rows="4"
       maxlength="2000"
       class="field-input"
-      placeholder="Үйл ажиллагааныхаа талаар товч бичнэ үү"></textarea>
+      placeholder={s.fieldAboutPlaceholder}></textarea>
   </div>
 
   <div>
     <label for="address" class="field-label">
-      Хаяг <span class="field-req" aria-hidden="true">*</span>
+      {s.fieldAddress} <span class="field-req" aria-hidden="true">*</span>
     </label>
     <input
       type="text"
@@ -57,7 +64,7 @@
   <div class="grid gap-5 sm:grid-cols-2">
     <div>
       <label for="phone" class="field-label">
-        Утасны дугаар <span class="field-req" aria-hidden="true">*</span>
+        {s.fieldPhone} <span class="field-req" aria-hidden="true">*</span>
       </label>
       <input
         type="tel"
@@ -71,7 +78,7 @@
     </div>
     <div>
       <label for="email" class="field-label">
-        Имэйл хаяг <span class="field-req" aria-hidden="true">*</span>
+        {s.fieldEmail} <span class="field-req" aria-hidden="true">*</span>
       </label>
       <input
         type="email"
@@ -87,7 +94,7 @@
 
   <!-- Honeypot: hidden from humans, bots tend to fill it -->
   <div class="hidden" aria-hidden="true">
-    <label for="website">Вэбсайт</label>
+    <label for="website">{s.fieldWebsite}</label>
     <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" />
   </div>
 
@@ -105,7 +112,7 @@
     id="form-submit"
     class="btn-primary w-full sm:w-auto"
   >
-    Хүсэлт илгээх
+    {s.submitForm}
   </button>
 </form>
 
@@ -113,6 +120,13 @@
   const form = document.getElementById('registration-form') as HTMLFormElement | null;
   const status = document.getElementById('form-status');
   const submit = document.getElementById('form-submit') as HTMLButtonElement | null;
+
+  // Status text is translated server-side and handed over on the form element.
+  const msg = {
+    ok: form?.dataset.msgOk ?? '',
+    error: form?.dataset.msgError ?? '',
+    network: form?.dataset.msgNetwork ?? '',
+  };
 
   function showStatus(message: string, ok: boolean) {
     if (!status) return;
@@ -137,12 +151,12 @@
       const data = (await res.json()) as { ok: boolean; error?: string };
       if (res.ok && data.ok) {
         form.reset();
-        showStatus('Таны хүсэлтийг хүлээн авлаа. Бид тантай удахгүй холбогдох болно.', true);
+        showStatus(msg.ok, true);
       } else {
-        showStatus(data.error ?? 'Алдаа гарлаа. Дахин оролдоно уу.', false);
+        showStatus(data.error ?? msg.error, false);
       }
     } catch {
-      showStatus('Сүлжээний алдаа гарлаа. Дахин оролдоно уу.', false);
+      showStatus(msg.network, false);
     } finally {
       if (submit) submit.disabled = false;
     }

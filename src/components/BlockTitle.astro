@@ -1,4 +1,6 @@
 ---
+import { toLang } from '../lib/i18n';
+import { strings } from '../lib/ui';
 
 // The signature element of the design: a small uppercase label sitting on a
 // rule that runs to the container edge, with a 3px accent bar under the label.
@@ -14,7 +16,8 @@ interface Props {
   id?: string;
 }
 
-const { title, moreHref, moreLabel = 'Бүгдийг үзэх →', as: Tag = 'h2', id } = Astro.props;
+const lang = toLang(Astro.currentLocale);
+const { title, moreHref, moreLabel = strings(lang).viewAll, as: Tag = 'h2', id } = Astro.props;
 ---
 
 <div class="flex items-end gap-s3 mb-s6">

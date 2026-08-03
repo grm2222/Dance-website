@@ -1,5 +1,7 @@
 ---
 import { dateParts, isToday, t } from '../lib/format';
+import { localizePath, toLang } from '../lib/i18n';
+import { strings } from '../lib/ui';
 import type { DanceEvent } from '../lib/types';
 
 interface Props {
@@ -9,21 +11,21 @@ interface Props {
   resultHref?: string;
 }
 
+const lang = toLang(Astro.currentLocale);
+const s = strings(lang);
 
-const {
-  events,
-  emptyText = 'Одоогоор мэдээлэл алга байна.',
-  resultHref = '/calendar',
-} = Astro.props;
+const { events, emptyText, resultHref = '/calendar' } = Astro.props;
+const empty = emptyText ?? s.noUpcoming;
+const resultsLink = localizePath(resultHref, lang);
 ---
 
 {
   events.length === 0 ? (
-    <p class="text-nav text-ink-600">{emptyText}</p>
+    <p class="text-nav text-ink-600">{empty}</p>
   ) : (
     <ol>
       {events.map((event, i) => {
-        const { day, month } = dateParts(event.date);
+        const { day, month } = dateParts(event.date, lang);
         const today = event.type === 'schedule' && isToday(event.date);
         return (
           <li
@@ -41,10 +43,10 @@ const {
             </time>
 
             <div class="flex-1 min-w-0 flex flex-col justify-center">
-              <h3 class="font-display text-head font-medium text-ink-800 mb-s1">{t(event.title)}</h3>
-              {t(event.location) && <p class="text-nav text-ink-600">{t(event.location)}</p>}
-              {t(event.description) && (
-                <p class="text-nav text-ink-600 line-clamp-2">{t(event.description)}</p>
+              <h3 class="font-display text-head font-medium text-ink-800 mb-s1">{t(event.title, lang)}</h3>
+              {t(event.location, lang) && <p class="text-nav text-ink-600">{t(event.location, lang)}</p>}
+              {t(event.description, lang) && (
+                <p class="text-nav text-ink-600 line-clamp-2">{t(event.description, lang)}</p>
               )}
             </div>
 
@@ -53,18 +55,18 @@ const {
             <div class="shrink-0 self-center max-sm:self-start max-sm:ml-16 max-sm:w-full">
               {event.type === 'result' ? (
                 <a
-                  href={resultHref}
+                  href={resultsLink}
                   class="inline-flex items-center gap-s1 min-h-[var(--tap)] text-nav font-bold text-ink-800 whitespace-nowrap hover:text-accent-700 transition-colors"
                 >
-                  Дүн үзэх →
+                  {s.viewResults}
                 </a>
               ) : today ? (
                 <span class="inline-block px-s3 py-s1 rounded-flat bg-accent-700 text-white text-meta font-bold uppercase tracking-[.06em] whitespace-nowrap">
-                  Өнөөдөр
+                  {s.statusToday}
                 </span>
               ) : (
                 <span class="inline-block px-s3 py-s1 rounded-flat border border-line-strong text-ink-600 text-meta font-bold uppercase tracking-[.06em] whitespace-nowrap">
-                  Хуваарь
+                  {s.statusScheduled}
                 </span>
               )}
             </div>

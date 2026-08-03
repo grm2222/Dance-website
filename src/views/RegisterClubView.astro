@@ -1,0 +1,25 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import RegistrationForm from '../components/RegistrationForm.astro';
+import { toLang } from '../lib/i18n';
+import { strings } from '../lib/ui';
+
+const lang = toLang(Astro.currentLocale);
+const s = strings(lang);
+---
+
+<BaseLayout title={s.clubFormTitle} description={s.clubFormLead}>
+  <PageHeader
+    title={s.clubFormTitle}
+    lead={s.clubFormLead}
+    crumbs={[
+      { label: s.home, href: '/' },
+      { label: s.registration, href: '/register' },
+    ]}
+  />
+
+  <div class="mx-auto max-w-[560px] px-s4 py-s12 md:py-s18">
+    <RegistrationForm />
+  </div>
+</BaseLayout>

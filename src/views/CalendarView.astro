@@ -1,0 +1,39 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import BlockTitle from '../components/BlockTitle.astro';
+import EventList from '../components/EventList.astro';
+import { sanityFetch } from '../lib/sanity';
+import { allUpcomingEventsQuery, allResultsQuery } from '../lib/queries';
+import { toLang } from '../lib/i18n';
+import { strings } from '../lib/ui';
+import type { DanceEvent } from '../lib/types';
+
+const lang = toLang(Astro.currentLocale);
+const s = strings(lang);
+
+const [upcoming, results] = await Promise.all([
+  sanityFetch<DanceEvent[]>(allUpcomingEventsQuery, []),
+  sanityFetch<DanceEvent[]>(allResultsQuery, []),
+]);
+---
+
+<BaseLayout title={s.calendarTitle} description={s.calendarLead}>
+  <PageHeader
+    title={s.calendarTitle}
+    lead={s.calendarLead}
+    crumbs={[{ label: s.home, href: '/' }]}
+  />
+
+  <div class="mx-auto max-w-page px-s4 py-s12 md:py-s18">
+    <section aria-labelledby="schedule-heading" class="mb-s18">
+      <BlockTitle id="schedule-heading" title={s.schedule} />
+      <EventList events={upcoming} emptyText={s.noUpcoming} />
+    </section>
+
+    <section id="results" aria-labelledby="results-heading" class="scroll-mt-[72px]">
+      <BlockTitle id="results-heading" title={s.results} />
+      <EventList events={results} emptyText={s.noResults} />
+    </section>
+  </div>
+</BaseLayout>

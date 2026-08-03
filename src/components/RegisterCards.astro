@@ -1,5 +1,7 @@
 ---
 import { t } from '../lib/format';
+import { localizePath, toLang } from '../lib/i18n';
+import { strings } from '../lib/ui';
 import type { SiteSettings } from '../lib/types';
 
 interface Props {
@@ -8,23 +10,25 @@ interface Props {
 
 const { settings } = Astro.props;
 
+const lang = toLang(Astro.currentLocale);
+const s = strings(lang);
 
 // A club and a dancer are different audiences, not a primary and a fallback —
 // so both cards carry equal weight. See docs/design-wdc.md §6 (Buttons).
 const cards = [
   {
-    href: '/register/club',
-    title: 'Клуб бүртгүүлэх',
-    text: t(settings?.clubCardText) || 'Бүжгийн клуб, сургалтын төвүүд холбооны гишүүнээр элсэх хүсэлт гаргана.',
+    href: localizePath('/register/club', lang),
+    title: s.clubCardTitle,
+    text: t(settings?.clubCardText, lang) || s.clubCardTextFallback,
   },
   {
-    href: '/register/dancer',
-    title: 'Тамирчин бүртгүүлэх',
-    text: t(settings?.dancerCardText) || 'Тамирчид тэмцээнд оролцох, зэрэг ахиулах бүртгэлээ хийлгэнэ.',
+    href: localizePath('/register/dancer', lang),
+    title: s.dancerCardTitle,
+    text: t(settings?.dancerCardText, lang) || s.dancerCardTextFallback,
   },
 ];
 
-const note = t(settings?.registerNote) || 'Хүсэлтийг холбооны ажилтан хянаад богино хугацаанд хариу өгнө.';
+const note = t(settings?.registerNote, lang) || s.registerNoteFallback;
 ---
 
 <div class="grid gap-s4 md:grid-cols-2">
@@ -37,7 +41,7 @@ const note = t(settings?.registerNote) || 'Хүсэлтийг холбооны �
         <h3 class="font-display text-head font-medium text-ink-800">{card.title}</h3>
         <p class="text-nav text-ink-600">{card.text}</p>
         <span class="mt-s2 inline-flex items-center gap-s1 text-nav font-bold uppercase tracking-[.04em] text-accent-700">
-          Хүсэлт илгээх →
+          {s.submitRequest}
         </span>
       </a>
     ))
