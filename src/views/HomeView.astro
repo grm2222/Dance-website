@@ -1,7 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import BlockTitle from '../components/BlockTitle.astro';
-import Hero from '../components/Hero.astro';
 import NewsCard from '../components/NewsCard.astro';
 import EventList from '../components/EventList.astro';
 import Gallery from '../components/Gallery.astro';
@@ -37,7 +36,10 @@ const aboutText = t(settings?.aboutText, lang);
 ---
 
 <BaseLayout title={siteName}>
-  <Hero settings={settings} />
+  {/* The hero used to carry this page's only <h1>. It is kept visually hidden
+      so the document still has a top-level heading for screen readers and
+      search engines — every page needs exactly one. */}
+  <h1 class="sr-only">{siteName}</h1>
 
   <!-- ═══ Latest news ═══ -->
   <section class="py-s12 md:py-s18" aria-labelledby="news-heading">
