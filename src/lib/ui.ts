@@ -56,11 +56,15 @@ const mn = {
 
   // ── calendar ──────────────────────────────────────────────
   calendarTitle: 'Тэмцээний хуанли',
-  calendarLead: 'Товлогдсон тэмцээний хуваарь болон гарсан дүн.',
+  calendarLead: 'Товлогдсон тэмцээний хуваарь.',
+  resultsTitle: 'Тэмцээний дүн',
+  resultsLead: 'Болж өнгөрсөн тэмцээний дүн, эзэлсэн байр.',
+  navResults: 'Дүн',
   noUpcoming: 'Одоогоор товлогдсон тэмцээн алга байна.',
   noResults: 'Одоогоор үр дүн ороогүй байна.',
   statusScheduled: 'Хуваарь',
   statusToday: 'Өнөөдөр',
+  statusResult: 'Дууссан',
   viewResults: 'Дүн үзэх →',
 
   // ── registration ──────────────────────────────────────────
@@ -161,11 +165,15 @@ const en: Strings = {
   newsImagePlaceholder: 'News',
 
   calendarTitle: 'Competition calendar',
-  calendarLead: 'Scheduled competitions and published results.',
+  calendarLead: 'Upcoming competitions.',
+  resultsTitle: 'Results',
+  resultsLead: 'Finished competitions and their placings.',
+  navResults: 'Results',
   noUpcoming: 'No competitions are scheduled yet.',
   noResults: 'No results have been published yet.',
   statusScheduled: 'Scheduled',
   statusToday: 'Today',
+  statusResult: 'Finished',
   viewResults: 'Results →',
 
   registerLead: 'Choose how you would like to register with the federation.',

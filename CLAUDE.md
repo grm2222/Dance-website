@@ -8,7 +8,7 @@ Phase 1 scope ONLY — do not build beyond this without being asked:
 1. **Landing page** — hero, about sections, competition schedule preview, latest news, photo gallery, footer
 2. **News section** — list page + single article page, categories (Дотоод мэдээ / Гадаад мэдээ)
 3. **Registration forms** — /register hub with two request forms: club/organization (`/register/club`) and dancer (`/register/dancer`) (no auth, no login — submissions are reviewed manually by admins)
-4. **Calendar** — /calendar page listing competition schedule (upcoming) and results
+4. **Calendar** — /calendar lists upcoming competitions; /results lists finished ones with placings (two separate pages)
 5. **Admin** — handled entirely by Sanity Studio (no custom admin UI to build)
 
 Out of scope for now: user accounts/login, competition registration system,

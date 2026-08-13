@@ -98,10 +98,11 @@ const showRegister = page?.showRegisterSection !== false;
         />
       </div>
       <div>
-        <BlockTitle as="h3" title={resultsHeading} moreHref={`${localizePath('/calendar', lang)}#results`} />
+        <BlockTitle as="h3" title={resultsHeading} moreHref={localizePath('/results', lang)} />
         <EventList
           events={recentResults}
           emptyText={t(page?.resultsEmpty, lang) || s.noResults}
+          resultHref="/results"
           compact
         />
       </div>

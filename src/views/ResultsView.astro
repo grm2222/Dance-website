@@ -3,39 +3,43 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import PageHeader from '../components/PageHeader.astro';
 import EventList from '../components/EventList.astro';
 import { sanityFetch } from '../lib/sanity';
-import { allUpcomingEventsQuery, pageContentQuery } from '../lib/queries';
+import { allResultsQuery, pageContentQuery } from '../lib/queries';
 import { t } from '../lib/format';
 import { localizePath, toLang } from '../lib/i18n';
 import { strings } from '../lib/ui';
 import type { DanceEvent, PageContent } from '../lib/types';
 
-// Upcoming competitions only. Past competitions and their placings live on
-// their own page — see ResultsView.astro.
+// Finished competitions and their placings. Upcoming ones live on the
+// calendar page — see CalendarView.astro.
 const lang = toLang(Astro.currentLocale);
 const s = strings(lang);
 
-const [page, upcoming] = await Promise.all([
+const [page, results] = await Promise.all([
   sanityFetch<PageContent | null>(pageContentQuery, null),
-  sanityFetch<DanceEvent[]>(allUpcomingEventsQuery, []),
+  sanityFetch<DanceEvent[]>(allResultsQuery, []),
 ]);
 
-const title = t(page?.calendarPageTitle, lang) || s.calendarTitle;
-const lead = t(page?.calendarPageLead, lang) || s.calendarLead;
-const resultsLabel = t(page?.resultsPageTitle, lang) || s.resultsTitle;
+const title = t(page?.resultsPageTitle, lang) || s.resultsTitle;
+const lead = t(page?.resultsPageLead, lang) || s.resultsLead;
+const calendarLabel = t(page?.calendarPageTitle, lang) || s.calendarTitle;
 ---
 
 <BaseLayout title={title} description={lead}>
   <PageHeader title={title} lead={lead} crumbs={[{ label: s.home, href: '/' }]} />
 
   <div class="mx-auto max-w-page px-s4 py-s12 md:py-s18">
-    <EventList events={upcoming} emptyText={t(page?.scheduleEmpty, lang) || s.noUpcoming} />
+    <EventList
+      events={results}
+      emptyText={t(page?.resultsEmpty, lang) || s.noResults}
+      resultHref=""
+    />
 
     <p class="mt-s8">
       <a
-        href={localizePath('/results', lang)}
+        href={localizePath('/calendar', lang)}
         class="tap inline-flex items-center text-nav font-bold text-ink-800 hover:text-accent-700 transition-colors"
       >
-        {resultsLabel} →
+        {calendarLabel} →
       </a>
     </p>
   </div>

@@ -19,6 +19,7 @@ export const pageContent = defineType({
     { name: 'homepage', title: 'Homepage', default: true },
     { name: 'news', title: 'News page' },
     { name: 'calendar', title: 'Calendar page' },
+    { name: 'results', title: 'Results page' },
     { name: 'register', title: 'Registration' },
     { name: 'errors', title: 'Error page' },
   ],
@@ -210,11 +211,25 @@ export const pageContent = defineType({
       type: 'localeString',
       group: 'calendar',
     }),
+
+    // ── Results page ────────────────────────────────────────
+    defineField({
+      name: 'resultsPageTitle',
+      title: 'Results page title',
+      type: 'localeString',
+      group: 'results',
+    }),
+    defineField({
+      name: 'resultsPageLead',
+      title: 'Results page intro',
+      type: 'localeText',
+      group: 'results',
+    }),
     defineField({
       name: 'resultsEmpty',
       title: 'Message when no results are published',
       type: 'localeString',
-      group: 'calendar',
+      group: 'results',
     }),
 
     // ── Registration ────────────────────────────────────────

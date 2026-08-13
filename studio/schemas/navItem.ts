@@ -14,7 +14,8 @@ import { defineArrayMember, defineField, defineType } from 'sanity';
 const SITE_PAGES = [
   { title: 'Home', value: '/' },
   { title: 'News', value: '/news' },
-  { title: 'Calendar', value: '/calendar' },
+  { title: 'Calendar — upcoming competitions', value: '/calendar' },
+  { title: 'Results', value: '/results' },
   { title: 'Registration — choose type', value: '/register' },
   { title: 'Registration — club form', value: '/register/club' },
   { title: 'Registration — dancer form', value: '/register/dancer' },

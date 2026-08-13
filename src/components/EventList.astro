@@ -7,7 +7,10 @@ import type { DanceEvent } from '../lib/types';
 interface Props {
   events: DanceEvent[];
   emptyText?: string;
-  /** Link each result row through to the calendar entry. */
+  /**
+   * Where a result row links to. Pass an empty string on the results page
+   * itself — a row that links to the page you are already on is noise.
+   */
   resultHref?: string;
   /**
    * Homepage variant. The two lists sit side by side there, so rows must be a
@@ -73,13 +76,17 @@ const resultsLink = localizePath(resultHref, lang);
             {/* Three-level status ladder in one hue — see docs/design-wdc.md §6.
                 Results get link affordance, not a badge: they are a destination. */}
             <div class="shrink-0 self-center max-sm:self-start max-sm:ml-16 max-sm:w-full">
-              {event.type === 'result' ? (
+              {event.type === 'result' && resultHref ? (
                 <a
                   href={resultsLink}
                   class="inline-flex items-center gap-s1 min-h-[var(--tap)] text-nav font-bold text-ink-800 whitespace-nowrap hover:text-accent-700 transition-colors"
                 >
                   {s.viewResults}
                 </a>
+              ) : event.type === 'result' ? (
+                <span class="inline-block px-s3 py-s1 rounded-flat border border-line-strong text-ink-600 text-meta font-bold uppercase tracking-[.06em] whitespace-nowrap">
+                  {s.statusResult}
+                </span>
               ) : today ? (
                 <span class="inline-block px-s3 py-s1 rounded-flat bg-accent-700 text-white text-meta font-bold uppercase tracking-[.06em] whitespace-nowrap">
                   {s.statusToday}

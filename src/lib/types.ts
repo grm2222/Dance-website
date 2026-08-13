@@ -138,6 +138,9 @@ export interface PageContent {
   calendarPageTitle?: LocaleString;
   calendarPageLead?: LocaleText;
   scheduleEmpty?: LocaleString;
+
+  resultsPageTitle?: LocaleString;
+  resultsPageLead?: LocaleText;
   resultsEmpty?: LocaleString;
 
   registerPageTitle?: LocaleString;
