@@ -4,29 +4,34 @@ import PageHeader from '../components/PageHeader.astro';
 import CategoryTabs from '../components/CategoryTabs.astro';
 import NewsCard from '../components/NewsCard.astro';
 import { sanityFetch } from '../lib/sanity';
-import { allNewsQuery, newsCategoriesQuery } from '../lib/queries';
+import { allNewsQuery, newsCategoriesQuery, pageContentQuery } from '../lib/queries';
+import { t } from '../lib/format';
 import { toLang } from '../lib/i18n';
 import { strings } from '../lib/ui';
-import type { NewsArticlePreview, NewsCategory } from '../lib/types';
+import type { NewsArticlePreview, NewsCategory, PageContent } from '../lib/types';
 
 const lang = toLang(Astro.currentLocale);
 const s = strings(lang);
 
-const [articles, categories] = await Promise.all([
+const [page, articles, categories] = await Promise.all([
+  sanityFetch<PageContent | null>(pageContentQuery, null),
   sanityFetch<NewsArticlePreview[]>(allNewsQuery, []),
   sanityFetch<NewsCategory[]>(newsCategoriesQuery, []),
 ]);
+
+const title = t(page?.newsPageTitle, lang) || s.newsTitle;
+const lead = t(page?.newsPageLead, lang);
 ---
 
-<BaseLayout title={s.newsTitle}>
-  <PageHeader title={s.newsTitle} crumbs={[{ label: s.home, href: '/' }]} />
+<BaseLayout title={title} description={lead || undefined}>
+  <PageHeader title={title} lead={lead} crumbs={[{ label: s.home, href: '/' }]} />
 
   <div class="mx-auto max-w-page px-s4 py-s12 md:py-s18">
     <CategoryTabs categories={categories} />
 
     {
       articles.length === 0 ? (
-        <p class="text-nav text-ink-600">{s.noNews}</p>
+        <p class="text-nav text-ink-600">{t(page?.newsEmpty, lang) || s.noNews}</p>
       ) : (
         <div class="grid gap-s6 sm:grid-cols-2 lg:grid-cols-3">
           {articles.map((article) => (

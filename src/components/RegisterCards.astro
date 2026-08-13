@@ -2,13 +2,13 @@
 import { t } from '../lib/format';
 import { localizePath, toLang } from '../lib/i18n';
 import { strings } from '../lib/ui';
-import type { SiteSettings } from '../lib/types';
+import type { PageContent } from '../lib/types';
 
 interface Props {
-  settings: SiteSettings | null;
+  page: PageContent | null;
 }
 
-const { settings } = Astro.props;
+const { page } = Astro.props;
 
 const lang = toLang(Astro.currentLocale);
 const s = strings(lang);
@@ -18,17 +18,17 @@ const s = strings(lang);
 const cards = [
   {
     href: localizePath('/register/club', lang),
-    title: s.clubCardTitle,
-    text: t(settings?.clubCardText, lang) || s.clubCardTextFallback,
+    title: t(page?.clubCardTitle, lang) || s.clubCardTitle,
+    text: t(page?.clubCardText, lang) || s.clubCardTextFallback,
   },
   {
     href: localizePath('/register/dancer', lang),
-    title: s.dancerCardTitle,
-    text: t(settings?.dancerCardText, lang) || s.dancerCardTextFallback,
+    title: t(page?.dancerCardTitle, lang) || s.dancerCardTitle,
+    text: t(page?.dancerCardText, lang) || s.dancerCardTextFallback,
   },
 ];
 
-const note = t(settings?.registerNote, lang) || s.registerNoteFallback;
+const note = t(page?.registerNote, lang) || s.registerNoteFallback;
 ---
 
 <div class="grid gap-s4 md:grid-cols-2">

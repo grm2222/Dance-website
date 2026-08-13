@@ -106,12 +106,51 @@ export interface SiteSettings {
   aboutTitle?: LocaleString;
   aboutText?: LocaleText;
 
-  clubCardText?: LocaleText;
-  dancerCardText?: LocaleText;
-  registerNote?: LocaleText;
-
   footerText?: LocaleText;
   footerLinks?: CtaLink[];
+}
+
+/**
+ * Page-specific copy. Every field is optional — a blank one falls back to the
+ * built-in translation in lib/ui.ts, so the site never renders an empty
+ * heading. Keep in sync with studio/schemas/pageContent.ts.
+ */
+export interface PageContent {
+  newsHeading?: LocaleString;
+  newsCount?: number;
+  scheduleHeading?: LocaleString;
+  resultsHeading?: LocaleString;
+  showGallery?: boolean;
+  galleryHeading?: LocaleString;
+  galleryCount?: number;
+  showRegisterSection?: boolean;
+  registerHeading?: LocaleString;
+
+  newsPageTitle?: LocaleString;
+  newsPageLead?: LocaleText;
+  newsEmpty?: LocaleString;
+  categoryEmpty?: LocaleString;
+
+  calendarPageTitle?: LocaleString;
+  calendarPageLead?: LocaleText;
+  scheduleEmpty?: LocaleString;
+  resultsEmpty?: LocaleString;
+
+  registerPageTitle?: LocaleString;
+  registerLead?: LocaleText;
+  clubCardTitle?: LocaleString;
+  clubCardText?: LocaleText;
+  dancerCardTitle?: LocaleString;
+  dancerCardText?: LocaleText;
+  registerNote?: LocaleText;
+  clubFormTitle?: LocaleString;
+  clubFormLead?: LocaleText;
+  dancerFormTitle?: LocaleString;
+  dancerFormLead?: LocaleText;
+  formSuccessMessage?: LocaleText;
+
+  notFoundTitle?: LocaleString;
+  notFoundText?: LocaleText;
 }
 
 export interface RegistrationRequestInput {

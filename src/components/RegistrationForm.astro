@@ -2,14 +2,21 @@
 import { toLang } from '../lib/i18n';
 import { strings } from '../lib/ui';
 
+interface Props {
+  /** Admin-editable thank-you text; falls back to the built-in translation. */
+  successMessage?: string;
+}
+
 // Posts to our own endpoint only; the Sanity write token stays server-side.
 const lang = toLang(Astro.currentLocale);
 const s = strings(lang);
+
+const { successMessage = s.formOk } = Astro.props;
 ---
 
 <form
   id="registration-form"
-  data-msg-ok={s.formOk}
+  data-msg-ok={successMessage}
   data-msg-error={s.formError}
   data-msg-network={s.formNetworkError}
   method="post"

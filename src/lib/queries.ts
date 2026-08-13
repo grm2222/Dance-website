@@ -88,8 +88,21 @@ export const siteSettingsQuery = `
   heroEyebrow, heroTitle, heroSubtitle, heroImage,
   heroPrimaryCta{ label, href }, heroSecondaryCta{ label, href },
   aboutTitle, aboutText,
-  clubCardText, dancerCardText, registerNote,
   footerText, footerLinks[]{ label, href }
+}
+`;
+
+export const pageContentQuery = `
+*[_type == "pageContent"][0]{
+  newsHeading, newsCount, scheduleHeading, resultsHeading,
+  showGallery, galleryHeading, galleryCount,
+  showRegisterSection, registerHeading,
+  newsPageTitle, newsPageLead, newsEmpty, categoryEmpty,
+  calendarPageTitle, calendarPageLead, scheduleEmpty, resultsEmpty,
+  registerPageTitle, registerLead,
+  clubCardTitle, clubCardText, dancerCardTitle, dancerCardText, registerNote,
+  clubFormTitle, clubFormLead, dancerFormTitle, dancerFormLead, formSuccessMessage,
+  notFoundTitle, notFoundText
 }
 `;
 

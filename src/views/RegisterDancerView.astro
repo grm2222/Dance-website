@@ -2,24 +2,34 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageHeader from '../components/PageHeader.astro';
 import DancerRegistrationForm from '../components/DancerRegistrationForm.astro';
+import { sanityFetch } from '../lib/sanity';
+import { pageContentQuery } from '../lib/queries';
+import { t } from '../lib/format';
 import { toLang } from '../lib/i18n';
 import { strings } from '../lib/ui';
+import type { PageContent } from '../lib/types';
 
 const lang = toLang(Astro.currentLocale);
 const s = strings(lang);
+
+const page = await sanityFetch<PageContent | null>(pageContentQuery, null);
+
+const title = t(page?.dancerFormTitle, lang) || s.dancerFormTitle;
+const lead = t(page?.dancerFormLead, lang) || s.dancerFormLead;
+const successMessage = t(page?.formSuccessMessage, lang) || s.formOk;
 ---
 
-<BaseLayout title={s.dancerFormTitle} description={s.dancerFormLead}>
+<BaseLayout title={title} description={lead}>
   <PageHeader
-    title={s.dancerFormTitle}
-    lead={s.dancerFormLead}
+    title={title}
+    lead={lead}
     crumbs={[
       { label: s.home, href: '/' },
-      { label: s.registration, href: '/register' },
+      { label: t(page?.registerPageTitle, lang) || s.registration, href: '/register' },
     ]}
   />
 
   <div class="mx-auto max-w-[560px] px-s4 py-s12 md:py-s18">
-    <DancerRegistrationForm />
+    <DancerRegistrationForm successMessage={successMessage} />
   </div>
 </BaseLayout>

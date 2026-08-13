@@ -5,6 +5,7 @@ import { newsCategory } from './newsCategory';
 import { event } from './event';
 import { galleryImage } from './galleryImage';
 import { siteSettings } from './siteSettings';
+import { pageContent } from './pageContent';
 import { registrationRequest } from './registrationRequest';
 import { dancerRegistrationRequest } from './dancerRegistrationRequest';
 
@@ -22,6 +23,7 @@ export const schemaTypes = [
   event,
   galleryImage,
   siteSettings,
+  pageContent,
   registrationRequest,
   dancerRegistrationRequest,
 ];

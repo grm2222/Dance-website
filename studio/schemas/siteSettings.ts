@@ -12,7 +12,6 @@ export const siteSettings = defineType({
     { name: 'navigation', title: 'Menu' },
     { name: 'contact', title: 'Contact' },
     { name: 'homepage', title: 'Homepage' },
-    { name: 'register', title: 'Registration' },
     { name: 'footer', title: 'Footer' },
   ],
   fields: [
@@ -157,30 +156,6 @@ export const siteSettings = defineType({
       title: 'About section text',
       type: 'localeText',
       group: 'homepage',
-    }),
-
-    defineField({
-      name: 'clubCardText',
-      title: 'Club registration — description',
-      description: 'One or two lines shown on the club card on the homepage.',
-      type: 'localeText',
-      group: 'register',
-    }),
-    defineField({
-      name: 'dancerCardText',
-      title: 'Dancer registration — description',
-      description: 'One or two lines shown on the dancer card on the homepage.',
-      type: 'localeText',
-      group: 'register',
-    }),
-    defineField({
-      name: 'registerNote',
-      title: 'Registration note',
-      description:
-        'Small print under the two cards, e.g. how long a review takes. ' +
-        'Keep any promise here accurate — applicants will hold you to it.',
-      type: 'localeText',
-      group: 'register',
     }),
 
     defineField({

@@ -6,6 +6,7 @@ import {
   CheckmarkCircleIcon,
   CogIcon,
   DocumentTextIcon,
+  EditIcon,
   EnvelopeIcon,
   ImagesIcon,
   SparkleIcon,
@@ -21,7 +22,12 @@ const apiVersion = '2026-06-01';
 
 // siteSettings is a singleton; registrationRequest is created only via the
 // website form — both are kept out of the "new document" menu.
-const HIDDEN_FROM_CREATE = ['siteSettings', 'registrationRequest', 'dancerRegistrationRequest'];
+const HIDDEN_FROM_CREATE = [
+  'siteSettings',
+  'pageContent',
+  'registrationRequest',
+  'dancerRegistrationRequest',
+];
 
 // Federation colors, matching the website (see src/styles/global.css).
 // accent-700 (#0b6ea8), not the decorative accent-500 — Studio puts white text
@@ -43,6 +49,11 @@ const structure: StructureResolver = (S) =>
         .id('siteSettings')
         .icon(CogIcon)
         .child(S.document().schemaType('siteSettings').documentId('siteSettings')),
+      S.listItem()
+        .title('Page text')
+        .id('pageContent')
+        .icon(EditIcon)
+        .child(S.document().schemaType('pageContent').documentId('pageContent')),
       S.divider(),
 
       S.listItem()

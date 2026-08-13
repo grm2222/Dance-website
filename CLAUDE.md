@@ -39,7 +39,8 @@ Define these document types:
 - `newsCategory` — title, slug
 - `event` — title, date, location, description, type ("schedule" | "result"), resultDetails (optional)
 - `galleryImage` — image, caption, order
-- `siteSettings` (singleton) — logo, phone, emails, address, facebook URL, footer text, hero content
+- `siteSettings` (singleton) — site identity: logo, menu, phone, emails, address, social URLs, footer text, hero content
+- `pageContent` (singleton) — page-specific copy: section headings, page titles/intros, empty-state messages, registration card/form text, 404 text, plus homepage item counts and section toggles. Every field is optional; blanks fall back to the built-in translations in `src/lib/ui.ts`
 - `registrationRequest` — orgName, about, address, phone, email, submittedAt, status ("new" | "reviewed") — created via API, hidden from creation in Studio UI but listable
 - `dancerRegistrationRequest` — lastName, firstName, birthDate, gender ("male" | "female"), club (optional), phone, email, submittedAt, status ("new" | "reviewed") — created via API, hidden from creation in Studio UI but listable
 

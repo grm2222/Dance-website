@@ -1,19 +1,28 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { sanityFetch } from '../lib/sanity';
+import { pageContentQuery } from '../lib/queries';
+import { t } from '../lib/format';
 import { localizePath, toLang } from '../lib/i18n';
 import { strings } from '../lib/ui';
+import type { PageContent } from '../lib/types';
 
 // One 404 serves both trees: a wrong URL under /en still lands here, so the
 // copy stays Mongolian-first with English links available from the header.
 const lang = toLang(Astro.currentLocale);
 const s = strings(lang);
+
+const page = await sanityFetch<PageContent | null>(pageContentQuery, null);
+
+const title = t(page?.notFoundTitle, lang) || s.notFoundTitle;
+const text = t(page?.notFoundText, lang) || s.notFoundText;
 ---
 
-<BaseLayout title={s.notFoundTitle}>
+<BaseLayout title={title}>
   <div class="mx-auto max-w-[560px] px-s4 py-s18 text-center">
     <p class="font-display text-hero font-normal text-accent-700" aria-hidden="true">404</p>
-    <h1 class="mt-s4 font-display text-section font-normal text-ink-800">{s.notFoundTitle}</h1>
-    <p class="mt-s3 text-ink-600">{s.notFoundText}</p>
+    <h1 class="mt-s4 font-display text-section font-normal text-ink-800">{title}</h1>
+    <p class="mt-s3 text-ink-600">{text}</p>
     <div class="mt-s8 flex flex-col sm:flex-row gap-s3 justify-center">
       <a href={localizePath('/', lang)} class="btn-primary">{s.notFoundHome}</a>
       <a

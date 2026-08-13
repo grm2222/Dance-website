@@ -4,11 +4,11 @@ import PageHeader from '../components/PageHeader.astro';
 import CategoryTabs from '../components/CategoryTabs.astro';
 import NewsCard from '../components/NewsCard.astro';
 import { sanityFetch } from '../lib/sanity';
-import { newsByCategoryQuery } from '../lib/queries';
+import { newsByCategoryQuery, pageContentQuery } from '../lib/queries';
 import { t } from '../lib/format';
 import { toLang } from '../lib/i18n';
 import { strings } from '../lib/ui';
-import type { NewsArticlePreview, NewsCategory } from '../lib/types';
+import type { NewsArticlePreview, NewsCategory, PageContent } from '../lib/types';
 
 interface Props {
   category: NewsCategory;
@@ -20,9 +20,10 @@ const { category, categories } = Astro.props;
 const lang = toLang(Astro.currentLocale);
 const s = strings(lang);
 
-const articles = await sanityFetch<NewsArticlePreview[]>(newsByCategoryQuery, [], {
-  category: category.slug,
-});
+const [page, articles] = await Promise.all([
+  sanityFetch<PageContent | null>(pageContentQuery, null),
+  sanityFetch<NewsArticlePreview[]>(newsByCategoryQuery, [], { category: category.slug }),
+]);
 const title = t(category.title, lang);
 ---
 
@@ -40,7 +41,7 @@ const title = t(category.title, lang);
 
     {
       articles.length === 0 ? (
-        <p class="text-nav text-ink-600">{s.noNewsInCategory}</p>
+        <p class="text-nav text-ink-600">{t(page?.categoryEmpty, lang) || s.noNewsInCategory}</p>
       ) : (
         <div class="grid gap-s6 sm:grid-cols-2 lg:grid-cols-3">
           {articles.map((article) => (

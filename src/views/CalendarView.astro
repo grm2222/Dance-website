@@ -4,36 +4,37 @@ import PageHeader from '../components/PageHeader.astro';
 import BlockTitle from '../components/BlockTitle.astro';
 import EventList from '../components/EventList.astro';
 import { sanityFetch } from '../lib/sanity';
-import { allUpcomingEventsQuery, allResultsQuery } from '../lib/queries';
+import { allUpcomingEventsQuery, allResultsQuery, pageContentQuery } from '../lib/queries';
+import { t } from '../lib/format';
 import { toLang } from '../lib/i18n';
 import { strings } from '../lib/ui';
-import type { DanceEvent } from '../lib/types';
+import type { DanceEvent, PageContent } from '../lib/types';
 
 const lang = toLang(Astro.currentLocale);
 const s = strings(lang);
 
-const [upcoming, results] = await Promise.all([
+const [page, upcoming, results] = await Promise.all([
+  sanityFetch<PageContent | null>(pageContentQuery, null),
   sanityFetch<DanceEvent[]>(allUpcomingEventsQuery, []),
   sanityFetch<DanceEvent[]>(allResultsQuery, []),
 ]);
+
+const title = t(page?.calendarPageTitle, lang) || s.calendarTitle;
+const lead = t(page?.calendarPageLead, lang) || s.calendarLead;
 ---
 
-<BaseLayout title={s.calendarTitle} description={s.calendarLead}>
-  <PageHeader
-    title={s.calendarTitle}
-    lead={s.calendarLead}
-    crumbs={[{ label: s.home, href: '/' }]}
-  />
+<BaseLayout title={title} description={lead}>
+  <PageHeader title={title} lead={lead} crumbs={[{ label: s.home, href: '/' }]} />
 
   <div class="mx-auto max-w-page px-s4 py-s12 md:py-s18">
     <section aria-labelledby="schedule-heading" class="mb-s18">
-      <BlockTitle id="schedule-heading" title={s.schedule} />
-      <EventList events={upcoming} emptyText={s.noUpcoming} />
+      <BlockTitle id="schedule-heading" title={t(page?.scheduleHeading, lang) || s.schedule} />
+      <EventList events={upcoming} emptyText={t(page?.scheduleEmpty, lang) || s.noUpcoming} />
     </section>
 
     <section id="results" aria-labelledby="results-heading" class="scroll-mt-[72px]">
-      <BlockTitle id="results-heading" title={s.results} />
-      <EventList events={results} emptyText={s.noResults} />
+      <BlockTitle id="results-heading" title={t(page?.resultsHeading, lang) || s.results} />
+      <EventList events={results} emptyText={t(page?.resultsEmpty, lang) || s.noResults} />
     </section>
   </div>
 </BaseLayout>
