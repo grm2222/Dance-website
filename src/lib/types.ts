@@ -143,6 +143,10 @@ export interface PageContent {
   resultsPageLead?: LocaleText;
   resultsEmpty?: LocaleString;
 
+  dancersPageTitle?: LocaleString;
+  dancersPageLead?: LocaleText;
+  dancersEmpty?: LocaleString;
+
   registerPageTitle?: LocaleString;
   registerLead?: LocaleText;
   clubCardTitle?: LocaleString;
@@ -177,3 +181,31 @@ export interface DancerRegistrationInput {
   phone: string;
   email: string;
 }
+
+/** A dancer's public profile. Contact details and full date of birth are
+ *  deliberately absent — see studio/schemas/dancer.ts. */
+export interface DancerResult {
+  event?: { title: LocaleString; date: string };
+  placing?: number;
+  category?: LocaleString;
+  partner?: string;
+}
+
+export interface Dancer {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  slug: string;
+  photo?: SanityImage;
+  birthYear?: number;
+  city?: LocaleString;
+  club?: string;
+  height?: number;
+  standardClass?: string;
+  latinClass?: string;
+  isActive?: boolean;
+  results?: DancerResult[];
+}
+
+/** Card-sized projection for the directory (no results). */
+export type DancerPreview = Omit<Dancer, 'results'>;

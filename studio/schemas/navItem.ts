@@ -16,6 +16,7 @@ const SITE_PAGES = [
   { title: 'News', value: '/news' },
   { title: 'Calendar — upcoming competitions', value: '/calendar' },
   { title: 'Results', value: '/results' },
+  { title: 'Dancers', value: '/dancers' },
   { title: 'Registration — choose type', value: '/register' },
   { title: 'Registration — club form', value: '/register/club' },
   { title: 'Registration — dancer form', value: '/register/dancer' },

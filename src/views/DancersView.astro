@@ -1,0 +1,113 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import DancerCard from '../components/DancerCard.astro';
+import { sanityFetch } from '../lib/sanity';
+import { pageContentQuery } from '../lib/queries';
+import { t } from '../lib/format';
+import { localizePath, toLang } from '../lib/i18n';
+import { strings } from '../lib/ui';
+import type { DancerPreview, PageContent } from '../lib/types';
+
+interface Props {
+  dancers: DancerPreview[];
+  /** 1-based page number and total, supplied by the route. */
+  page: number;
+  totalPages: number;
+  total: number;
+}
+
+const { dancers, page: pageNo, totalPages, total } = Astro.props;
+
+const lang = toLang(Astro.currentLocale);
+const s = strings(lang);
+
+const page = await sanityFetch<PageContent | null>(pageContentQuery, null);
+
+const title = t(page?.dancersPageTitle, lang) || s.dancersTitle;
+const lead = t(page?.dancersPageLead, lang) || s.dancersLead;
+
+/** Page 1 lives at /dancers; later pages at /dancers/page/2. */
+const pageUrl = (n: number) =>
+  localizePath(n === 1 ? '/dancers' : `/dancers/page/${n}`, lang);
+
+const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
+---
+
+<BaseLayout title={pageNo === 1 ? title : `${title} — ${pageNo}`} description={lead}>
+  <PageHeader title={title} lead={lead} crumbs={[{ label: s.home, href: '/' }]} />
+
+  <div class="mx-auto max-w-page px-s4 py-s12 md:py-s18">
+    {
+      dancers.length === 0 ? (
+        <p class="text-nav text-ink-600">{t(page?.dancersEmpty, lang) || s.noDancers}</p>
+      ) : (
+        <>
+          <p class="mb-s6 text-nav text-ink-600">
+            {s.dancersCount}: <strong class="text-ink-800">{total}</strong>
+          </p>
+
+          <div class="grid gap-s4 md:grid-cols-2">
+            {dancers.map((dancer) => (
+              <DancerCard dancer={dancer} />
+            ))}
+          </div>
+
+          {
+            totalPages > 1 && (
+              <nav aria-label={s.pagination} class="mt-s12">
+                <ul class="flex flex-wrap items-center gap-s2">
+                  {pageNo > 1 && (
+                    <li>
+                      <a
+                        href={pageUrl(pageNo - 1)}
+                        rel="prev"
+                        class="inline-flex items-center min-h-[var(--tap)] px-s4 rounded-flat border border-line-strong text-nav font-bold text-ink-800 hover:border-ink-800 transition-colors"
+                      >
+                        {s.pagePrev}
+                      </a>
+                    </li>
+                  )}
+
+                  {pageNumbers.map((n) =>
+                    n === pageNo ? (
+                      <li>
+                        <span
+                          aria-current="page"
+                          class="grid place-items-center min-h-[var(--tap)] min-w-[var(--tap)] px-s3 rounded-flat bg-accent-700 text-white text-nav font-bold"
+                        >
+                          {n}
+                        </span>
+                      </li>
+                    ) : (
+                      <li>
+                        <a
+                          href={pageUrl(n)}
+                          class="grid place-items-center min-h-[var(--tap)] min-w-[var(--tap)] px-s3 rounded-flat border border-line-strong text-nav font-bold text-ink-800 hover:border-ink-800 transition-colors"
+                        >
+                          {n}
+                        </a>
+                      </li>
+                    ),
+                  )}
+
+                  {pageNo < totalPages && (
+                    <li>
+                      <a
+                        href={pageUrl(pageNo + 1)}
+                        rel="next"
+                        class="inline-flex items-center min-h-[var(--tap)] px-s4 rounded-flat border border-line-strong text-nav font-bold text-ink-800 hover:border-ink-800 transition-colors"
+                      >
+                        {s.pageNext}
+                      </a>
+                    </li>
+                  )}
+                </ul>
+              </nav>
+            )
+          }
+        </>
+      )
+    }
+  </div>
+</BaseLayout>

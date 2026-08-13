@@ -1,0 +1,27 @@
+---
+import DancersView from '../../../../views/DancersView.astro';
+import { sanityFetch } from '../../../../lib/sanity';
+import { allDancersQuery } from '../../../../lib/queries';
+import { PER_PAGE, pageNumbers } from '../../../../lib/pagination';
+import type { DancerPreview } from '../../../../lib/types';
+
+// Page 1 lives at /dancers, so this route starts at 2.
+export async function getStaticPaths() {
+  const dancers = await sanityFetch<DancerPreview[]>(allDancersQuery, []);
+  return pageNumbers(dancers.length)
+    .filter((n) => n > 1)
+    .map((n) => ({ params: { page: String(n) } }));
+}
+
+const pageNo = Number(Astro.params.page);
+const dancers = await sanityFetch<DancerPreview[]>(allDancersQuery, []);
+const totalPages = Math.max(1, Math.ceil(dancers.length / PER_PAGE));
+const start = (pageNo - 1) * PER_PAGE;
+---
+
+<DancersView
+  dancers={dancers.slice(start, start + PER_PAGE)}
+  page={pageNo}
+  totalPages={totalPages}
+  total={dancers.length}
+/>

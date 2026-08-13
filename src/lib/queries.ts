@@ -100,6 +100,7 @@ export const pageContentQuery = `
   newsPageTitle, newsPageLead, newsEmpty, categoryEmpty,
   calendarPageTitle, calendarPageLead, scheduleEmpty,
   resultsPageTitle, resultsPageLead, resultsEmpty,
+  dancersPageTitle, dancersPageLead, dancersEmpty,
   registerPageTitle, registerLead,
   clubCardTitle, clubCardText, dancerCardTitle, dancerCardText, registerNote,
   clubFormTitle, clubFormLead, dancerFormTitle, dancerFormLead, formSuccessMessage,
@@ -115,5 +116,29 @@ export const pageContentQuery = `
 export const nextEventQuery = `
 *[_type == "event" && type == "schedule" && date >= now()] | order(date asc)[0]{
   _id, title, date, location, type
+}
+`;
+
+const dancerCardFields = `
+  _id, firstName, lastName, "slug": slug.current,
+  photo, birthYear, city, club, height, standardClass, latinClass, isActive
+`;
+
+export const allDancersQuery = `
+*[_type == "dancer" && defined(slug.current)]
+  | order(lastName asc, firstName asc){ ${dancerCardFields} }
+`;
+
+export const dancerSlugsQuery = `
+*[_type == "dancer" && defined(slug.current)].slug.current
+`;
+
+export const dancerBySlugQuery = `
+*[_type == "dancer" && slug.current == $slug][0]{
+  ${dancerCardFields},
+  results[]{
+    placing, category, partner,
+    event->{ title, date }
+  }
 }
 `;

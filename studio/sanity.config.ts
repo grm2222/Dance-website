@@ -135,6 +135,45 @@ const structure: StructureResolver = (S) =>
         ),
 
       S.listItem()
+        .title('Dancers')
+        .icon(UserIcon)
+        .child(
+          S.list()
+            .title('Dancers')
+            .items([
+              S.listItem()
+                .title('Currently competing')
+                .icon(UserIcon)
+                .child(
+                  S.documentList()
+                    .title('Currently competing')
+                    .apiVersion(apiVersion)
+                    .filter('_type == "dancer" && isActive != false')
+                    .defaultOrdering([{ field: 'lastName', direction: 'asc' }])
+                    .canHandleIntent(S.documentTypeList('dancer').getCanHandleIntent()),
+                ),
+              S.listItem()
+                .title('Inactive')
+                .icon(UserIcon)
+                .child(
+                  S.documentList()
+                    .title('Inactive')
+                    .apiVersion(apiVersion)
+                    .filter('_type == "dancer" && isActive == false')
+                    .defaultOrdering([{ field: 'lastName', direction: 'asc' }]),
+                ),
+              S.divider(),
+              S.listItem()
+                .title('All dancers')
+                .icon(UserIcon)
+                .child(
+                  S.documentTypeList('dancer')
+                    .title('All dancers')
+                    .defaultOrdering([{ field: 'lastName', direction: 'asc' }]),
+                ),
+            ]),
+        ),
+      S.listItem()
         .title('Gallery')
         .icon(ImagesIcon)
         .child(

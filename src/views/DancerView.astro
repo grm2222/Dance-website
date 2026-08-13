@@ -1,0 +1,156 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import BlockTitle from '../components/BlockTitle.astro';
+import { urlFor } from '../lib/sanity';
+import { formatDate, t } from '../lib/format';
+import { localizePath, toLang } from '../lib/i18n';
+import { strings } from '../lib/ui';
+import type { Dancer } from '../lib/types';
+
+interface Props {
+  dancer: Dancer;
+}
+
+const { dancer } = Astro.props;
+
+const lang = toLang(Astro.currentLocale);
+const s = strings(lang);
+
+const name = [dancer.lastName, dancer.firstName].filter(Boolean).join(' ');
+const photoUrl = dancer.photo ? urlFor(dancer.photo).width(480).height(480).url() : null;
+const city = t(dancer.city, lang);
+
+const details = [
+  dancer.birthYear && { label: s.dancerBirthYear, value: String(dancer.birthYear) },
+  dancer.height && { label: s.dancerHeight, value: `${dancer.height} cm` },
+  city && { label: s.dancerCity, value: city },
+  dancer.club && { label: s.dancerClub, value: dancer.club },
+  dancer.standardClass && { label: s.dancerStandard, value: dancer.standardClass },
+  dancer.latinClass && { label: s.dancerLatin, value: dancer.latinClass },
+].filter((d): d is { label: string; value: string } => Boolean(d));
+
+// Newest competition first, so a profile opens on recent form.
+const results = [...(dancer.results ?? [])].sort((a, b) =>
+  (b.event?.date ?? '').localeCompare(a.event?.date ?? ''),
+);
+---
+
+<BaseLayout title={name} description={[city, dancer.club].filter(Boolean).join(' · ')}>
+  <PageHeader
+    title={name}
+    crumbs={[
+      { label: s.home, href: '/' },
+      { label: s.dancersTitle, href: '/dancers' },
+    ]}
+  />
+
+  <div class="mx-auto max-w-page px-s4 py-s12 md:py-s18">
+    <div class="grid gap-s8 md:grid-cols-[200px_1fr] md:gap-s12">
+      <div>
+        {
+          photoUrl ? (
+            <img
+              src={photoUrl}
+              alt={name}
+              width="200"
+              height="200"
+              class="h-[200px] w-[200px] rounded-full object-cover border border-line"
+            />
+          ) : (
+            <span
+              aria-hidden="true"
+              class="grid h-[200px] w-[200px] place-items-center rounded-full bg-paper-alt border border-line font-display text-hero text-ink-600"
+            >
+              {dancer.firstName?.charAt(0) ?? '?'}
+            </span>
+          )
+        }
+        {
+          dancer.isActive === false && (
+            <p class="mt-s4 inline-block px-s3 py-s1 rounded-flat border border-line-strong text-meta font-bold uppercase tracking-[.06em] text-ink-600">
+              {s.dancerInactive}
+            </p>
+          )
+        }
+      </div>
+
+      <div>
+        {
+          details.length > 0 && (
+            <dl class="grid gap-x-s8 gap-y-s3 sm:grid-cols-2">
+              {details.map((detail) => (
+                <div class="border-b border-line pb-s2">
+                  <dt class="text-meta font-bold uppercase tracking-[.06em] text-ink-600">
+                    {detail.label}
+                  </dt>
+                  <dd class="text-copy text-ink-800 mt-s1">{detail.value}</dd>
+                </div>
+              ))}
+            </dl>
+          )
+        }
+      </div>
+    </div>
+
+    <section class="mt-s12 md:mt-s18" aria-labelledby="results-heading">
+      <BlockTitle id="results-heading" title={s.dancerResults} />
+      {
+        results.length === 0 ? (
+          <p class="text-nav text-ink-600">{s.dancerNoResults}</p>
+        ) : (
+          <ol>
+            {results.map((result, i) => (
+              <li
+                class:list={[
+                  'flex flex-wrap sm:flex-nowrap items-center gap-s3 sm:gap-s4 py-s4 border-b border-line',
+                  i === 0 && 'border-t',
+                ]}
+              >
+                {result.placing ? (
+                  <span class="shrink-0 grid h-12 w-12 place-content-center rounded-flat bg-ink-900 text-white text-center leading-none">
+                    <span class="font-display text-head font-medium">{result.placing}</span>
+                  </span>
+                ) : (
+                  <span aria-hidden="true" class="shrink-0 h-12 w-12 rounded-flat border border-line" />
+                )}
+
+                <div class="min-w-0 flex-1">
+                  <h3 class="font-display text-head font-medium text-ink-800">
+                    {t(result.event?.title, lang)}
+                  </h3>
+                  <p class="text-nav text-ink-600">
+                    {
+                      [
+                        result.event?.date && formatDate(result.event.date, lang),
+                        t(result.category, lang),
+                        result.partner && `${s.dancerPartner}: ${result.partner}`,
+                      ]
+                        .filter(Boolean)
+                        .join(' · ')
+                    }
+                  </p>
+                </div>
+
+                {result.placing && (
+                  <span class="shrink-0 text-meta font-bold uppercase tracking-[.06em] text-ink-600">
+                    {result.placing} {s.dancerPlace}
+                  </span>
+                )}
+              </li>
+            ))}
+          </ol>
+        )
+      }
+    </section>
+
+    <p class="mt-s8">
+      <a
+        href={localizePath('/dancers', lang)}
+        class="tap inline-flex items-center text-nav font-bold text-ink-800 hover:text-accent-700 transition-colors"
+      >
+        {s.backToDancers}
+      </a>
+    </p>
+  </div>
+</BaseLayout>

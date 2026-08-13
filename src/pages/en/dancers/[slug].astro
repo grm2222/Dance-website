@@ -1,0 +1,20 @@
+---
+import DancerView from '../../../views/DancerView.astro';
+import { sanityFetch } from '../../../lib/sanity';
+import { dancerBySlugQuery, dancerSlugsQuery } from '../../../lib/queries';
+import type { Dancer } from '../../../lib/types';
+
+export async function getStaticPaths() {
+  const slugs = await sanityFetch<string[]>(dancerSlugsQuery, []);
+  return slugs.map((slug) => ({ params: { slug } }));
+}
+
+const { slug } = Astro.params;
+const dancer = await sanityFetch<Dancer | null>(dancerBySlugQuery, null, { slug });
+
+if (!dancer) {
+  return Astro.redirect('/en/dancers');
+}
+---
+
+<DancerView dancer={dancer} />

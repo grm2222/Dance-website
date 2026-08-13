@@ -1,0 +1,90 @@
+---
+import { urlFor } from '../lib/sanity';
+import { t } from '../lib/format';
+import { localizePath, toLang } from '../lib/i18n';
+import { strings } from '../lib/ui';
+import type { DancerPreview } from '../lib/types';
+
+interface Props {
+  dancer: DancerPreview;
+}
+
+const { dancer } = Astro.props;
+
+const lang = toLang(Astro.currentLocale);
+const s = strings(lang);
+
+const name = [dancer.lastName, dancer.firstName].filter(Boolean).join(' ');
+const photoUrl = dancer.photo ? urlFor(dancer.photo).width(240).height(240).url() : null;
+const city = t(dancer.city, lang);
+
+// Facts are only rendered when present, so a sparse profile still reads as a
+// deliberate card rather than a list of blanks.
+const facts = [
+  dancer.birthYear && { label: s.dancerBirthYear, value: String(dancer.birthYear) },
+  dancer.height && { label: s.dancerHeight, value: `${dancer.height} cm` },
+  city && { label: s.dancerCity, value: city },
+  dancer.club && { label: s.dancerClub, value: dancer.club },
+].filter((f): f is { label: string; value: string } => Boolean(f));
+
+const classes = [
+  dancer.standardClass && `${s.dancerStandard}: ${dancer.standardClass}`,
+  dancer.latinClass && `${s.dancerLatin}: ${dancer.latinClass}`,
+]
+  .filter(Boolean)
+  .join(' · ');
+---
+
+<a
+  href={localizePath(`/dancers/${dancer.slug}`, lang)}
+  class="flex gap-s4 p-s4 bg-paper border border-line rounded-flat hover:border-accent-500 hover:shadow-[0_2px_10px_rgb(0_0_0/0.07)] transition-all"
+>
+  {
+    photoUrl ? (
+      <img
+        src={photoUrl}
+        alt=""
+        width="80"
+        height="80"
+        loading="lazy"
+        decoding="async"
+        class="shrink-0 h-20 w-20 rounded-full object-cover border border-line"
+      />
+    ) : (
+      <span
+        aria-hidden="true"
+        class="shrink-0 h-20 w-20 rounded-full bg-paper-alt border border-line grid place-items-center font-display text-num text-ink-600"
+      >
+        {dancer.firstName?.charAt(0) ?? '?'}
+      </span>
+    )
+  }
+
+  <div class="min-w-0 flex-1">
+    <h3 class="font-display text-head font-medium text-ink-800 uppercase mb-s1">
+      {name}
+      {
+        dancer.isActive === false && (
+          <span class="ml-s2 align-middle inline-block px-s2 py-[1px] rounded-flat border border-line-strong text-meta font-bold uppercase tracking-[.06em] text-ink-600">
+            {s.dancerInactive}
+          </span>
+        )
+      }
+    </h3>
+
+    {
+      facts.length > 0 && (
+        <dl class="flex flex-wrap gap-x-s4 gap-y-s1 text-nav text-ink-600">
+          {facts.map((fact) => (
+            <div class="flex gap-s1">
+              <dt class="sr-only">{fact.label}</dt>
+              <dd>{fact.value}</dd>
+            </div>
+          ))}
+        </dl>
+      )
+    }
+
+    {classes && <p class="mt-s1 text-meta font-bold uppercase tracking-[.06em] text-ink-600">{classes}</p>}
+  </div>
+</a>

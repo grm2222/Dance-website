@@ -9,7 +9,8 @@ Phase 1 scope ONLY — do not build beyond this without being asked:
 2. **News section** — list page + single article page, categories (Дотоод мэдээ / Гадаад мэдээ)
 3. **Registration forms** — /register hub with two request forms: club/organization (`/register/club`) and dancer (`/register/dancer`) (no auth, no login — submissions are reviewed manually by admins)
 4. **Calendar** — /calendar lists upcoming competitions; /results lists finished ones with placings (two separate pages)
-5. **Admin** — handled entirely by Sanity Studio (no custom admin UI to build)
+5. **Dancers** — /dancers directory (paginated) + /dancers/[slug] profile with photo, club, classes and competition results. Public profiles are a separate `dancer` document, never the raw registration request — no contact details or full date of birth are published
+6. **Admin** — handled entirely by Sanity Studio (no custom admin UI to build)
 
 Out of scope for now: user accounts/login, competition registration system,
 rankings, e-commerce, payments. These come in phase 2 — do not scaffold them.
@@ -43,6 +44,7 @@ Define these document types:
 - `pageContent` (singleton) — page-specific copy: section headings, page titles/intros, empty-state messages, registration card/form text, 404 text, plus homepage item counts and section toggles. Every field is optional; blanks fall back to the built-in translations in `src/lib/ui.ts`
 - `registrationRequest` — orgName, about, address, phone, email, submittedAt, status ("new" | "reviewed") — created via API, hidden from creation in Studio UI but listable
 - `dancerRegistrationRequest` — lastName, firstName, birthDate, gender ("male" | "female"), club (optional), phone, email, submittedAt, status ("new" | "reviewed") — created via API, hidden from creation in Studio UI but listable
+- `dancer` — public profile an admin creates after reviewing a request: lastName, firstName, slug, photo, birthYear, city, club, height, standardClass, latinClass, isActive, results[] (each links to an `event` with placing/category/partner). Never copy phone, email or full date of birth here — those stay in the private request
 
 ## Project Structure
 

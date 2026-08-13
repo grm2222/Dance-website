@@ -3,6 +3,7 @@ import { ctaLink, navChild, navItem } from './navItem';
 import { newsArticle } from './newsArticle';
 import { newsCategory } from './newsCategory';
 import { event } from './event';
+import { dancer, dancerResult } from './dancer';
 import { galleryImage } from './galleryImage';
 import { siteSettings } from './siteSettings';
 import { pageContent } from './pageContent';
@@ -17,10 +18,12 @@ export const schemaTypes = [
   ctaLink,
   navChild,
   navItem,
+  dancerResult,
   // documents
   newsArticle,
   newsCategory,
   event,
+  dancer,
   galleryImage,
   siteSettings,
   pageContent,
