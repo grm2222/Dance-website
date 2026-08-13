@@ -83,16 +83,16 @@ export const galleryQuery = `
 export const siteSettingsQuery = `
 *[_type == "siteSettings"][0]{
   siteName, tagline, logo,
-  navigation[]{ label, href, children[]{ label, href } },
+  navigation[]{ label, href, customHref, children[]{ label, href, customHref } },
   phone, emails, address, facebookUrl, instagramUrl, youtubeUrl,
-  footerText, footerLinks[]{ label, href }
+  footerText, footerLinks[]{ label, href, customHref }
 }
 `;
 
 export const pageContentQuery = `
 *[_type == "pageContent"][0]{
   showHero, heroEyebrow, heroTitle, heroSubtitle, heroImage,
-  heroPrimaryCta{ label, href }, heroSecondaryCta{ label, href },
+  heroPrimaryCta{ label, href, customHref }, heroSecondaryCta{ label, href, customHref },
   aboutTitle, aboutText,
   newsHeading, newsCount, scheduleHeading, resultsHeading,
   showGallery, galleryHeading, galleryCount,

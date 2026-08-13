@@ -1,7 +1,7 @@
 ---
 import { urlFor } from '../lib/sanity';
 import { daysUntil, formatDate, formatLongDate, t } from '../lib/format';
-import { alternatePath, LANG_LABELS, localizePath, LOCALES, toLang } from '../lib/i18n';
+import { alternatePath, LANG_LABELS, linkHref, localizePath, LOCALES, toLang } from '../lib/i18n';
 import { strings } from '../lib/ui';
 import type { DanceEvent, NavItem, SiteSettings } from '../lib/types';
 
@@ -43,6 +43,10 @@ const currentPath = Astro.url.pathname;
 /** Internal links get the /en prefix; external ones are left alone. */
 const href = (target: string) =>
   target.startsWith('/') ? localizePath(target, lang) : target;
+
+/** The path a menu entry points at, before locale prefixing. */
+const rawTarget = (link: { href?: string; customHref?: string }) =>
+  link.customHref || link.href || '/';
 
 const isActive = (target: string) => {
   const resolved = href(target);
@@ -198,11 +202,11 @@ const langLinks = LOCALES.map((code) => ({
                   </button>
                 ) : (
                   <a
-                    href={href(item.href)}
-                    aria-current={isActive(item.href) ? 'page' : undefined}
+                    href={linkHref(item, lang)}
+                    aria-current={isActive(rawTarget(item)) ? 'page' : undefined}
                     class:list={[
                       'flex items-center px-s4 text-nav font-bold uppercase tracking-[.03em] border-b-[3px] transition-colors',
-                      isActive(item.href)
+                      isActive(rawTarget(item))
                         ? 'text-accent-700 border-accent-500'
                         : 'text-ink-800 border-transparent hover:text-accent-700',
                     ]}
@@ -216,7 +220,7 @@ const langLinks = LOCALES.map((code) => ({
                     {item.children.map((child) => (
                       <li>
                         <a
-                          href={href(child.href)}
+                          href={linkHref(child, lang)}
                           class="block px-s4 py-s3 text-nav text-body border-b border-line last:border-b-0 hover:bg-paper-alt hover:text-accent-700 transition-colors"
                         >
                           {t(child.label, lang)}
@@ -284,11 +288,11 @@ const langLinks = LOCALES.map((code) => ({
                     <svg viewBox="0 0 12 12" class="h-[9px] w-[9px] fill-current transition-transform" aria-hidden="true"><path d="M2 4l4 4 4-4z" /></svg>
                   </button>
                   <div class="m-sub hidden bg-paper-alt border-t border-line">
-                    <a href={href(item.href)} class="flex items-center min-h-[var(--tap)] py-s3 pl-s8 pr-s4 text-copy text-body border-b border-line">
+                    <a href={linkHref(item, lang)} class="flex items-center min-h-[var(--tap)] py-s3 pl-s8 pr-s4 text-copy text-body border-b border-line">
                       {t(item.label, lang)}
                     </a>
                     {item.children.map((child) => (
-                      <a href={href(child.href)} class="flex items-center min-h-[var(--tap)] py-s3 pl-s8 pr-s4 text-copy text-body border-b border-line last:border-b-0">
+                      <a href={linkHref(child, lang)} class="flex items-center min-h-[var(--tap)] py-s3 pl-s8 pr-s4 text-copy text-body border-b border-line last:border-b-0">
                         {t(child.label, lang)}
                       </a>
                     ))}
@@ -296,11 +300,11 @@ const langLinks = LOCALES.map((code) => ({
                 </>
               ) : (
                 <a
-                  href={href(item.href)}
-                  aria-current={isActive(item.href) ? 'page' : undefined}
+                  href={linkHref(item, lang)}
+                  aria-current={isActive(rawTarget(item)) ? 'page' : undefined}
                   class:list={[
                     'w-full min-h-[56px] flex items-center px-s4 text-copy font-bold uppercase tracking-[.03em]',
-                    isActive(item.href) ? 'text-accent-700' : 'text-ink-800',
+                    isActive(rawTarget(item)) ? 'text-accent-700' : 'text-ink-800',
                   ]}
                 >
                   {t(item.label, lang)}

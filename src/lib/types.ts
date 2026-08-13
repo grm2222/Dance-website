@@ -75,7 +75,10 @@ export interface GalleryImage {
 /** A link with a label — used for buttons and footer links. */
 export interface CtaLink {
   label: LocaleString;
-  href: string;
+  /** Page picked from the dropdown in the Studio. */
+  href?: string;
+  /** Free-form path or external URL; takes precedence over `href`. */
+  customHref?: string;
 }
 
 /** Header menu entry; `children` renders as a dropdown. */

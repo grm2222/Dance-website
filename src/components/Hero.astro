@@ -1,7 +1,7 @@
 ---
 import { urlFor } from '../lib/sanity';
 import { t } from '../lib/format';
-import { localizePath, toLang } from '../lib/i18n';
+import { linkHref, localizePath, toLang } from '../lib/i18n';
 import { strings } from '../lib/ui';
 import type { PageContent } from '../lib/types';
 
@@ -26,9 +26,9 @@ const heroImageUrl = page?.heroImage
 const primary = page?.heroPrimaryCta;
 const secondary = page?.heroSecondaryCta;
 const primaryLabel = t(primary?.label, lang) || s.heroPrimaryFallback;
-const primaryHref = href(primary?.href || '/register');
+const primaryHref = primary ? linkHref(primary, lang) : localizePath('/register', lang);
 const secondaryLabel = t(secondary?.label, lang) || s.heroSecondaryFallback;
-const secondaryHref = href(secondary?.href || '/calendar');
+const secondaryHref = secondary ? linkHref(secondary, lang) : localizePath('/calendar', lang);
 ---
 
 <section class="relative isolate bg-ink-900 text-white overflow-hidden">

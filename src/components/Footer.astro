@@ -1,6 +1,6 @@
 ---
 import { t } from '../lib/format';
-import { localizePath, toLang } from '../lib/i18n';
+import { linkHref, toLang } from '../lib/i18n';
 import { strings } from '../lib/ui';
 import type { CtaLink, SiteSettings } from '../lib/types';
 
@@ -17,8 +17,6 @@ const siteName = t(settings?.siteName, lang) || s.siteNameFallback;
 const footerText = t(settings?.footerText, lang);
 const address = t(settings?.address, lang);
 const year = new Date().getFullYear();
-
-const href = (target: string) => (target.startsWith('/') ? localizePath(target, lang) : target);
 
 const FALLBACK_LINKS: CtaLink[] = [
   { label: { mn: 'Мэдээ', en: 'News' }, href: '/news' },
@@ -64,7 +62,7 @@ const socials = [
           {
             links.map((link) => (
               <li>
-                <a href={href(link.href)} class="flex items-center min-h-[var(--tap)] hover:text-white transition-colors">
+                <a href={linkHref(link, lang)} class="flex items-center min-h-[var(--tap)] hover:text-white transition-colors">
                   {t(link.label, lang)}
                 </a>
               </li>

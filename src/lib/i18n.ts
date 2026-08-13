@@ -50,3 +50,17 @@ export const LANG_LABELS: Record<Lang, { short: string; full: string }> = {
   mn: { short: 'МН', full: 'Монгол' },
   en: { short: 'EN', full: 'English' },
 };
+
+/**
+ * The address a CMS link points at. Editors pick a page from a dropdown
+ * (`href`); `customHref` is the escape hatch for news categories and outside
+ * sites, so it wins when both are set. Internal paths get the locale prefix,
+ * external URLs are left alone.
+ */
+export function linkHref(
+  link: { href?: string; customHref?: string } | undefined,
+  lang: Lang,
+): string {
+  const target = link?.customHref || link?.href || '/';
+  return target.startsWith('/') ? localizePath(target, lang) : target;
+}
