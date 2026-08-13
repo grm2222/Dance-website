@@ -17,7 +17,12 @@ export const sanityClient = createClient({
   projectId: projectId ?? 'unconfigured',
   dataset,
   apiVersion: '2026-06-01',
-  useCdn: true,
+  // Pages are prerendered, so every query runs at build time. The publish
+  // webhook fires a rebuild the instant an editor hits Publish, which can
+  // beat the CDN's ~60s cache and bake the pre-edit content into the site.
+  // Reading from the API directly costs nothing here — it is a handful of
+  // requests per build — and guarantees a rebuild reflects what was published.
+  useCdn: false,
 });
 
 const builder = createImageUrlBuilder(sanityClient);
