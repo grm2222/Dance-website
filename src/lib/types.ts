@@ -97,15 +97,6 @@ export interface SiteSettings {
   instagramUrl?: string;
   youtubeUrl?: string;
 
-  heroEyebrow?: LocaleString;
-  heroTitle?: LocaleString;
-  heroSubtitle?: LocaleText;
-  heroImage?: SanityImage;
-  heroPrimaryCta?: CtaLink;
-  heroSecondaryCta?: CtaLink;
-  aboutTitle?: LocaleString;
-  aboutText?: LocaleText;
-
   footerText?: LocaleText;
   footerLinks?: CtaLink[];
 }
@@ -116,6 +107,16 @@ export interface SiteSettings {
  * heading. Keep in sync with studio/schemas/pageContent.ts.
  */
 export interface PageContent {
+  showHero?: boolean;
+  heroEyebrow?: LocaleString;
+  heroTitle?: LocaleString;
+  heroSubtitle?: LocaleText;
+  heroImage?: SanityImage;
+  heroPrimaryCta?: CtaLink;
+  heroSecondaryCta?: CtaLink;
+  aboutTitle?: LocaleString;
+  aboutText?: LocaleText;
+
   newsHeading?: LocaleString;
   newsCount?: number;
   scheduleHeading?: LocaleString;

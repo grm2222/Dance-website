@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import BlockTitle from '../components/BlockTitle.astro';
+import Hero from '../components/Hero.astro';
 import NewsCard from '../components/NewsCard.astro';
 import EventList from '../components/EventList.astro';
 import Gallery from '../components/Gallery.astro';
@@ -41,7 +42,8 @@ const [settings, page, latestNews, upcomingEvents, recentResults, galleryImages]
   ]);
 
 const siteName = t(settings?.siteName, lang) || s.siteNameFallback;
-const aboutText = t(settings?.aboutText, lang);
+const aboutText = t(page?.aboutText, lang);
+const showHero = page?.showHero !== false;
 
 // Admin-controlled headings and section sizes; each falls back to the built-in
 // translation so a blank field never leaves a heading empty.
@@ -62,6 +64,8 @@ const showRegister = page?.showRegisterSection !== false;
       so the document still has a top-level heading for screen readers and
       search engines — every page needs exactly one. */}
   <h1 class="sr-only">{siteName}</h1>
+
+  {showHero && <Hero page={page} />}
 
   <!-- ═══ Latest news ═══ -->
   <section class="py-s12 md:py-s18" aria-labelledby="news-heading">
@@ -121,7 +125,7 @@ const showRegister = page?.showRegisterSection !== false;
     aboutText && (
       <section class="py-s12 md:py-s18 border-t border-line" aria-labelledby="about-heading">
         <div class="mx-auto max-w-page px-s4">
-          <BlockTitle id="about-heading" title={t(settings?.aboutTitle, lang) || s.aboutUs} />
+          <BlockTitle id="about-heading" title={t(page?.aboutTitle, lang) || s.aboutUs} />
           <p class="max-w-[70ch] whitespace-pre-line leading-[1.75]">{aboutText}</p>
         </div>
       </section>

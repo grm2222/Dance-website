@@ -3,11 +3,11 @@ import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { sanityFetch, urlFor } from '../lib/sanity';
-import { nextEventQuery, siteSettingsQuery } from '../lib/queries';
+import { nextEventQuery, pageContentQuery, siteSettingsQuery } from '../lib/queries';
 import { t } from '../lib/format';
 import { alternates, toLang } from '../lib/i18n';
 import { strings } from '../lib/ui';
-import type { DanceEvent, SiteSettings } from '../lib/types';
+import type { DanceEvent, PageContent, SiteSettings } from '../lib/types';
 
 interface Props {
   title: string;
@@ -21,18 +21,19 @@ const { title, description, ogImage } = Astro.props;
 const lang = toLang(Astro.currentLocale);
 const s = strings(lang);
 
-const [settings, nextEvent] = await Promise.all([
+const [settings, page, nextEvent] = await Promise.all([
   sanityFetch<SiteSettings | null>(siteSettingsQuery, null),
+  sanityFetch<PageContent | null>(pageContentQuery, null),
   sanityFetch<DanceEvent | null>(nextEventQuery, null),
 ]);
 
 const siteName = t(settings?.siteName, lang) || s.siteNameFallback;
 const fullTitle = title === siteName ? title : `${title} — ${siteName}`;
-const metaDescription =
-  description || t(settings?.heroSubtitle, lang) || s.metaDescriptionFallback;
+// The hero subtitle and photo double as the site-wide search-engine
+// description and social preview when a page supplies none of its own.
+const metaDescription = description || t(page?.heroSubtitle, lang) || s.metaDescriptionFallback;
 const ogImageUrl =
-  ogImage ??
-  (settings?.heroImage ? urlFor(settings.heroImage).width(1200).height(630).url() : undefined);
+  ogImage ?? (page?.heroImage ? urlFor(page.heroImage).width(1200).height(630).url() : undefined);
 
 // Tells search engines the two language versions of this page are equivalent.
 const langAlternates = alternates(Astro.url.pathname);

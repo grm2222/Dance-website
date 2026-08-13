@@ -11,7 +11,6 @@ export const siteSettings = defineType({
     { name: 'general', title: 'General', default: true },
     { name: 'navigation', title: 'Menu' },
     { name: 'contact', title: 'Contact' },
-    { name: 'homepage', title: 'Homepage' },
     { name: 'footer', title: 'Footer' },
   ],
   fields: [
@@ -103,60 +102,6 @@ export const siteSettings = defineType({
       group: 'contact',
     }),
 
-    defineField({
-      name: 'heroEyebrow',
-      title: 'Hero label',
-      description: 'Small pill above the big title, e.g. the name of the next big competition.',
-      type: 'localeString',
-      group: 'homepage',
-    }),
-    defineField({
-      name: 'heroTitle',
-      title: 'Hero title',
-      description: 'The big headline on the homepage.',
-      type: 'localeString',
-      group: 'homepage',
-    }),
-    defineField({
-      name: 'heroSubtitle',
-      title: 'Hero subtitle',
-      type: 'localeText',
-      group: 'homepage',
-    }),
-    defineField({
-      name: 'heroImage',
-      title: 'Hero background photo',
-      description:
-        'Fills the whole hero behind the text, darkened from the left. ' +
-        'Use a wide, landscape photo — a real competition shot works far better than a graphic.',
-      type: 'image',
-      group: 'homepage',
-      options: { hotspot: true },
-    }),
-    defineField({
-      name: 'heroPrimaryCta',
-      title: 'Hero main button',
-      type: 'ctaLink',
-      group: 'homepage',
-    }),
-    defineField({
-      name: 'heroSecondaryCta',
-      title: 'Hero second button',
-      type: 'ctaLink',
-      group: 'homepage',
-    }),
-    defineField({
-      name: 'aboutTitle',
-      title: 'About section title',
-      type: 'localeString',
-      group: 'homepage',
-    }),
-    defineField({
-      name: 'aboutText',
-      title: 'About section text',
-      type: 'localeText',
-      group: 'homepage',
-    }),
 
     defineField({
       name: 'footerText',

@@ -23,7 +23,80 @@ export const pageContent = defineType({
     { name: 'errors', title: 'Error page' },
   ],
   fields: [
-    // ── Homepage ────────────────────────────────────────────
+    // ── Homepage: hero banner ───────────────────────────────
+    defineField({
+      name: 'showHero',
+      title: 'Show the hero banner',
+      description: 'The large banner at the top of the homepage. Turn off for a compact homepage that starts with the news.',
+      type: 'boolean',
+      group: 'homepage',
+      initialValue: true,
+    }),
+    defineField({
+      name: 'heroEyebrow',
+      title: 'Hero label',
+      description: 'Small pill above the big title, e.g. the name of the next big competition.',
+      type: 'localeString',
+      group: 'homepage',
+      hidden: ({ document }) => document?.showHero === false,
+    }),
+    defineField({
+      name: 'heroTitle',
+      title: 'Hero title',
+      description: 'The big headline on the homepage.',
+      type: 'localeString',
+      group: 'homepage',
+      hidden: ({ document }) => document?.showHero === false,
+    }),
+    defineField({
+      name: 'heroSubtitle',
+      title: 'Hero subtitle',
+      description: 'Also used as the site’s search-engine description when a page has none.',
+      type: 'localeText',
+      group: 'homepage',
+    }),
+    defineField({
+      name: 'heroImage',
+      title: 'Hero background photo',
+      description:
+        'Fills the whole hero behind the text, darkened from the left. ' +
+        'Use a wide, landscape photo — a real competition shot works far better than a graphic. ' +
+        'Also used as the preview image when the site is shared on social media.',
+      type: 'image',
+      group: 'homepage',
+      options: { hotspot: true },
+    }),
+    defineField({
+      name: 'heroPrimaryCta',
+      title: 'Hero main button',
+      type: 'ctaLink',
+      group: 'homepage',
+      hidden: ({ document }) => document?.showHero === false,
+    }),
+    defineField({
+      name: 'heroSecondaryCta',
+      title: 'Hero second button',
+      type: 'ctaLink',
+      group: 'homepage',
+      hidden: ({ document }) => document?.showHero === false,
+    }),
+
+    // ── Homepage: about ─────────────────────────────────────
+    defineField({
+      name: 'aboutTitle',
+      title: 'About section title',
+      type: 'localeString',
+      group: 'homepage',
+    }),
+    defineField({
+      name: 'aboutText',
+      title: 'About section text',
+      description: 'Leave blank to hide the about section from the homepage.',
+      type: 'localeText',
+      group: 'homepage',
+    }),
+
+    // ── Homepage: sections ──────────────────────────────────
     defineField({
       name: 'newsHeading',
       title: 'News section heading',

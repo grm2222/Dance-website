@@ -85,15 +85,15 @@ export const siteSettingsQuery = `
   siteName, tagline, logo,
   navigation[]{ label, href, children[]{ label, href } },
   phone, emails, address, facebookUrl, instagramUrl, youtubeUrl,
-  heroEyebrow, heroTitle, heroSubtitle, heroImage,
-  heroPrimaryCta{ label, href }, heroSecondaryCta{ label, href },
-  aboutTitle, aboutText,
   footerText, footerLinks[]{ label, href }
 }
 `;
 
 export const pageContentQuery = `
 *[_type == "pageContent"][0]{
+  showHero, heroEyebrow, heroTitle, heroSubtitle, heroImage,
+  heroPrimaryCta{ label, href }, heroSecondaryCta{ label, href },
+  aboutTitle, aboutText,
   newsHeading, newsCount, scheduleHeading, resultsHeading,
   showGallery, galleryHeading, galleryCount,
   showRegisterSection, registerHeading,
