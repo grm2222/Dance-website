@@ -1,4 +1,5 @@
 // @ts-check
+import process from 'node:process';
 import { defineConfig } from 'astro/config';
 
 import tailwindcss from '@tailwindcss/vite';
@@ -23,15 +24,18 @@ export default defineConfig({
   },
 
   // Pages render on demand and are then cached like static files (ISR), so a
-  // visitor gets a pre-built page at static speed, but an edit published in the
-  // Studio appears within `expiration` seconds instead of waiting for a full
-  // site rebuild. The publish webhook still rebuilds, which refreshes the cache
-  // for everyone at once.
+  // visitor gets a pre-built page at static speed.
   output: 'server',
 
   adapter: vercel({
     isr: {
-      expiration: 30,
+      // Publishing in the Studio calls /api/revalidate, which refreshes exactly
+      // the affected pages straight away — so an edit is live immediately
+      // rather than after a rebuild.
+      bypassToken: process.env.ISR_BYPASS_TOKEN,
+      // Safety net only. If a revalidation call is ever missed, a page can be
+      // at most this stale; it is not the normal path to freshness.
+      expiration: 300,
     },
   })
 });
