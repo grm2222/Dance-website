@@ -43,6 +43,15 @@ export default defineConfig({
       // Safety net. If a revalidation call is ever missed — or the token is not
       // configured — a page can be at most this stale.
       expiration: 300,
+      // The API routes must NOT go through the ISR cache. Vercel's ISR
+      // (prerender) functions only serve GET/HEAD, so a POST to one fails with
+      // FUNCTION_INVOCATION_FAILED — which silently broke both registration
+      // forms and /api/revalidate itself. Excluded routes are served by the
+      // normal server function instead, and are never cached.
+      //
+      // This has to be a RegExp: the adapter compares string entries to a
+      // route's pattern with `===`, so '/api/*' would match nothing at all.
+      exclude: [/^\/api\//],
     },
   })
 });
