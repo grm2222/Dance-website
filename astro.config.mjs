@@ -32,9 +32,16 @@ export default defineConfig({
       // Publishing in the Studio calls /api/revalidate, which refreshes exactly
       // the affected pages straight away — so an edit is live immediately
       // rather than after a rebuild.
-      bypassToken: process.env.ISR_BYPASS_TOKEN,
-      // Safety net only. If a revalidation call is ever missed, a page can be
-      // at most this stale; it is not the normal path to freshness.
+      //
+      // Spread rather than assign: the adapter rejects an explicit `undefined`
+      // token, which would fail the build on any environment where the secret
+      // is not set yet. Without it the site still works, just on the timed
+      // expiry below instead of instant refreshes.
+      ...(process.env.ISR_BYPASS_TOKEN
+        ? { bypassToken: process.env.ISR_BYPASS_TOKEN }
+        : {}),
+      // Safety net. If a revalidation call is ever missed — or the token is not
+      // configured — a page can be at most this stale.
       expiration: 300,
     },
   })
