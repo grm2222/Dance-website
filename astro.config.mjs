@@ -6,8 +6,24 @@ import tailwindcss from '@tailwindcss/vite';
 
 import vercel from '@astrojs/vercel';
 
+/**
+ * The site's public address, used to build the absolute URLs that canonical
+ * tags, hreflang and the sitemap all require.
+ *
+ * Vercel sets VERCEL_PROJECT_PRODUCTION_URL to the project's production
+ * domain and updates it when a custom domain is added, so the right address
+ * follows the move on its own. PUBLIC_SITE_URL overrides it if ever needed.
+ */
+const site =
+  process.env.PUBLIC_SITE_URL ||
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : 'http://localhost:4321');
+
 // https://astro.build/config
 export default defineConfig({
+  site,
+
   // Mongolian is the default and keeps the bare paths (/news); English is
   // served under /en/. This makes each language a real, indexable URL rather
   // than a client-side text swap. See docs/design-wdc.md.

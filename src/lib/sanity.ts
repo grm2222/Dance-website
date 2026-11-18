@@ -7,6 +7,16 @@ const projectId = (import.meta.env.PUBLIC_SANITY_PROJECT_ID as string | undefine
 const dataset = (import.meta.env.PUBLIC_SANITY_DATASET as string | undefined) || 'production';
 
 /**
+ * Read token, required once the dataset is private.
+ *
+ * The dataset must be private: it holds the registration requests, which
+ * carry a dancer's phone, email and full date of birth — often a child's. A
+ * public dataset serves those to anyone who knows the project ID, no matter
+ * what the website chooses to render. Server-only, never sent to the browser.
+ */
+const readToken = (import.meta.env.SANITY_READ_TOKEN as string | undefined) || undefined;
+
+/**
  * True once PUBLIC_SANITY_PROJECT_ID is set. Without it the site still
  * builds (empty content, default text) so local setup never blocks on
  * CMS credentials.
@@ -17,11 +27,12 @@ export const sanityClient = createClient({
   projectId: projectId ?? 'unconfigured',
   dataset,
   apiVersion: '2026-06-01',
-  // Pages are prerendered, so every query runs at build time. The publish
-  // webhook fires a rebuild the instant an editor hits Publish, which can
-  // beat the CDN's ~60s cache and bake the pre-edit content into the site.
-  // Reading from the API directly costs nothing here — it is a handful of
-  // requests per build — and guarantees a rebuild reflects what was published.
+  ...(readToken ? { token: readToken } : {}),
+  // Pages render on demand behind the ISR cache (see astro.config.mjs), so a
+  // query runs only when a page is actually rebuilt. Going straight to the API
+  // rather than the CDN means a page refreshed right after a publish shows what
+  // was just published, instead of whatever the CDN cached up to a minute ago.
+  // A token also requires useCdn: false.
   useCdn: false,
 });
 

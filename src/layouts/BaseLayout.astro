@@ -36,7 +36,17 @@ const ogImageUrl =
   ogImage ?? (page?.heroImage ? urlFor(page.heroImage).width(1200).height(630).url() : undefined);
 
 // Tells search engines the two language versions of this page are equivalent.
-const langAlternates = alternates(Astro.url.pathname);
+// These must be absolute URLs — search engines ignore relative hreflang — so
+// each path is resolved against `site` from astro.config.mjs.
+const base = Astro.site ?? new URL(Astro.url.origin);
+const absolute = (path: string) => new URL(path, base).href;
+const langAlternates = alternates(Astro.url.pathname).map((alt) => ({
+  lang: alt.lang,
+  href: absolute(alt.href),
+}));
+// The page's own preferred address, so query strings and the /en pairing
+// never read as duplicate content.
+const canonical = absolute(Astro.url.pathname);
 const ogLocale = lang === 'en' ? 'en' : 'mn_MN';
 ---
 
@@ -49,6 +59,7 @@ const ogLocale = lang === 'en' ? 'en' : 'mn_MN';
     <meta name="description" content={metaDescription} />
     <meta name="theme-color" content="#000000" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="canonical" href={canonical} />
     {langAlternates.map((alt) => <link rel="alternate" hreflang={alt.lang} href={alt.href} />)}
     <link rel="alternate" hreflang="x-default" href={langAlternates[0].href} />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -61,6 +72,7 @@ const ogLocale = lang === 'en' ? 'en' : 'mn_MN';
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={metaDescription} />
     <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
     <meta property="og:locale" content={ogLocale} />
     {ogImageUrl && <meta property="og:image" content={ogImageUrl} />}
   </head>

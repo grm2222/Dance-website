@@ -85,14 +85,28 @@ export function daysUntil(iso: string): number {
   return Math.round((startOf(d) - startOf(new Date())) / 86_400_000);
 }
 
+/**
+ * Escapes a value before it goes into an HTML attribute. The result of
+ * renderPortableText is injected with `set:html`, so an unescaped quote in a
+ * caption would break out of the attribute and inject markup.
+ */
+function escapeAttr(value: string): string {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
 export function renderPortableText(blocks: PortableTextBlock[] | undefined): string {
   if (!blocks || blocks.length === 0) return '';
   return toHTML(blocks, {
     components: {
       types: {
         image: ({ value }) => {
-          const src = urlFor(value).width(1200).url();
-          const alt = typeof value.alt === 'string' ? value.alt : '';
+          const src = escapeAttr(urlFor(value).width(1200).url());
+          const alt = escapeAttr(typeof value.alt === 'string' ? value.alt : '');
           return `<img src="${src}" alt="${alt}" loading="lazy" />`;
         },
       },

@@ -68,12 +68,6 @@ export const recentResultsQuery = `
 }
 `;
 
-export const allEventsQuery = `
-*[_type == "event"] | order(date desc){
-  _id, title, date, location, description, type, resultDetails
-}
-`;
-
 export const galleryQuery = `
 *[_type == "galleryImage"] | order(coalesce(order, 999) asc, _createdAt desc)[0...12]{
   _id, image, caption, order
@@ -132,6 +126,18 @@ export const allDancersQuery = `
 export const dancerSlugsQuery = `
 *[_type == "dancer" && defined(slug.current)].slug.current
 `;
+
+/**
+ * Everything the sitemap needs, in one request: the slugs of each page that
+ * has its own address, plus the dancer count so the paginated directory pages
+ * can be listed too.
+ */
+export const sitemapQuery = `{
+  "news": ${newsSlugsQuery},
+  "categories": *[_type == "newsCategory" && defined(slug.current)].slug.current,
+  "dancers": ${dancerSlugsQuery},
+  "dancerCount": count(*[_type == "dancer" && defined(slug.current)])
+}`;
 
 export const dancerBySlugQuery = `
 *[_type == "dancer" && slug.current == $slug][0]{

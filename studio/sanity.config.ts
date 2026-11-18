@@ -318,7 +318,13 @@ export default defineConfig({
   projectId,
   dataset,
   theme,
-  plugins: [structureTool({ structure }), visionTool()],
+  // Vision is a raw GROQ query console — useful while developing, confusing
+  // in the deployed Studio, which is used by non-technical admins. `sanity
+  // deploy` builds in production mode, so it appears only in `npm run dev`.
+  plugins: [
+    structureTool({ structure }),
+    ...(process.env.NODE_ENV === 'development' ? [visionTool()] : []),
+  ],
   schema: {
     types: schemaTypes,
     templates: (prev) => [
