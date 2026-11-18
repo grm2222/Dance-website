@@ -4,20 +4,16 @@ import { sanityFetch } from '../../../lib/sanity';
 import { newsCategoriesQuery } from '../../../lib/queries';
 import type { NewsCategory } from '../../../lib/types';
 
-export async function getStaticPaths() {
-  const categories = await sanityFetch<NewsCategory[]>(newsCategoriesQuery, []);
-  return categories.map((category) => ({
-    params: { slug: category.slug },
-    props: { category, categories },
-  }));
-}
+// Rendered on demand and cached by ISR (see astro.config.mjs), so the category
+// is resolved from the URL at request time. A new category is reachable as soon
+// as it is published, without waiting for a rebuild.
+const { slug } = Astro.params;
+const categories = await sanityFetch<NewsCategory[]>(newsCategoriesQuery, []);
+const category = categories.find((c) => c.slug === slug);
 
-interface Props {
-  category: NewsCategory;
-  categories: NewsCategory[];
+if (!category) {
+  return Astro.redirect('/news');
 }
-
-const { category, categories } = Astro.props;
 ---
 
 <CategoryView category={category} categories={categories} />

@@ -1,14 +1,11 @@
 ---
 import DancerView from '../../../views/DancerView.astro';
 import { sanityFetch } from '../../../lib/sanity';
-import { dancerBySlugQuery, dancerSlugsQuery } from '../../../lib/queries';
+import { dancerBySlugQuery } from '../../../lib/queries';
 import type { Dancer } from '../../../lib/types';
 
-export async function getStaticPaths() {
-  const slugs = await sanityFetch<string[]>(dancerSlugsQuery, []);
-  return slugs.map((slug) => ({ params: { slug } }));
-}
-
+// Rendered on demand and cached by ISR (see astro.config.mjs): a newly
+// published item is reachable immediately, without a rebuild.
 const { slug } = Astro.params;
 const dancer = await sanityFetch<Dancer | null>(dancerBySlugQuery, null, { slug });
 

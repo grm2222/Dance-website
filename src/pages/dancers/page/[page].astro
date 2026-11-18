@@ -2,20 +2,20 @@
 import DancersView from '../../../views/DancersView.astro';
 import { sanityFetch } from '../../../lib/sanity';
 import { allDancersQuery } from '../../../lib/queries';
-import { PER_PAGE, pageNumbers } from '../../../lib/pagination';
+import { PER_PAGE } from '../../../lib/pagination';
 import type { DancerPreview } from '../../../lib/types';
 
-// Page 1 lives at /dancers, so this route starts at 2.
-export async function getStaticPaths() {
-  const dancers = await sanityFetch<DancerPreview[]>(allDancersQuery, []);
-  return pageNumbers(dancers.length)
-    .filter((n) => n > 1)
-    .map((n) => ({ params: { page: String(n) } }));
-}
-
+// Page 1 lives at /dancers; this route starts at 2. Rendered on demand, so a
+// page number outside the real range has to be rejected here rather than simply
+// never being generated.
 const pageNo = Number(Astro.params.page);
 const dancers = await sanityFetch<DancerPreview[]>(allDancersQuery, []);
 const totalPages = Math.max(1, Math.ceil(dancers.length / PER_PAGE));
+
+if (!Number.isInteger(pageNo) || pageNo < 2 || pageNo > totalPages) {
+  return Astro.redirect('/dancers');
+}
+
 const start = (pageNo - 1) * PER_PAGE;
 ---
 

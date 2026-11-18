@@ -22,5 +22,16 @@ export default defineConfig({
     plugins: [tailwindcss()]
   },
 
-  adapter: vercel()
+  // Pages render on demand and are then cached like static files (ISR), so a
+  // visitor gets a pre-built page at static speed, but an edit published in the
+  // Studio appears within `expiration` seconds instead of waiting for a full
+  // site rebuild. The publish webhook still rebuilds, which refreshes the cache
+  // for everyone at once.
+  output: 'server',
+
+  adapter: vercel({
+    isr: {
+      expiration: 30,
+    },
+  })
 });

@@ -1,16 +1,13 @@
 ---
 import NewsArticleView from '../../../views/NewsArticleView.astro';
 import { sanityFetch } from '../../../lib/sanity';
-import { newsArticleBySlugQuery, newsSlugsQuery } from '../../../lib/queries';
+import { newsArticleBySlugQuery } from '../../../lib/queries';
 import type { NewsArticle } from '../../../lib/types';
 
 // Slugs are shared across languages — one article, two URLs. The view falls
 // back to the Mongolian body when no English translation exists yet.
-export async function getStaticPaths() {
-  const slugs = await sanityFetch<string[]>(newsSlugsQuery, []);
-  return slugs.map((slug) => ({ params: { slug } }));
-}
-
+// Rendered on demand and cached by ISR (see astro.config.mjs): a newly
+// published item is reachable immediately, without a rebuild.
 const { slug } = Astro.params;
 const article = await sanityFetch<NewsArticle | null>(newsArticleBySlugQuery, null, { slug });
 
